@@ -1,0 +1,327 @@
+.overlay {
+    --orange: #fe5119;
+    --white: #ffffff;
+    --gray: #d0d0d0;
+
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+
+    overflow: hidden;
+    background: #080808;
+    color: var(--gray);
+    font-family: monospace;
+
+    opacity: 1;
+    transition: opacity 600ms cubic-bezier(0.76, 0, 0.24, 1);
+}
+
+.leaving {
+    opacity: 0;
+}
+
+.brand {
+    position: absolute;
+    top: 32px;
+    left: 32px;
+
+    font-size: 12px;
+    letter-spacing: 2px;
+}
+
+.brand span {
+    color: var(--white);
+}
+
+.center {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 42px;
+
+    transform: translate(-50%, -50%);
+}
+
+.rotor {
+    position: relative;
+    width: 160px;
+    height: 160px;
+
+    animation: rotateMark 6s cubic-bezier(0.76, 0, 0.24, 1) infinite;
+    will-change: transform;
+}
+
+.arm {
+    position: absolute;
+    left: 80px;
+    top: 80px;
+
+    width: 0;
+    height: 0;
+
+    transform: rotate(var(--angle));
+}
+
+.arm i {
+    position: absolute;
+    display: block;
+
+    top: -7px;
+    left: 0;
+    width: 64px;
+    height: 14px;
+
+    background: var(--orange);
+    transform-origin: 7px 7px;
+
+    animation: foldBar 6s cubic-bezier(0.76, 0, 0.24, 1) infinite;
+}
+
+.arm:nth-child(even) i {
+    animation-name: foldAlternate;
+}
+
+.arm:first-child i::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    right: 0;
+
+    width: 3px;
+    height: 100%;
+    background: var(--white);
+}
+
+.status {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    white-space: nowrap;
+    font-size: 11px;
+    letter-spacing: 3px;
+}
+
+.dot {
+    width: 4px;
+    height: 4px;
+    background: var(--orange);
+}
+
+.dots {
+    color: var(--orange);
+    animation: pulse 1.5s ease-in-out infinite;
+}
+
+.footer {
+    position: absolute;
+    bottom: 28px;
+    left: 32px;
+    right: 32px;
+
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+
+    font-size: 10px;
+    letter-spacing: 1px;
+}
+
+@keyframes rotateMark {
+
+    0%,
+    8% {
+        transform: rotate(0deg);
+    }
+
+    25%,
+    33% {
+        transform: rotate(60deg);
+    }
+
+    50%,
+    58% {
+        transform: rotate(180deg);
+    }
+
+    75%,
+    83% {
+        transform: rotate(240deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+@keyframes foldBar {
+
+    0%,
+    8%,
+    100% {
+        transform: translateX(0) rotate(0deg);
+        width: 64px;
+    }
+
+    25%,
+    33% {
+        transform: translateX(38px) rotate(90deg);
+        width: 47px;
+    }
+
+    50%,
+    58% {
+        transform: translateX(7px) rotate(60deg);
+        width: 68px;
+    }
+
+    75%,
+    83% {
+        transform: translateX(30px) rotate(-30deg);
+        width: 44px;
+    }
+}
+
+@keyframes foldAlternate {
+
+    0%,
+    8%,
+    100% {
+        transform: translateX(0) rotate(0deg);
+        width: 64px;
+    }
+
+    25%,
+    33% {
+        transform: translateX(38px) rotate(90deg);
+        width: 47px;
+    }
+
+    50%,
+    58% {
+        transform: translateX(7px) rotate(-60deg);
+        width: 68px;
+    }
+
+    75%,
+    83% {
+        transform: translateX(30px) rotate(30deg);
+        width: 44px;
+    }
+}
+
+@keyframes pulse {
+
+    0%,
+    100% {
+        opacity: 0.25;
+    }
+
+    50% {
+        opacity: 1;
+    }
+}
+
+@media (max-width: 480px) {
+    .brand {
+        top: 24px;
+        left: 20px;
+    }
+
+    .footer {
+        left: 20px;
+        right: 20px;
+        font-size: 9px;
+        letter-spacing: 0;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+    .rotor,
+    .arm i,
+    .dots {
+        animation: none;
+    }
+
+    .overlay {
+        transition-duration: 100ms;
+    }
+
+    /* Orange circle grows from the bottom middle. */
+    .preloader-orange-wipe {
+        position: fixed;
+        inset: 0;
+        z-index: 10000;
+
+        background: #fe5119;
+        pointer-events: none;
+
+        animation: preloader-orange-expand 750ms cubic-bezier(0.76, 0, 0.24, 1) both;
+    }
+
+    /* Content stays mounted so its images can load. */
+    .preloader-page {
+        background: #080808;
+    }
+
+    /* The actual page grows over the orange layer. */
+    .preloader-page--revealing {
+        position: relative;
+        z-index: 10001;
+
+        height: 100vh;
+        height: 100dvh;
+        overflow: hidden;
+        pointer-events: none;
+
+        animation: preloader-page-expand 750ms cubic-bezier(0.76, 0, 0.24, 1) both;
+    }
+
+    /* Restore normal page layout after the reveal. */
+    .preloader-page--done {
+        clip-path: none;
+    }
+
+    @keyframes preloader-orange-expand {
+        from {
+            clip-path: circle(8px at 50% 100%);
+        }
+
+        to {
+            clip-path: circle(150% at 50% 100%);
+        }
+    }
+
+    @keyframes preloader-page-expand {
+        from {
+            clip-path: circle(0% at 50% 100%);
+        }
+
+        to {
+            clip-path: circle(150% at 50% 100%);
+        }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+
+        .preloader-orange-wipe,
+        .preloader-page--revealing {
+            animation: preloader-transition-fade 100ms linear both;
+        }
+
+        @keyframes preloader-transition-fade {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+    }
+}
