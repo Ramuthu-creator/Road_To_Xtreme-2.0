@@ -1,14 +1,24 @@
 import "../styles/globals.css";
 import "./globals.css";
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Inter, Orbitron, Space_Grotesk } from "next/font/google";
 import Preloader from "@/components/animations/xtremepreloader";
 
-const inter = Inter({ subsets: ["latin"] });
+const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
+const orbitron = Orbitron({
+  subsets: ["latin"],
+  variable: "--font-orbitron",
+  weight: ["400", "600", "700", "900"],
+});
+const spaceGrotesk = Space_Grotesk({
+  subsets: ["latin"],
+  variable: "--font-space",
+  weight: ["400", "500", "600", "700"],
+});
 
 export const metadata: Metadata = {
   title: "Road To Xtreme 2.0",
-  description: "Next.js Application",
+  description: "Outthink the challenge. Outcode the competition.",
 };
 
 export default function RootLayout({
@@ -17,10 +27,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
-      <body className={inter.className}>
+    <html lang="en" className={`${inter.variable} ${orbitron.variable} ${spaceGrotesk.variable}`}>
+      <body className={`${inter.className} bg-[#0a0a0b] text-white selection:bg-[#ff5500] selection:text-black antialiased overflow-x-hidden`}>
         <Preloader>{children}</Preloader>
       </body>
     </html>
   );
 }
+
