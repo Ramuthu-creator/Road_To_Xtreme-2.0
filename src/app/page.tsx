@@ -1,3 +1,4 @@
+<<<<<<< Updated upstream
 export default function Home() {
   return (
     <main className="flex min-h-screen flex-col items-center justify-between p-24">
@@ -8,5 +9,26 @@ export default function Home() {
         </p>
       </div>
     </main>
+=======
+"use client";
+
+import Navbar from "@/components/layout/Navbar";
+import Footer from "@/components/layout/Footer";
+
+export default function Home() {
+  return (
+    <div className="min-h-screen bg-[#0d0d0e] text-white flex flex-col justify-between">
+      {/* Navbar Component */}
+      <Navbar />
+
+      {/* Main Content Space */}
+      <main className="flex-1 flex items-center justify-center p-8">
+        {/* Content goes here */}
+      </main>
+
+      {/* Footer Component */}
+      <Footer />
+    </div>
+>>>>>>> Stashed changes
   );
 }
