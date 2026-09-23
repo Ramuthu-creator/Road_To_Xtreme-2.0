@@ -5,6 +5,7 @@ import { Inter, Orbitron, Space_Grotesk } from "next/font/google";
 import Preloader from "@/components/animations/xtremepreloader";
 import Navbar from "@/components/sections/navbar/Navbar";
 import Footer from "@/components/sections/footer/Footer";
+import Guidence from "@/components/sections/guidance-resources/HowItWorks";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 const orbitron = Orbitron({
@@ -33,6 +34,7 @@ export default function RootLayout({
       <body className={`${inter.className} bg-[#0a0a0b] text-white selection:bg-[#ff5500] selection:text-black antialiased overflow-x-hidden flex flex-col min-h-screen`}>
         <Preloader>
           <Navbar />
+          <Guidence />
           <main className="flex-1 flex flex-col">
             {children}
           </main>
