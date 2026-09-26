@@ -12,7 +12,7 @@ const SessionRegistration: React.FC = () => {
           </p>
           
           <h2 className="text-white text-4xl lg:text-6xl font-bold mb-4 md:mb-6 leading-tight">
-            Your Xtreme <br /> Starts Here<span className="text-orange-500">.</span>
+            Your Xtreme <br /> Starts <span className="whitespace-nowrap">Here<span className="text-orange-500">.</span></span>
           </h2>
           
           <p className="text-gray-400 text-sm md:text-base mb-10 md:mb-12 max-w-md leading-relaxed">
@@ -90,13 +90,11 @@ const SessionRegistration: React.FC = () => {
         {/* Right Column - Graphic & Footer Text */}
         <div className="flex flex-col items-center lg:items-end justify-center lg:justify-start lg:mt-16 w-full">
           {/* Blob Graphic */}
-          <div 
-            className="w-64 h-64 md:w-96 md:h-96 bg-gradient-to-br from-orange-500 to-red-900 mb-12 mt-8 lg:mt-0 lg:mr-8"
-            style={{ 
-              borderRadius: '40% 60% 70% 30% / 40% 50% 60% 50%',
-              boxShadow: '0 20px 50px -10px rgba(239, 68, 68, 0.2)'
-            }}
-          ></div>
+          <img 
+            src="/registration-blob.svg" 
+            alt="Registration Graphic" 
+            className="w-full h-auto max-w-md md:max-w-lg lg:max-w-xl mb-12 mt-8 lg:mt-0 lg:mr-8 object-contain"
+          />
           
           <div className="text-center lg:text-right flex flex-col items-center lg:items-end w-full">
             <p className="text-orange-500 font-mono text-sm tracking-[0.15em] mb-3">
