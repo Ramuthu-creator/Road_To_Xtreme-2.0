@@ -6,6 +6,7 @@ import Preloader from "@/components/animations/xtremepreloader";
 import Navbar from "@/components/sections/navbar/Navbar";
 import Footer from "@/components/sections/footer/Footer";
 import Guidence from "@/components/sections/guidance-resources/HowItWorks";
+import Faq from "@/components/sections/faq/faq";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 const orbitron = Orbitron({
@@ -35,6 +36,7 @@ export default function RootLayout({
         <Preloader>
           <Navbar />
           <Guidence />
+          <Faq />
           <main className="flex-1 flex flex-col">
             {children}
           </main>
