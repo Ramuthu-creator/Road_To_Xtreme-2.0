@@ -1,12 +1,27 @@
+"use client";
+
+import UpcomingSessions from "@/components/sections/upcoming-sessions/UpcomingSessions";
+import Hero from "@/components/hero/hero";
+import Guidence from "@/components/sections/guidance-resources/HowItWorks";
+
 export default function Home() {
   return (
-    <main className="flex min-h-screen flex-col items-center justify-between p-24">
-      <div className="z-10 max-w-5xl w-full items-center justify-between font-mono text-sm lg:flex">
-        <p className="fixed left-0 top-0 flex w-full justify-center border-b border-gray-300 bg-gradient-to-b from-zinc-200 pb-6 pt-8 backdrop-blur-2xl dark:border-neutral-800 dark:bg-zinc-800/30 dark:from-inherit lg:static lg:w-auto  lg:rounded-xl lg:border lg:bg-gray-200 lg:p-4 lg:dark:bg-zinc-800/30">
-          Get started by editing&nbsp;
-          <code className="font-mono font-bold">src/app/page.tsx</code>
-        </p>
-      </div>
+    <main className="flex flex-col w-full relative">
+      {/* The Hero stays fixed at the top while scrolling down */}
+      <section className="sticky top-0 w-full min-h-screen z-0">
+        <Hero />
+      </section>
+      
+      {/* The next sections slide up OVER the Hero */}
+      <section className="relative w-full z-10 bg-[#0b0b0c] shadow-[0_-20px_50px_rgba(0,0,0,0.8)]">
+        <Guidence />
+      </section>
+      
+      <section className="relative w-full z-10 bg-[#0b0b0c]">
+        <UpcomingSessions />
+      </section>
     </main>
   );
 }
+
+
