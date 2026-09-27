@@ -19,7 +19,7 @@ export default function Hero() {
                 <div className="mainimage">
                     <Image
                         className="img"
-                        src="/assets/images/bg.png"
+                        src="/assets/logos/bg.png"
                         alt="Background"
                         width={1920}
                         height={1080}
@@ -30,7 +30,7 @@ export default function Hero() {
                     <p>Outcode the competition.</p>
                 </div>
                 <div className="bottom">
-                    <p>// 2.0</p>
+                    {/* <p>// 2.0</p> */}
                 </div>
             </div>
         </div>

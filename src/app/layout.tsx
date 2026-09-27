@@ -1,7 +1,9 @@
 import "../styles/globals.css";
 import "./globals.css";
 import type { Metadata } from "next";
+import type { ReactNode } from "react";
 import { Inter, Orbitron, Space_Grotesk } from "next/font/google";
+
 import Preloader from "@/components/animations/xtremepreloader";
 // import Navbar from "@/components/sections/navbar/Navbar";
 // import Footer from "@/components/sections/footer/Footer";
@@ -9,12 +11,17 @@ import Preloader from "@/components/animations/xtremepreloader";
 import Navbar from "@/components/sections/navbar/Navbar";
 import Footer from "@/components/sections/footer/Footer";
 
-const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
+const inter = Inter({
+  subsets: ["latin"],
+  variable: "--font-inter",
+});
+
 const orbitron = Orbitron({
   subsets: ["latin"],
   variable: "--font-orbitron",
   weight: ["400", "600", "700", "900"],
 });
+
 const spaceGrotesk = Space_Grotesk({
   subsets: ["latin"],
   variable: "--font-space",
@@ -29,7 +36,7 @@ export const metadata: Metadata = {
 export default function RootLayout({
   children,
 }: {
-  children: React.ReactNode;
+  children: ReactNode;
 }) {
   return (
     <html lang="en" className={`${inter.variable} ${orbitron.variable} ${spaceGrotesk.variable}`}>
@@ -47,4 +54,3 @@ export default function RootLayout({
     </html>
   );
 }
-
