@@ -6,7 +6,10 @@ import Preloader from "@/components/animations/xtremepreloader";
 // import Navbar from "@/components/sections/navbar/Navbar";
 // import Footer from "@/components/sections/footer/Footer";
 // import Guidence from "@/components/sections/guidance-resources/HowItWorks";
-import Hero from "@/components/hero/hero";
+import Hero from "@/components/hero/hero"
+import Navbar from "@/components/sections/navbar/Navbar";
+import Footer from "@/components/sections/footer/Footer";
+import Guidence from "@/components/sections/guidance-resources/HowItWorks";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 const orbitron = Orbitron({
@@ -31,16 +34,17 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={`${inter.variable} ${orbitron.variable} ${spaceGrotesk.variable}`}>
-      <body className={`${inter.className} bg-[#0a0a0b] text-white ?selection:bg-[#ff5500] selection:text-black antialiased overflow-x-hidden flex flex-col min-h-screen`}>
+    <html lang="en" className={`${inter.variable} ${orbitron.variable} ${spaceGrotesk.variab
+    
+        
+      <body className={`${inter.className} bg-[#0a0a0b] text-white selection:bg-[#ff5500] selection:text-black antialiased overflow-x-hidden flex flex-col min-h-screen`}>
         <Preloader>
-          {/* <Navbar /> */}
-          {/* <Guidence /> */}
-          <Hero />
+          <Navbar />
+          <Guidence />
           <main className="flex-1 flex flex-col">
-            {/* {children} */}
+            {children}
           </main>
-          {/* <Footer /> */}
+          <Footer />
         </Preloader>
       </body>
     </html>
