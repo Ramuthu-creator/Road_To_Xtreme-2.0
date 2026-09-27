@@ -19,7 +19,7 @@ export default function Hero() {
                 <div className="mainimage">
                     <Image
                         className="img"
-                        src="/assets/logos/bg.png"
+                        src="/assets/images/bg.png"
                         alt="Background"
                         width={1920}
                         height={1080}
