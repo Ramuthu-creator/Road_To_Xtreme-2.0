@@ -3,6 +3,10 @@ import "./globals.css";
 import type { Metadata } from "next";
 import { Inter, Orbitron, Space_Grotesk } from "next/font/google";
 import Preloader from "@/components/animations/xtremepreloader";
+// import Navbar from "@/components/sections/navbar/Navbar";
+// import Footer from "@/components/sections/footer/Footer";
+// import Guidence from "@/components/sections/guidance-resources/HowItWorks";
+import Hero from "@/components/hero/hero"
 import Navbar from "@/components/sections/navbar/Navbar";
 import Footer from "@/components/sections/footer/Footer";
 import Guidence from "@/components/sections/guidance-resources/HowItWorks";
@@ -25,12 +29,14 @@ export const metadata: Metadata = {
 };
 
 export default function RootLayout({
-  children,
+  // children,
 }: {
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={`${inter.variable} ${orbitron.variable} ${spaceGrotesk.variable}`}>
+    <html lang="en" className={`${inter.variable} ${orbitron.variable} ${spaceGrotesk.variab
+    
+        
       <body className={`${inter.className} bg-[#0a0a0b] text-white selection:bg-[#ff5500] selection:text-black antialiased overflow-x-hidden flex flex-col min-h-screen`}>
         <Preloader>
           <Navbar />
