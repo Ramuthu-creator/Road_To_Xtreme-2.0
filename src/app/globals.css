@@ -351,73 +351,65 @@
 
 .hero {
     width: 100%;
+    border-bottom: 2px solid #fe5119; /* Orange line at bottom */
     /* height: 100vh; */
     /* border: 1px solid red; */
 
     .hero-content {
 
         .countdown {
-            /* border: 1px solid blue; */
             position: absolute;
-            height: 50vh;
-            width: 97%;
-            display: flex;
-            justify-content: center;
-            align-items: flex-end;
-            flex-direction: column;
-            gap: 10px;
-            /* .center{ */
-            /* border: 1px solid red; */
-            /* display: flex; */
-            /* justify-content: center; */
-            /* align-items: center; */
-            /* position: relative; */
-
-            /* right: 200px; */
+            top: 15vh; /* Move it higher up into the black space above the hair */
+            right: 4vw;
+            display: grid;
+            grid-template-columns: auto auto auto auto auto auto auto;
+            row-gap: 5px;
+            column-gap: clamp(8px, 1vw, 20px);
+            align-items: end;
+            justify-items: center;
+            z-index: 10; 
             .text {
-                font-size: 23px;
+                font-size: clamp(12px, 1.2vw, 16px);
                 font-family: "exo 2", sans-serif;
-                font-weight: bold;
-                font-style: regular;
-                line-height: 100%;
-                letter-spacing: 1px;
-
+                font-weight: 500;
+                font-style: italic;
+                letter-spacing: 2px;
+                color: #d0d0d0;
             }
             .numCountdown{
-                font-size: 25px;
+                font-size: clamp(32px, 4vw, 56px);
                 font-family: "exo 2", sans-serif;
                 font-weight: bold;
-                font-style: regular;
                 line-height: 100%;
-                letter-spacing: 1px;
+                letter-spacing: 2px;
                 position: relative;
-                right: 100px;
             }
-
-            /* } */
         }
         .mainContent{
             position: absolute;
+            top: 32vh;
+            left: 8vw;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            z-index: 1; /* Put text behind the image */
             .roadto{
                 font-family: "exo 2", sans-serif;
-                font-size: 40px;
-                font-weight: bold;
+                font-size: clamp(24px, 3.5vw, 40px);
+                font-weight: 700;
+                font-style: italic;
                 letter-spacing: 1px;
-                position: absolute;
-                width: 400px;
-                top: 220px;
-                left: 80px;
+                color: #ffffff;
+                margin-bottom: -1.5vw; /* pull XTREME up closer */
+                margin-left: 0; 
             }
             p{
-                font-size: 19rem;
-                position: absolute;
+                font-size: clamp(80px, 19vw, 20rem);
                 font-family: "arial",sans-serif;
                 font-weight: 800;
-                line-height: 90%;
-                letter-spacing: -8px;
+                line-height: 85%;
+                letter-spacing: clamp(-2px, -0.3vw, -6px);
                 color: #fe5119;
-                top: 270px;
-                left: 80px;
             }
         }
 
@@ -425,22 +417,25 @@
             display: flex;
             justify-content: center;
             align-items: flex-end;
-            /* border: 2px solid red; */
             height: 90vh;
+            position: relative;
+            z-index: 5; /* Image on top of the text */
+            pointer-events: none; /* Let mouse events pass through to parallax text if needed */
             .img {
                 position: relative;
                 width: 60%;
+                min-width: 300px;
+                max-width: 100%;
             }
         }
         .subcontent{
             position:absolute;
-            /* border: 1px solid red; */
-            top: 670px;
-            left: 120px;
-            /* flex-direction: column; */
+            bottom: 12vh; /* move down below XTREME */
+            left: 8vw; /* align exactly with the left edge of XTREME */
+            z-index: 10;
             p{
                 font-family: "exo 2", sans-serif;
-                font-size: 20px;
+                font-size: clamp(14px, 1.5vw, 20px);
                 letter-spacing: 0.5px;
                 line-height: 30px;
                 font-weight: 400;
