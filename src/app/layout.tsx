@@ -10,7 +10,6 @@ import Preloader from "@/components/animations/xtremepreloader";
 // import Guidence from "@/components/sections/guidance-resources/HowItWorks";
 import Navbar from "@/components/sections/navbar/Navbar";
 import Footer from "@/components/sections/footer/Footer";
-import Guidence from "@/components/sections/guidance-resources/HowItWorks";
 import CustomCursor from "@/components/animations/customCursor";
 
 const inter = Inter({
@@ -42,15 +41,15 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className={`${inter.variable} ${orbitron.variable} ${spaceGrotesk.variable}`}>
+    
         
       <body className={`${inter.className} bg-[#0a0a0b] text-white selection:bg-[#ff5500] selection:text-black antialiased overflow-x-hidden flex flex-col min-h-screen`}>
-      <CustomCursor />
+        <CustomCursor />
         <Preloader>
           <Navbar />
           <main className="flex-1 flex flex-col">
             {children}
           </main>
-          <Guidence />
           <Footer />
         </Preloader>
       </body>

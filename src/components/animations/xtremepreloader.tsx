@@ -18,7 +18,6 @@ export default function Preloader({ children }: Props) {
 
   useEffect(() => {
     const previousOverflow = document.body.style.overflow;
-
     const reducedMotion = window.matchMedia(
       "(prefers-reduced-motion: reduce)",
     ).matches;
@@ -59,11 +58,12 @@ export default function Preloader({ children }: Props) {
           <div
             className="
               brand
-              max-lg:!top-[max(20px,env(safe-area-inset-top))]
-              max-lg:!left-[max(20px,env(safe-area-inset-left))]
-              max-lg:right-5
-              max-lg:!text-[10px]
-              max-lg:!tracking-[1.5px]
+              max-md:!top-[max(20px,env(safe-area-inset-top))]
+              max-md:!left-[max(20px,env(safe-area-inset-left))]
+              max-md:!right-[max(20px,env(safe-area-inset-right))]
+              max-md:!text-[10px]
+              max-md:!leading-relaxed
+              max-md:!tracking-[1.5px]
             "
           >
             ROAD TO <span>XTREME 2.0</span>
@@ -72,11 +72,15 @@ export default function Preloader({ children }: Props) {
           <div
             className="
               center
-              max-lg:!w-[calc(100%_-_40px)]
-              max-lg:!gap-[clamp(16px,5svh,30px)]
+              max-md:!w-[calc(100%_-_40px)]
+              max-md:!max-w-[calc(100%_-_40px)]
+              max-md:!gap-[clamp(20px,5svh,30px)]
             "
           >
-            <div className="rotor" aria-hidden="true">
+            <div
+              className="rotor max-md:!shrink-0"
+              aria-hidden="true"
+            >
               {Array.from({ length: 6 }, (_, index) => (
                 <span
                   className="arm"
@@ -95,31 +99,49 @@ export default function Preloader({ children }: Props) {
             <div
               className="
                 status
-                max-lg:max-w-full
-                max-lg:!justify-center
-                max-lg:!gap-2
-                max-lg:!text-[10px]
-                max-lg:!tracking-[1px]
+                max-md:!flex
+                max-md:!w-full
+                max-md:!min-w-0
+                max-md:!flex-wrap
+                max-md:!items-center
+                max-md:!justify-center
+                max-md:!gap-x-2
+                max-md:!gap-y-1
+                max-md:!whitespace-normal
+                max-md:!text-center
+                max-md:!text-[10px]
+                max-md:!leading-relaxed
+                max-md:!tracking-[1.5px]
               "
             >
-              <span className="dot max-lg:shrink-0" />
-              LOADING EXPERIENCE
-              <span className="dots">...</span>
+              <span
+                className="dot max-md:!shrink-0"
+                aria-hidden="true"
+              />
+              <span className="max-md:whitespace-nowrap">
+                LOADING EXPERIENCE
+                <span className="dots">...</span>
+              </span>
             </div>
           </div>
 
           <div
             className="
               footer
-              max-lg:!left-[max(20px,env(safe-area-inset-left))]
-              max-lg:!right-[max(20px,env(safe-area-inset-right))]
-              max-lg:!bottom-[max(16px,env(safe-area-inset-bottom))]
-              max-lg:!text-[9px]
-              max-lg:!tracking-normal
-              max-sm:!flex-col
-              max-sm:!items-center
-              max-sm:!gap-1
-              max-sm:text-center
+              max-md:!left-[max(20px,env(safe-area-inset-left))]
+              max-md:!right-[max(20px,env(safe-area-inset-right))]
+              max-md:!bottom-[max(20px,env(safe-area-inset-bottom))]
+              max-md:!flex
+              max-md:!w-auto
+              max-md:!flex-col
+              max-md:!items-center
+              max-md:!justify-center
+              max-md:!gap-2
+              max-md:!whitespace-normal
+              max-md:!text-center
+              max-md:!text-[9px]
+              max-md:!leading-relaxed
+              max-md:!tracking-[0.5px]
             "
           >
             <span>OUTTHINK THE CHALLENGE.</span>
