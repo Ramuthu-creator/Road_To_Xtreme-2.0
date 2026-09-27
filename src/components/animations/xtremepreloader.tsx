@@ -18,6 +18,7 @@ export default function Preloader({ children }: Props) {
 
   useEffect(() => {
     const previousOverflow = document.body.style.overflow;
+
     const reducedMotion = window.matchMedia(
       "(prefers-reduced-motion: reduce)",
     ).matches;
@@ -55,11 +56,26 @@ export default function Preloader({ children }: Props) {
     <div className={active ? "intro-root--active" : undefined}>
       {active && (
         <div className="overlay intro-loader" role="status">
-          <div className="brand">
+          <div
+            className="
+              brand
+              max-lg:!top-[max(20px,env(safe-area-inset-top))]
+              max-lg:!left-[max(20px,env(safe-area-inset-left))]
+              max-lg:right-5
+              max-lg:!text-[10px]
+              max-lg:!tracking-[1.5px]
+            "
+          >
             ROAD TO <span>XTREME 2.0</span>
           </div>
 
-          <div className="center">
+          <div
+            className="
+              center
+              max-lg:!w-[calc(100%_-_40px)]
+              max-lg:!gap-[clamp(16px,5svh,30px)]
+            "
+          >
             <div className="rotor" aria-hidden="true">
               {Array.from({ length: 6 }, (_, index) => (
                 <span
@@ -76,14 +92,36 @@ export default function Preloader({ children }: Props) {
               ))}
             </div>
 
-            <div className="status">
-              <span className="dot" />
+            <div
+              className="
+                status
+                max-lg:max-w-full
+                max-lg:!justify-center
+                max-lg:!gap-2
+                max-lg:!text-[10px]
+                max-lg:!tracking-[1px]
+              "
+            >
+              <span className="dot max-lg:shrink-0" />
               LOADING EXPERIENCE
               <span className="dots">...</span>
             </div>
           </div>
 
-          <div className="footer">
+          <div
+            className="
+              footer
+              max-lg:!left-[max(20px,env(safe-area-inset-left))]
+              max-lg:!right-[max(20px,env(safe-area-inset-right))]
+              max-lg:!bottom-[max(16px,env(safe-area-inset-bottom))]
+              max-lg:!text-[9px]
+              max-lg:!tracking-normal
+              max-sm:!flex-col
+              max-sm:!items-center
+              max-sm:!gap-1
+              max-sm:text-center
+            "
+          >
             <span>OUTTHINK THE CHALLENGE.</span>
             <span>OUTCODE THE COMPETITION.</span>
           </div>
