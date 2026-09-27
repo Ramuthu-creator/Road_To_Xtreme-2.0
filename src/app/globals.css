@@ -252,75 +252,268 @@
         transition-duration: 100ms;
     }
 
-    /* Orange circle grows from the bottom middle. */
-    .preloader-orange-wipe {
-        position: fixed;
-        inset: 0;
-        z-index: 10000;
 
-        background: #fe5119;
-        pointer-events: none;
+}
 
-        animation: preloader-orange-expand 750ms cubic-bezier(0.76, 0, 0.24, 1) both;
+/* Group the loader, orange circle, and page layers. */
+.intro-root--active {
+    position: relative;
+    isolation: isolate;
+}
+
+/* Override the original overlay's z-index: 9999. */
+.intro-root--active>.intro-loader {
+    z-index: 1;
+    opacity: 1;
+    transition: none;
+}
+
+/* Orange circle covers the loader. */
+.intro-orange {
+    position: fixed;
+    inset: 0;
+    z-index: 2;
+
+    background: #fe5119;
+    pointer-events: none;
+
+    clip-path: circle(8px at 50% 100%);
+
+    animation: intro-orange-grow 750ms cubic-bezier(0.76, 0, 0.24, 1) both;
+}
+
+/* Main page sits above the orange, initially clipped away. */
+.intro-root--active>.intro-content {
+    position: relative;
+    z-index: 3;
+
+    min-height: 100svh;
+    background: #080808;
+    pointer-events: none;
+}
+
+.intro-content--loading,
+.intro-content--orange {
+    clip-path: circle(0px at 50vw 100vh);
+    clip-path: circle(0px at 50vw 100dvh);
+}
+
+/* Reveal the actual page from the bottom center. */
+.intro-content--revealing {
+    animation: intro-page-grow 750ms cubic-bezier(0.76, 0, 0.24, 1) 100ms both;
+}
+
+.intro-content--done {
+    clip-path: none;
+}
+
+@keyframes intro-orange-grow {
+    from {
+        clip-path: circle(8px at 50% 100%);
     }
 
-    /* Content stays mounted so its images can load. */
-    .preloader-page {
-        background: #080808;
+    to {
+        clip-path: circle(150vmax at 50% 100%);
+    }
+}
+
+@keyframes intro-page-grow {
+    from {
+        clip-path: circle(0px at 50vw 100vh);
+        clip-path: circle(0px at 50vw 100dvh);
     }
 
-    /* The actual page grows over the orange layer. */
-    .preloader-page--revealing {
-        position: relative;
-        z-index: 10001;
+    to {
+        clip-path: circle(150vmax at 50vw 100vh);
+        clip-path: circle(150vmax at 50vw 100dvh);
+    }
+}
 
-        height: 100vh;
-        height: 100dvh;
-        overflow: hidden;
-        pointer-events: none;
+@media (prefers-reduced-motion: reduce) {
 
-        animation: preloader-page-expand 750ms cubic-bezier(0.76, 0, 0.24, 1) both;
+    .intro-orange,
+    .intro-content--revealing {
+        animation: intro-simple-fade 100ms linear both;
     }
 
-    /* Restore normal page layout after the reveal. */
-    .preloader-page--done {
-        clip-path: none;
-    }
-
-    @keyframes preloader-orange-expand {
+    @keyframes intro-simple-fade {
         from {
-            clip-path: circle(8px at 50% 100%);
+            clip-path: none;
+            opacity: 0;
         }
 
         to {
-            clip-path: circle(150% at 50% 100%);
+            clip-path: none;
+            opacity: 1;
+        }
+    }
+}
+
+.hero {
+    width: 100%;
+    border-bottom: 2px solid #fe5119; /* Orange line at bottom */
+    /* height: 100vh; */
+    /* border: 1px solid red; */
+
+    .hero-content {
+
+        .countdown {
+            position: absolute;
+            top: 15vh; /* Move it higher up into the black space above the hair */
+            right: 4vw;
+            display: grid;
+            grid-template-columns: auto auto auto auto auto auto auto;
+            row-gap: 5px;
+            column-gap: clamp(8px, 1vw, 20px);
+            align-items: end;
+            justify-items: center;
+            z-index: 10; 
+            .text {
+                font-size: clamp(12px, 1.2vw, 16px);
+                font-family: "exo 2", sans-serif;
+                font-weight: 500;
+                font-style: italic;
+                letter-spacing: 2px;
+                color: #d0d0d0;
+            }
+            .numCountdown{
+                font-size: clamp(32px, 4vw, 56px);
+                font-family: "exo 2", sans-serif;
+                font-weight: bold;
+                line-height: 100%;
+                letter-spacing: 2px;
+                position: relative;
+            }
+        }
+        .mainContent{
+            position: absolute;
+            top: 32vh;
+            left: 8vw;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            z-index: 1; /* Put text behind the image */
+            .roadto{
+                font-family: "exo 2", sans-serif;
+                font-size: clamp(24px, 3.5vw, 40px);
+                font-weight: 700;
+                font-style: italic;
+                letter-spacing: 1px;
+                color: #ffffff;
+                margin-bottom: -1.5vw; /* pull XTREME up closer */
+                margin-left: 0; 
+            }
+            p{
+                font-size: clamp(80px, 19vw, 20rem);
+                font-family: "arial",sans-serif;
+                font-weight: 800;
+                line-height: 85%;
+                letter-spacing: clamp(-2px, -0.3vw, -6px);
+                color: #fe5119;
+            }
+        }
+
+        .mainimage {
+            display: flex;
+            justify-content: center;
+            align-items: flex-end;
+            height: 90vh;
+            position: relative;
+            z-index: 5; /* Image on top of the text */
+            pointer-events: none; /* Let mouse events pass through to parallax text if needed */
+            .img {
+                position: relative;
+                width: 60%;
+                min-width: 300px;
+                max-width: 100%;
+            }
+        }
+        .subcontent{
+            position:absolute;
+            bottom: 12vh; /* move down below XTREME */
+            left: 8vw; /* align exactly with the left edge of XTREME */
+            z-index: 10;
+            p{
+                font-family: "exo 2", sans-serif;
+                font-size: clamp(14px, 1.5vw, 20px);
+                letter-spacing: 0.5px;
+                line-height: 30px;
+                font-weight: 400;
+                color: #d0d0d0;
+
+            }
+        }
+    }
+}
+
+.howitworks {
+    width: 100%;
+    height: 170vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    /* padding: 100px 0; */
+    /* border: 2px solid red; */
+    gap: 10px;
+
+    .top {
+        display: flex;
+        justify-content: space-between;
+        width: 90%;
+        /* border: 1px solid red; */
+        position: absolute;
+        /* bottom: 2%; */
+        /* top: 60px; */
+
+        .left {
+            color: #fe5119;
+            font-size: 10px;
+            font-family: Verdana, Geneva, Tahoma, sans-serif;
+        }
+
+        .right {
+            color: #d0d0d0;
+            font-family: Verdana, Geneva, Tahoma, sans-serif;
+            font-size: 10px;
         }
     }
 
-    @keyframes preloader-page-expand {
-        from {
-            clip-path: circle(0% at 50% 100%);
-        }
+    .content {
+        position: absolute;
+        /* top: 100px; */
+        /* bottom: 20px; */
+        right: 10%;
+        display: flex;
+        flex-direction: column;
+        gap: 30px;
+        /* border: 2px solid red; */
 
-        to {
-            clip-path: circle(150% at 50% 100%);
-        }
-    }
+        .text-box {
 
-    @media (prefers-reduced-motion: reduce) {
-
-        .preloader-orange-wipe,
-        .preloader-page--revealing {
-            animation: preloader-transition-fade 100ms linear both;
-        }
-
-        @keyframes preloader-transition-fade {
-            from {
-                opacity: 0;
+            /* border: 1px solid red; */
+            h1 {
+                font-size: 78px;
+                line-height: 84px;
+                letter-spacing: -2px;
+                font-weight: 700;
             }
 
-            to {
-                opacity: 1;
+            .orange {
+                color: #fe5119;
+            }
+
+            .subtext {
+                .text {
+                    font-family: "Inter", sans-serif;
+                    font-weight: 400;
+                    font-style: Regular;
+                    font-size: 25px;
+                    /* leading-trim: NONE; */
+                    line-height: 34px;
+                    letter-spacing: -2px;
+
+                }
             }
         }
     }
