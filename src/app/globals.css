@@ -351,78 +351,90 @@
 
 .hero {
     width: 100%;
+    border-bottom: 2px solid #fe5119; /* Orange line at bottom */
     /* height: 100vh; */
     /* border: 1px solid red; */
 
     .hero-content {
 
         .countdown {
-            /* border: 1px solid blue; */
             position: absolute;
-            height: 50vh;
-            width: 97%;
-            display: flex;
-            justify-content: center;
-            align-items: flex-end;
-            flex-direction: column;
-            gap: 10px;
-            /* .center{ */
-            /* border: 1px solid red; */
-            /* display: flex; */
-            /* justify-content: center; */
-            /* align-items: center; */
-            /* position: relative; */
-
-            /* right: 200px; */
+            top: 15vh; /* Move it higher up into the black space above the hair */
+            right: 4vw;
+            display: grid;
+            grid-template-columns: auto auto auto auto auto auto auto;
+            row-gap: 5px;
+            column-gap: clamp(8px, 1vw, 20px);
+            align-items: end;
+            justify-items: center;
+            z-index: 10; 
             .text {
-                font-size: 23px;
+                font-size: clamp(12px, 1.2vw, 16px);
                 font-family: "exo 2", sans-serif;
-                font-weight: bold;
-                font-style: regular;
-                line-height: 100%;
-                letter-spacing: 1px;
-
+                font-weight: 500;
+                font-style: italic;
+                letter-spacing: 2px;
+                color: #d0d0d0;
             }
+
 
             .numCountdown {
                 font-size: 25px;
+
+            .numCountdown{
+                font-size: clamp(32px, 4vw, 56px);
+
                 font-family: "exo 2", sans-serif;
                 font-weight: bold;
-                font-style: regular;
                 line-height: 100%;
-                letter-spacing: 1px;
+                letter-spacing: 2px;
                 position: relative;
-                right: 100px;
             }
-
-            /* } */
         }
 
         .mainContent {
             position: absolute;
 
+
             .roadto {
+
+            top: 32vh;
+            left: 8vw;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            z-index: 1; /* Put text behind the image */
+            .roadto{
+
                 font-family: "exo 2", sans-serif;
-                font-size: 40px;
-                font-weight: bold;
+                font-size: clamp(24px, 3.5vw, 40px);
+                font-weight: 700;
+                font-style: italic;
                 letter-spacing: 1px;
-                position: absolute;
-                width: 400px;
-                top: 220px;
-                left: 80px;
+                color: #ffffff;
+                margin-bottom: -1.5vw; /* pull XTREME up closer */
+                margin-left: 0; 
             }
+
 
             p {
                 font-size: 19rem;
                 position: absolute;
                 font-family: "arial", sans-serif;
+
+            p{
+                font-size: clamp(80px, 19vw, 20rem);
+                font-family: "arial",sans-serif;
+
                 font-weight: 800;
-                line-height: 90%;
-                letter-spacing: -8px;
+                line-height: 85%;
+                letter-spacing: clamp(-2px, -0.3vw, -6px);
                 color: #fe5119;
+
                 top: 270px;
                 left: 80px;
                 /* border: 1px solid red; */
+
             }
         }
 
@@ -430,25 +442,28 @@
             display: flex;
             justify-content: center;
             align-items: flex-end;
-            /* border: 2px solid red; */
             height: 90vh;
+
+
+            position: relative;
+            z-index: 5; /* Image on top of the text */
+            pointer-events: none; /* Let mouse events pass through to parallax text if needed */
 
             .img {
                 position: relative;
                 width: 60%;
+                min-width: 300px;
+                max-width: 100%;
             }
         }
-
-        .subcontent {
-            position: absolute;
-            /* border: 1px solid red; */
-            top: 670px;
-            left: 120px;
-
-            /* flex-direction: column; */
-            p {
+        .subcontent{
+            position:absolute;
+            bottom: 12vh; /* move down below XTREME */
+            left: 8vw; /* align exactly with the left edge of XTREME */
+            z-index: 10;
+            p{
                 font-family: "exo 2", sans-serif;
-                font-size: 20px;
+                font-size: clamp(14px, 1.5vw, 20px);
                 letter-spacing: 0.5px;
                 line-height: 30px;
                 font-weight: 400;
@@ -534,14 +549,14 @@
 
 .howitworks {
     width: 100%;
-    height: 170vh;
+    height: 150vh;
     display: flex;
     justify-content: center;
     align-items: center;
     flex-direction: column;
     /* padding: 100px 0; */
     /* border: 2px solid red; */
-    gap: 10px;
+    gap: 20px;
 
     .top {
         display: flex;
@@ -569,7 +584,7 @@
         position: relative;
         /* top: 100px; */
         /* bottom: 20px; */
-        right: 10%;
+        right: 20%;
         display: flex;
         flex-direction: column;
         gap: 30px;
@@ -579,8 +594,8 @@
 
             /* border: 1px solid red; */
             h1 {
-                font-size: 78px;
-                line-height: 84px;
+                font-size: 52px;
+                line-height: 60px;
                 letter-spacing: -2px;
                 font-weight: 700;
             }
@@ -594,7 +609,7 @@
                     font-family: "Inter", sans-serif;
                     font-weight: 400;
                     font-style: Regular;
-                    font-size: 25px;
+                    font-size: 20px;
                     /* leading-trim: NONE; */
                     line-height: 34px;
                     letter-spacing: -2px;
@@ -604,227 +619,402 @@
         }
     }
 }
- /* MOBILE PHONES */
-@media (max-width: 767px) {
-  /* PRELOADER */
-  .overlay {
-    box-sizing: border-box;
+
+
+/* FAQ Section */
+
+
+.faq-section {
+  min-height: 100vh;
+  width: 100%;
+  color: #ffffff;
+
+  padding: 40px 8% 70px;
+
+  font-family: var(--font-inter), Arial, sans-serif;
+}
+
+/* TOP */
+
+.faq-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  margin-bottom: 65px;
+
+  font-family: var(--font-space), monospace;
+  font-size: 10px;
+  letter-spacing: 2px;
+}
+
+.faq-top p {
+  margin: 0;
+  color: #fe5119;
+}
+
+.faq-top span {
+  color: #d0d0d0;
+}
+
+/* ---------- MAIN LAYOUT ---------- */
+
+.faq-container {
+  max-width: 1400px;
+  margin: 0 auto;
+
+  display: grid;
+  grid-template-columns: 0.85fr 1.25fr;
+  gap: 120px;
+}
+
+/* LEFT SIDE */
+
+.faq-left {
+  position: relative;
+}
+
+.faq-label {
+  color: #fe5119;
+
+  font-family: var(--font-space), monospace;
+  font-size: 9px;
+  letter-spacing: 1px;
+
+  margin-bottom: 55px;
+}
+
+.faq-left h2 {
+  margin: 0;
+
+  font-size: clamp(42px, 4vw, 68px);
+  font-weight: 600;
+  line-height: 0.95;
+  letter-spacing: -3px;
+}
+
+.faq-left h2 span {
+  color: #fe5119;
+}
+
+.faq-description {
+  margin-top: 30px;
+
+  color: #8d8d8d;
+
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+/* CODE GRAPHIC */
+
+.code-graphic {
+  position: relative;
+
+  width: 150px;
+  height: 150px;
+
+  margin-top: 35px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.code-circle {
+  width: 95px;
+  height: 95px;
+
+  border: 1px solid rgba(254, 81, 25, 0.35);
+  border-radius: 50%;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  position: relative;
+}
+
+.code-circle::before {
+  content: "";
+
+  position: absolute;
+  inset: 8px;
+
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 50%;
+}
+
+.code-circle span {
+  color: #fe5119;
+
+  font-family: var(--font-space), monospace;
+  font-size: 34px;
+  font-weight: 400;
+
+  text-shadow: 0 0 15px rgba(254, 81, 25, 0.3);
+}
+
+/* Crosshair lines */
+
+.line {
+  position: absolute;
+  background: rgba(255, 255, 255, 0.18);
+}
+
+.line-top,
+.line-bottom {
+  width: 1px;
+  height: 22px;
+
+  left: 50%;
+}
+
+.line-top {
+  top: 0;
+}
+
+.line-bottom {
+  bottom: 0;
+}
+
+.line-left,
+.line-right {
+  width: 22px;
+  height: 1px;
+
+  top: 50%;
+}
+
+.line-left {
+  left: 0;
+}
+
+.line-right {
+  right: 0;
+}
+
+/* orange little point */
+
+.line-top::after {
+  content: "";
+
+  position: absolute;
+
+  width: 4px;
+  height: 4px;
+
+  background: #fe5119;
+  border-radius: 50%;
+
+  bottom: 0;
+  left: -1.5px;
+
+  box-shadow: 0 0 8px #fe5119;
+}
+
+.faq-bottom-text {
+  margin-top: 30px;
+
+  color: #626262;
+
+  font-family: var(--font-space), monospace;
+  font-size: 8px;
+  letter-spacing: 2px;
+}
+
+/* RIGHT SIDE / ACCORDION */
+
+.faq-right {
+  padding-top: 10px;
+}
+
+.faq-item {
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.faq-item:last-of-type {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.faq-question {
+  width: 100%;
+
+  padding: 23px 5px;
+
+  border: none;
+  outline: none;
+
+  background: transparent;
+  color: #ffffff;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  cursor: pointer;
+
+  text-align: left;
+}
+
+.faq-question-left {
+  display: flex;
+  align-items: center;
+  gap: 22px;
+}
+
+.faq-number {
+  color: #5d5d5d;
+
+  font-family: var(--font-space), monospace;
+  font-size: 9px;
+}
+
+.faq-question-text {
+  color: #d0d0d0;
+
+  font-size: 13px;
+  font-weight: 400;
+
+  transition: color 0.3s ease;
+}
+
+.faq-plus {
+  color: #d0d0d0;
+
+  font-family: var(--font-space), monospace;
+  font-size: 20px;
+  font-weight: 300;
+
+  transition:
+    color 0.3s ease,
+    transform 0.3s ease;
+}
+
+/* Hover */
+
+.faq-question:hover .faq-question-text,
+.faq-question:hover .faq-plus {
+  color: #fe5119;
+}
+
+/* Active */
+
+.faq-item.active .faq-question-text {
+  color: #ffffff;
+}
+
+.faq-item.active .faq-plus {
+  color: #fe5119;
+}
+
+/* ANSWER ANIMATION */
+
+.faq-answer {
+  display: grid;
+  grid-template-rows: 0fr;
+
+  opacity: 0;
+
+  transition:
+    grid-template-rows 0.4s ease,
+    opacity 0.3s ease;
+}
+
+.faq-answer-inner {
+  overflow: hidden;
+
+  margin-left: 41px;
+
+  color: #808080;
+
+  font-size: 11px;
+  line-height: 1.7;
+
+  max-width: 520px;
+}
+
+.faq-item.active .faq-answer {
+  grid-template-rows: 1fr;
+  opacity: 1;
+}
+
+.faq-item.active .faq-answer-inner {
+  padding-bottom: 22px;
+}
+
+/*  CONTACT  */
+
+.faq-contact {
+  margin-top: 16px;
+
+  color: #666666;
+
+  font-family: var(--font-space), monospace;
+  font-size: 8px;
+}
+
+/* RESPONSIVE */
+
+@media (max-width: 900px) {
+  .faq-section {
+    padding: 35px 6%;
   }
 
-  .overlay .brand {
-    overflow-wrap: anywhere;
+  .faq-container {
+    grid-template-columns: 1fr;
+    gap: 70px;
   }
 
-  .overlay .center {
-    box-sizing: border-box;
-    max-width: calc(100% - 40px);
-    gap: clamp(20px, 5vh, 30px);
+  .faq-label {
+    margin-bottom: 35px;
   }
 
-  .overlay .rotor {
-    width: clamp(100px, 32vw, 160px);
-    height: clamp(100px, 32vw, 160px);
-    flex-shrink: 0;
+  .faq-left h2 {
+    font-size: 52px;
   }
 
-  .overlay .status {
-    box-sizing: border-box;
-    width: 100%;
-    min-width: 0;
-  }
-
-  .overlay .footer {
-    box-sizing: border-box;
-    max-width: none;
-  }
-
-  /* HERO CONTAINER */
-  .hero {
-    box-sizing: border-box;
-    height: auto;
-    min-width: 0;
-  }
-
-  .hero .hero-content {
-    box-sizing: border-box;
-    height: auto;
-    min-width: 0;
-    max-width: 100%;
-  }
-
-  .hero .hero-content > * {
-    min-width: 0;
-    max-width: 100%;
-  }
-
-  .hero .hero-content .countdown {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-end;
-  }
-
-  .hero .hero-content .mainContent {
-    height: auto;
-    text-align: center;
-  }
-
-  .hero .hero-content .mainContent .roadto {
-    max-width: 100%;
-  }
-
-  .hero .hero-content .mainContent p {
-    /* Keeps the title manageable on narrow phones */
-    font-size: clamp(44px, 14vw, 104px);
-  }
-
-  .hero .hero-content .mainimage {
-    inset: auto;
-    display: flex;
-    justify-content: center;
-    height: auto;
-  }
-
-  .hero .hero-content .mainimage .img {
-    display: block;
-    inset: auto;
-    min-width: 0;
-    max-width: 560px;
-    object-fit: contain;
-  }
-
-  .hero .hero-content .mainimage .img img {
-    width: 100%;
-    object-fit: contain;
-  }
-
-  .hero .hero-content .subcontent {
-    height: auto;
-    max-width: 100%;
-  }
-
-  /* HOW IT WORKS */
-  .howitworks {
-    display: flex;
-    flex-direction: column;
-    min-width: 0;
-    max-width: 100%;
-  }
-
-  .howitworks .top {
-    box-sizing: border-box;
-    display: flex;
-    height: auto;
-    min-width: 0;
-  }
-
-  .howitworks .top .left,
-  .howitworks .top .right {
-    min-width: 0;
-  }
-
-  .howitworks .content {
-    box-sizing: border-box;
-    display: flex;
-    flex-direction: column;
-    height: auto;
-    max-width: 100%;
-    align-items: stretch;
-  }
-
-  .howitworks .content > *,
-  .howitworks .content .text-box,
-  .howitworks .content .text-box .subtext {
-    box-sizing: border-box;
-    width: 100%;
-    min-width: 0;
-    max-width: 100%;
-    height: auto;
-  }
-
-  .howitworks .content .text-box h1 {
-    max-width: 100%;
-    white-space: normal;
-  }
-
-  .howitworks .content .text-box .subtext .text {
-    width: 100%;
-    min-width: 0;
-    max-width: 100%;
-    white-space: normal;
-  }
-
-  .howitworks .content img,
-  .howitworks .content video {
-    display: block;
-    max-width: 100%;
-    height: auto;
+  .code-graphic {
+    margin-top: 35px;
   }
 }
 
-/* SMALL PHONES */
-@media (max-width: 360px) {
-  .overlay .brand {
-    font-size: 9px;
-    letter-spacing: 1px;
+@media (max-width: 600px) {
+  .faq-section {
+    padding: 28px 24px 60px;
   }
 
-  .overlay .center {
-    gap: 20px;
+  .faq-top {
+    margin-bottom: 50px;
   }
 
-  .hero .hero-content .mainContent {
-    padding-inline: 12px;
+  .faq-container {
+    gap: 55px;
   }
 
-  .hero .hero-content .mainContent .roadto {
-    font-size: 18px;
+  .faq-left h2 {
+    font-size: 42px;
+    letter-spacing: -2px;
   }
 
-  .hero .hero-content .mainimage {
-    padding-top: 80px;
+  .faq-description {
+    font-size: 11px;
   }
 
-  .hero .hero-content .subcontent p {
-    font-size: 14px;
+  .faq-question {
+    padding: 20px 0;
   }
 
-  .howitworks {
-    padding-block: 36px;
-    gap: 24px;
-  }
-
-  .howitworks .content .text-box h1 {
-    font-size: 30px;
-  }
-
-  .howitworks .content .text-box .subtext .text {
-    font-size: 15px;
-  }
-}
-
-/* SHORT PHONE SCREENS / LANDSCAPE */
-@media (max-width: 767px) and (max-height: 480px) {
-  .overlay .brand {
-    top: max(12px, env(safe-area-inset-top));
-  }
-
-  .overlay .center {
+  .faq-question-left {
     gap: 14px;
   }
 
-  .overlay .rotor {
-    width: 80px;
-    height: 80px;
+  .faq-question-text {
+    font-size: 12px;
   }
 
-  .overlay .status {
-    font-size: 9px;
-    letter-spacing: 1px;
-  }
-
-  .overlay .footer {
-    bottom: max(12px, env(safe-area-inset-bottom));
-    font-size: 8px;
-    gap: 6px;
+  .faq-answer-inner {
+    margin-left: 29px;
+    padding-right: 15px;
   }
 }
