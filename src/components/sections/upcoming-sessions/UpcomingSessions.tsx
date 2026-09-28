@@ -4,31 +4,34 @@ import { useRef, useState } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import SessionCard, { SessionCardProps } from './SessionCard';
 
-
 const sessions: SessionCardProps[] = [
   {
     sessionNumber: '01',
-    title: 'Getting Started with Xtreme',
-    time: '19:00 ONWARDS',
-    date: '5TH OF MONDAY 2026',
-    audience: 'ALL REGISTERED TEAMS & ORGANIZERS',
+    title: 'Introducing Session',
+    date: 'SEPTEMBER 28',
+    audience: 'OC-VIRTUAL',
     status: 'live',
-    actionHref: 'https://example.com/live/session-01',
+    actionHref: '/registration',
   },
   {
     sessionNumber: '02',
-    title: 'Getting Started with Xtreme',
-    time: '19:00 ONWARDS',
-    date: '12TH OF MONDAY 2026',
-    audience: 'ALL REGISTERED TEAMS & ORGANIZERS',
+    title: "Shanodh Sir's Session",
+    date: 'OCTOBER 5',
+    audience: 'PHYSICAL',
     status: 'upcoming',
   },
   {
     sessionNumber: '03',
-    title: 'Getting Started with Xtreme',
-    time: '19:00 ONWARDS',
-    date: '19TH OF MONDAY 2026',
-    audience: 'ALL REGISTERED TEAMS & ORGANIZERS',
+    title: "Manosha Sir's Session",
+    date: 'OCTOBER 6',
+    audience: 'PHYSICAL',
+    status: 'upcoming',
+  },
+  {
+    sessionNumber: '04',
+    title: "Naveen Sir's Session",
+    date: 'OCTOBER 19',
+    audience: 'PHYSICAL',
     status: 'upcoming',
   },
 ];
@@ -37,12 +40,14 @@ export default function UpcomingSessions() {
   const scrollerRef = useRef<HTMLDivElement>(null);
   const [reminders, setReminders] = useState<Record<string, boolean>>({});
 
-  const scrollByCard = (direction: 'left' | 'right') => {
+  // Each slide is as wide as the scroller, so one click moves exactly one card.
+  const scrollBySlide = (direction: 'left' | 'right') => {
     const el = scrollerRef.current;
     if (!el) return;
-    const card = el.querySelector<HTMLElement>('[data-session-card]');
-    const step = card ? card.offsetWidth + 24 : el.clientWidth * 0.8;
-    el.scrollBy({ left: direction === 'left' ? -step : step, behavior: 'smooth' });
+    el.scrollBy({
+      left: direction === 'left' ? -el.clientWidth : el.clientWidth,
+      behavior: 'smooth',
+    });
   };
 
   const toggleReminder = (sessionNumber: string) => {
@@ -66,23 +71,26 @@ export default function UpcomingSessions() {
           </p>
         </div>
 
-        {/* Carousel */}
-        <div className="relative mt-12">
+        {/* Carousel: one card at a time */}
+        <div className="relative mx-auto mt-12 max-w-md">
           <button
             type="button"
             aria-label="Previous session"
-            onClick={() => scrollByCard('left')}
-            className="absolute left-0 top-1/2 z-10 hidden -translate-x-4 -translate-y-1/2 items-center justify-center rounded-full border border-neutral-700 bg-neutral-900 p-2 text-neutral-300 transition-colors hover:border-[#fe5119] hover:text-[#fe5119] sm:flex"
+            onClick={() => scrollBySlide('left')}
+            className="absolute left-0 top-1/2 z-10 flex -translate-y-1/2 items-center justify-center rounded-full border border-neutral-700 bg-neutral-900 p-2 text-neutral-300 transition-colors hover:border-[#fe5119] hover:text-[#fe5119]"
           >
             <ChevronLeft className="h-5 w-5" />
           </button>
 
           <div
             ref={scrollerRef}
-            className="flex snap-x snap-mandatory [&>:first-child]:ml-auto [&>:last-child]:mr-auto gap-6 overflow-x-auto scroll-smooth px-1 pb-4 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+            className="flex snap-x snap-mandatory overflow-x-auto scroll-smooth pb-4 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
           >
             {sessions.map((session) => (
-              <div key={session.sessionNumber} data-session-card className="snap-center">
+              <div
+                key={session.sessionNumber}
+                className="flex w-full shrink-0 snap-center justify-center"
+              >
                 <SessionCard
                   {...session}
                   reminderSet={reminders[session.sessionNumber]}
@@ -95,8 +103,8 @@ export default function UpcomingSessions() {
           <button
             type="button"
             aria-label="Next session"
-            onClick={() => scrollByCard('right')}
-            className="absolute right-0 top-1/2 z-10 hidden translate-x-4 -translate-y-1/2 items-center justify-center rounded-full border border-neutral-700 bg-neutral-900 p-2 text-neutral-300 transition-colors hover:border-[#fe5119] hover:text-[#fe5119] sm:flex"
+            onClick={() => scrollBySlide('right')}
+            className="absolute right-0 top-1/2 z-10 flex -translate-y-1/2 items-center justify-center rounded-full border border-neutral-700 bg-neutral-900 p-2 text-neutral-300 transition-colors hover:border-[#fe5119] hover:text-[#fe5119]"
           >
             <ChevronRight className="h-5 w-5" />
           </button>

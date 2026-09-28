@@ -1,15 +1,15 @@
 'use client';
 
-import { Clock, Calendar, Radio, Bell, BellRing } from 'lucide-react';
+import { Clock, Calendar, UserPlus, Bell, BellRing } from 'lucide-react';
 
 export interface SessionCardProps {
   sessionNumber: string; // e.g. "01"
-  title: string; // e.g. "Getting Started with Xtreme"
-  time: string; // e.g. "19:00 ONWARDS"
-  date: string; // e.g. "5TH OF MONDAY 2026"
-  audience: string; // e.g. "ALL REGISTERED TEAMS & ORGANIZERS"
+  title: string; // e.g. "Introducing Session"
+  time?: string; // optional, only shown when given
+  date: string; // e.g. "SEPTEMBER 28"
+  audience: string; // e.g. "OC-VIRTUAL" or "PHYSICAL"
   status: 'live' | 'upcoming';
-  actionHref?: string; // stream/join link, only used when status === 'live'
+  actionHref?: string; // link for the Register Here button (first card only)
   reminderSet?: boolean; // only relevant when status === 'upcoming'
   onSetReminder?: () => void;
 }
@@ -39,17 +39,19 @@ export default function SessionCard({
 
       {/* Time + date */}
       <div className="flex flex-col gap-2.5 text-sm text-neutral-300">
-        <div className="flex items-center gap-2.5">
-          <Clock className="h-4 w-4 shrink-0 text-[#fe5119]" strokeWidth={2} />
-          <span>{time}</span>
-        </div>
+        {time && (
+          <div className="flex items-center gap-2.5">
+            <Clock className="h-4 w-4 shrink-0 text-[#fe5119]" strokeWidth={2} />
+            <span>{time}</span>
+          </div>
+        )}
         <div className="flex items-center gap-2.5">
           <Calendar className="h-4 w-4 shrink-0 text-[#fe5119]" strokeWidth={2} />
           <span>{date}</span>
         </div>
       </div>
 
-      {/* Audience */}
+      {/* Audience / mode */}
       <p className="text-xs font-semibold tracking-wide text-[#fe5119]">
         {audience}
       </p>
@@ -57,12 +59,12 @@ export default function SessionCard({
       {/* Action */}
       <div className="mt-auto pt-1">
         {status === 'live' ? (
-          <a
-            href={actionHref}
+          
+            <a href={actionHref}
             className="flex w-full items-center justify-center gap-2 rounded-full bg-[#fe5119] px-6 py-3 text-sm font-bold tracking-wide text-white transition-colors hover:bg-[#ff6a3d]"
           >
-            <Radio className="h-4 w-4" strokeWidth={2.5} />
-            JOIN LIVE / STREAM
+            <UserPlus className="h-4 w-4" strokeWidth={2.5} />
+            REGISTER HERE
           </a>
         ) : (
           <button
