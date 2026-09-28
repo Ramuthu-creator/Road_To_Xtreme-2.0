@@ -4,6 +4,7 @@ import UpcomingSessions from "@/components/sections/upcoming-sessions/UpcomingSe
 import Hero from "@/components/hero/hero";
 import Guidence from "@/components/sections/guidance-resources/HowItWorks";
 import FAQ from "@/components/sections/faq/faq";
+// import AnimatedShape from "@/components/animations/animatedShape";
 
 
 export default function Home() {
@@ -18,6 +19,8 @@ export default function Home() {
       <section className="relative w-full z-10 bg-[#0b0b0c] shadow-[0_-20px_50px_rgba(0,0,0,0.8)]">
         <UpcomingSessions />
       </section>
+
+     
       
       <section className="relative w-full z-10 bg-[#0b0b0c]">
         <Guidence />
