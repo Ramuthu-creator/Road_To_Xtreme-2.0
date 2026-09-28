@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
+import { motion, useMotionValue, useSpring, useTransform, Variants } from "framer-motion";
 import { useEffect, useState } from "react";
 
 export default function Hero() {
@@ -72,7 +72,7 @@ export default function Hero() {
     }, [mouseX, mouseY]);
 
     // 2. Text Reveal Masking Animation Variants
-    const maskVariants = {
+    const maskVariants: Variants = {
         hidden: { y: "110%" },
         visible: { y: 0, transition: { duration: 1, ease: [0.16, 1, 0.3, 1] } } // Premium easing curve
     };

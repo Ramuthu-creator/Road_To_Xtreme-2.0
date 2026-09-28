@@ -36,6 +36,7 @@ export default function ConfirmationPage() {
 
   const handleSubmit = () => {
     alert('Registration submitted successfully!');
+    router.push('/');
   };
 
   return (
@@ -58,7 +59,7 @@ export default function ConfirmationPage() {
             </div>
             <div className="flex items-center gap-3 text-[#ff4500]">
               <span className="flex h-10 w-10 items-center justify-center rounded-full bg-[#ff4500] text-black">03</span>
-              <span>conformation</span>
+              <span>Confirmation</span>
             </div>
           </div>
         </div>
@@ -126,7 +127,7 @@ export default function ConfirmationPage() {
                     {sessionNum === 1 ? 'Team Leader' : `Member ${sessionNum}`}
                   </span>
                   <Link 
-                    href="/registration/sessions"
+                    href="/registration/members"
                     className="flex items-center gap-1.5 text-xs font-bold text-[#ff4500] hover:underline"
                   >
                     Edit
@@ -167,7 +168,7 @@ export default function ConfirmationPage() {
         {/* Navigation / Submit Buttons */}
         <div className="mt-10 flex items-center justify-between">
           <Link 
-            href="/registration/sessions"
+            href="/registration/members"
             className="flex items-center gap-2 rounded-full bg-[#2a2a2e] px-8 py-3 text-sm font-semibold text-white transition-colors hover:bg-gray-700"
           >
             ← Back

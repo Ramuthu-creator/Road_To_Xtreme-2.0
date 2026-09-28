@@ -63,7 +63,7 @@ export default function Navbar() {
         {/* Right Action Button & Mobile Menu Toggle */}
         <div className="flex items-center gap-3 sm:gap-4">
           <Link
-            href="/registration"
+            href="/registration/team-details"
             className="px-5 sm:px-7 py-2 sm:py-2.5 rounded-full bg-gradient-to-r from-[#ff5500] to-[#ff3b00] hover:from-[#ff6600] hover:to-[#ff4500] text-white font-medium text-xs sm:text-sm tracking-wide shadow-[0_0_22px_rgba(255,85,0,0.5)] hover:shadow-[0_0_32px_rgba(255,85,0,0.75)] transition-all duration-300 transform hover:-translate-y-0.5 active:translate-y-0 inline-block whitespace-nowrap"
           >
             Register Now

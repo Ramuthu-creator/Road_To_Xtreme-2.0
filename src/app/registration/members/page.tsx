@@ -11,7 +11,7 @@ interface MemberDetails {
   ieeeNo: string;
 }
 
-export default function SessionsPage() {
+export default function MembersPage() {
   const router = useRouter();
   const [activeSession, setActiveSession] = useState<number>(1);
 
@@ -89,7 +89,7 @@ export default function SessionsPage() {
             </div>
             <div className="flex items-center gap-3 text-gray-400">
               <span className="flex h-10 w-10 items-center justify-center rounded-full border border-gray-600 text-white">03</span>
-              <span>conformation</span>
+              <span>Confirmation</span>
             </div>
           </div>
         </div>
