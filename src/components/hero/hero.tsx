@@ -227,16 +227,17 @@ export default function Hero() {
             .set(image, { clearProps: "filter" });
         }
 
-        const arrowAnimation = reduced
+        const syncFloat = reduced
           ? undefined
-          : animate(arrow, {
-              translateY: [0, 7],
-              duration: 1100,
-              ease: "inOutSine",
-              alternate: true,
-              loop: true,
-              autoplay: false,
-            });
+          : gsap.timeline({ paused: true, repeat: -1, yoyo: true });
+
+        if (syncFloat) {
+          syncFloat.to(arrow, { y: 8, duration: 2.2, ease: "sine.inOut" }, 0);
+          if (!pointer) {
+            // Float character only on mobile/touch devices
+            syncFloat.to(character, { y: 6, duration: 2.2, ease: "sine.inOut" }, 0);
+          }
+        }
 
         const start = () => {
           if (started) return;
@@ -248,7 +249,7 @@ export default function Hero() {
           }
 
           reveal.play();
-          arrowAnimation?.play();
+          syncFloat?.play();
 
           typed = new Typed(text, {
             strings: [message],
@@ -329,7 +330,7 @@ export default function Hero() {
         return () => {
           observer?.disconnect();
           removeListeners();
-          arrowAnimation?.revert();
+          syncFloat?.kill();
           typed?.destroy();
           text.textContent = "";
         };

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import "./faq.css";
 
 const faqData = [
   {
@@ -46,14 +47,14 @@ export default function FAQ() {
     <section className="faq-section" id="faq">
       {/* Top heading */}
       <div className="faq-top">
-        <p>FREQUENTLY ASKED QUESTIONS</p>
+        <p>FREQUENTLY ASK QUESTIONS</p>
         <span>// 2.0</span>
       </div>
 
       <div className="faq-container">
         {/* LEFT SIDE */}
         <div className="faq-left">
-          <p className="faq-label">THE KNOWLEDGE BASE_</p>
+          <p className="faq-label">THE KNOWLEDGE BASE</p>
 
           <h2>
             Less doubt.
@@ -119,7 +120,7 @@ export default function FAQ() {
           })}
 
           <p className="faq-contact">
-            For event details and full rules, visit IEEE Xtreme.
+            For current dates and full rules, visit IEEEXtreme.org ↗
           </p>
         </div>
       </div>
