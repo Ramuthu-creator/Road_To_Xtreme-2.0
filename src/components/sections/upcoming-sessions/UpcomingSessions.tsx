@@ -40,12 +40,18 @@ export default function UpcomingSessions() {
   const scrollerRef = useRef<HTMLDivElement>(null);
   const [reminders, setReminders] = useState<Record<string, boolean>>({});
 
-  // Each slide is as wide as the scroller, so one click moves exactly one card.
+  // Scroll by exactly one card width + gap
   const scrollBySlide = (direction: 'left' | 'right') => {
     const el = scrollerRef.current;
-    if (!el) return;
+    if (!el || !el.firstElementChild) return;
+    
+    // Get the exact width of the first card plus the gap (gap-6 = 24px)
+    const cardWidth = el.firstElementChild.clientWidth;
+    const gap = 24; 
+    const scrollAmount = cardWidth + gap;
+
     el.scrollBy({
-      left: direction === 'left' ? -el.clientWidth : el.clientWidth,
+      left: direction === 'left' ? -scrollAmount : scrollAmount,
       behavior: 'smooth',
     });
   };
@@ -55,15 +61,18 @@ export default function UpcomingSessions() {
   };
 
   return (
-    <section className="bg-black px-6 py-20 sm:py-28">
-      <div className="mx-auto max-w-5xl">
+    <section className="relative px-6 py-20 sm:py-28 overflow-hidden bg-transparent">
+      {/* Decorative gradient blur */}
+      <div className="pointer-events-none absolute left-1/2 top-0 -z-10 h-[500px] w-[800px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#fe5119]/10 blur-[120px]"></div>
+
+      <div className="mx-auto max-w-[1400px]">
         {/* Section heading */}
-        <div className="mx-auto max-w-lg text-center">
-          <p className="text-xs font-bold tracking-[0.2em] text-[#fe5119]">
+        <div className="mx-auto max-w-2xl text-center">
+          <p className="inline-block rounded-full border border-[#fe5119]/30 bg-[#fe5119]/10 px-3 py-1 text-[10px] font-bold tracking-[0.2em] text-[#fe5119]">
             WHAT&apos;S NEXT
           </p>
-          <h2 className="mt-3 text-3xl font-extrabold text-white sm:text-4xl">
-            Upcoming <span className="text-[#fe5119]">Sessions</span>
+          <h2 className="mt-4 text-4xl font-extrabold text-white tracking-tight sm:text-5xl md:text-6xl">
+            Upcoming <span className="bg-gradient-to-r from-[#fe5119] to-[#ff8a5c] bg-clip-text text-transparent drop-shadow-[0_0_15px_rgba(254,81,25,0.3)]">Sessions</span>
           </h2>
           <p className="mx-auto mt-3 text-sm leading-relaxed text-neutral-400">
             Gear up for hands-on workshops, expert tech talks, and strategic
@@ -71,25 +80,25 @@ export default function UpcomingSessions() {
           </p>
         </div>
 
-        {/* Carousel: one card at a time */}
-        <div className="relative mx-auto mt-12 max-w-md">
+        {/* Carousel: multiple cards */}
+        <div className="relative mx-auto mt-16 max-w-full">
           <button
             type="button"
             aria-label="Previous session"
             onClick={() => scrollBySlide('left')}
-            className="absolute left-0 top-1/2 z-10 flex -translate-y-1/2 items-center justify-center rounded-full border border-neutral-700 bg-neutral-900 p-2 text-neutral-300 transition-colors hover:border-[#fe5119] hover:text-[#fe5119]"
+            className="absolute -left-4 sm:left-0 top-1/2 z-10 flex -translate-y-1/2 items-center justify-center rounded-full border border-white/10 bg-black/50 p-3 text-white backdrop-blur-md transition-all hover:scale-110 hover:border-[#fe5119] hover:bg-[#fe5119] hover:text-white sm:-left-6 lg:-left-8 shadow-xl"
           >
             <ChevronLeft className="h-5 w-5" />
           </button>
 
           <div
             ref={scrollerRef}
-            className="flex snap-x snap-mandatory overflow-x-auto scroll-smooth pb-4 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+            className="flex snap-x snap-mandatory overflow-x-auto scroll-smooth pb-12 pt-4 gap-6 px-2 sm:px-6 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
           >
             {sessions.map((session) => (
               <div
                 key={session.sessionNumber}
-                className="flex w-full shrink-0 snap-center justify-center"
+                className="flex shrink-0 snap-center"
               >
                 <SessionCard
                   {...session}
@@ -104,7 +113,7 @@ export default function UpcomingSessions() {
             type="button"
             aria-label="Next session"
             onClick={() => scrollBySlide('right')}
-            className="absolute right-0 top-1/2 z-10 flex -translate-y-1/2 items-center justify-center rounded-full border border-neutral-700 bg-neutral-900 p-2 text-neutral-300 transition-colors hover:border-[#fe5119] hover:text-[#fe5119]"
+            className="absolute -right-4 sm:right-0 top-1/2 z-10 flex -translate-y-1/2 items-center justify-center rounded-full border border-white/10 bg-black/50 p-3 text-white backdrop-blur-md transition-all hover:scale-110 hover:border-[#fe5119] hover:bg-[#fe5119] hover:text-white sm:-right-6 lg:-right-8 shadow-xl"
           >
             <ChevronRight className="h-5 w-5" />
           </button>
