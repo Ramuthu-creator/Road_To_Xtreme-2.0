@@ -27,6 +27,8 @@ export default function Hero() {
     seconds: "00",
   });
 
+  const prevTimeLeft = useRef(timeLeft);
+
   // Countdown
   useEffect(() => {
     const update = () => {
@@ -34,9 +36,18 @@ export default function Hero() {
 
       setTimeLeft({
         days: String(Math.floor(remaining / 86400000)).padStart(2, "0"),
-        hours: String(Math.floor(remaining / 3600000) % 24).padStart(2, "0"),
-        minutes: String(Math.floor(remaining / 60000) % 60).padStart(2, "0"),
-        seconds: String(Math.floor(remaining / 1000) % 60).padStart(2, "0"),
+        hours: String(Math.floor(remaining / 3600000) % 24).padStart(
+          2,
+          "0",
+        ),
+        minutes: String(Math.floor(remaining / 60000) % 60).padStart(
+          2,
+          "0",
+        ),
+        seconds: String(Math.floor(remaining / 1000) % 60).padStart(
+          2,
+          "0",
+        ),
       });
 
       return remaining;
@@ -51,29 +62,47 @@ export default function Hero() {
     return () => window.clearInterval(timer);
   }, []);
 
-  const prevTimeLeft = useRef(timeLeft);
-
   // Anime.js countdown effect
   useEffect(() => {
-    units.forEach((unit) => {
-      const key = unit.key as keyof typeof timeLeft;
-      if (prevTimeLeft.current[key] !== timeLeft[key]) {
-        const el = document.getElementById(`countdown-value-${key}`);
-        if (el) {
-          animate(el, {
-            translateY: [-15, 0],
-            rotateX: [-90, 0],
-            opacity: [0, 1],
-            duration: 500,
-            easing: "easeOutQuint",
-          });
+    const root = heroRef.current;
+    if (!root) return;
+
+    const reducedMotion = window.matchMedia(
+      "(prefers-reduced-motion: reduce)",
+    ).matches;
+
+    const animations: ReturnType<typeof animate>[] = [];
+
+    if (!reducedMotion) {
+      units.forEach(({ key }) => {
+        if (prevTimeLeft.current[key] === timeLeft[key]) return;
+
+        const element = root.querySelector<HTMLElement>(
+          `[data-countdown-value="${key}"]`,
+        );
+
+        if (element) {
+          animations.push(
+            animate(element, {
+              translateY: [-15, 0],
+              rotateX: [-90, 0],
+              opacity: [0, 1],
+              duration: 500,
+              ease: "outQuint",
+            }),
+          );
         }
-      }
-    });
+      });
+    }
+
     prevTimeLeft.current = timeLeft;
+
+    return () => {
+      animations.forEach((animation) => animation.revert());
+    };
   }, [timeLeft]);
 
-  // Keep the 380px desktop text height while fitting its width.
+  // Fit XTREME across the heading width with a shorter desktop font.
   useEffect(() => {
     const root = heroRef.current;
     if (!root) return;
@@ -90,7 +119,7 @@ export default function Hero() {
 
       if (!available || !width) return;
 
-      fit.style.transform = `scaleX(${Math.min(1, available / width)})`;
+      fit.style.transform = `scaleX(${available / width})`;
     };
 
     updateWidth();
@@ -105,7 +134,7 @@ export default function Hero() {
     };
   }, []);
 
-  // Reveal animations, parallax, arrow movement and typing.
+  // Reveal animations, parallax, floating arrow, and typing.
   useEffect(() => {
     const root = heroRef.current;
     const text = typedRef.current;
@@ -119,10 +148,12 @@ export default function Hero() {
         all: "all",
         reduced: "(prefers-reduced-motion: reduce)",
         pointer: "(hover: hover) and (pointer: fine)",
+        desktop: "(min-width: 1024px)",
       },
       (context) => {
         const reduced = Boolean(context.conditions?.reduced);
         const pointer = Boolean(context.conditions?.pointer);
+        const isDesktop = Boolean(context.conditions?.desktop);
 
         const title = root.querySelector<HTMLElement>("[data-title]")!;
         const character = root.querySelector<HTMLElement>(
@@ -169,8 +200,14 @@ export default function Hero() {
             transformOrigin: "50% 100%",
           });
 
-          gsap.set(countdown, { autoAlpha: 0, y: -12 });
-          gsap.set(arrow, { autoAlpha: 0 });
+          gsap.set(countdown, {
+            autoAlpha: 0,
+            y: -12,
+          });
+
+          gsap.set(arrow, {
+            autoAlpha: 0,
+          });
 
           gsap.set(baseline, {
             scaleX: 0,
@@ -247,20 +284,40 @@ export default function Hero() {
               },
               1.55,
             )
-            .set(image, { clearProps: "filter" });
+            .set(image, {
+              clearProps: "filter",
+            });
         }
-
-        const isDesktop = window.matchMedia("(min-width: 1024px)").matches;
 
         const syncFloat = reduced
           ? undefined
-          : gsap.timeline({ paused: true, repeat: -1, yoyo: true });
+          : gsap.timeline({
+              paused: true,
+              repeat: -1,
+              yoyo: true,
+            });
 
         if (syncFloat) {
-          syncFloat.to(arrow, { y: 8, duration: 2.2, ease: "sine.inOut" }, 0);
-          // Float character on touch devices OR narrow screens
+          syncFloat.to(
+            arrow,
+            {
+              y: 8,
+              duration: 2.2,
+              ease: "sine.inOut",
+            },
+            0,
+          );
+
           if (!pointer || !isDesktop) {
-            syncFloat.to(character, { y: 6, duration: 2.2, ease: "sine.inOut" }, 0);
+            syncFloat.to(
+              character,
+              {
+                y: 6,
+                duration: 2.2,
+                ease: "sine.inOut",
+              },
+              0,
+            );
           }
         }
 
@@ -287,7 +344,6 @@ export default function Hero() {
           });
         };
 
-        // Compatible with your existing preloader phase classes.
         const intro = root.closest(".intro-content");
         let observer: MutationObserver | undefined;
 
@@ -310,7 +366,10 @@ export default function Hero() {
         let removeListeners = () => {};
 
         if (!reduced && pointer && isDesktop) {
-          const options = { duration: 0.9, ease: "power3.out" };
+          const options = {
+            duration: 0.9,
+            ease: "power3.out",
+          };
 
           const imageX = gsap.quickTo(character, "x", options);
           const imageY = gsap.quickTo(character, "y", options);
@@ -327,8 +386,11 @@ export default function Hero() {
             }
 
             const bounds = root.getBoundingClientRect();
-            const x = (event.clientX - bounds.left) / bounds.width - 0.5;
-            const y = (event.clientY - bounds.top) / bounds.height - 0.5;
+
+            const x =
+              (event.clientX - bounds.left) / bounds.width - 0.5;
+            const y =
+              (event.clientY - bounds.top) / bounds.height - 0.5;
 
             imageX(-16 * x);
             imageY(-10 * y);
@@ -440,12 +502,9 @@ export default function Hero() {
             {units.map((unit, index) => (
               <Fragment key={`label-${unit.key}`}>
                 {index > 0 && (
-                  <span
-                    aria-hidden="true"
-                    className="w-2"
-                  >
-                  </span>
+                  <span aria-hidden="true" className="w-2" />
                 )}
+
                 <span
                   className="
                     text-[10px] font-semibold italic
@@ -463,13 +522,15 @@ export default function Hero() {
                 {index > 0 && (
                   <span
                     aria-hidden="true"
-                    className="text-lg text-white sm:text-xl font-bold"
+                    className="text-lg font-bold text-white sm:text-xl"
                   >
                     :
                   </span>
                 )}
+
                 <span
                   id={`countdown-value-${unit.key}`}
+                  data-countdown-value={unit.key}
                   className="
                     inline-block text-xl font-bold italic
                     leading-none tabular-nums text-white
@@ -505,20 +566,23 @@ export default function Hero() {
               </span>
             </span>
 
+            {/* Shorter XTREME text, fitted to the same width */}
             <span
               data-xtreme-mask
-              className="block w-full overflow-hidden pb-3"
+              className="block w-full overflow-hidden pb-1"
             >
               <span data-xtreme-fit className="block origin-left">
                 <span
                   data-xtreme-word
                   className="
                     block w-max whitespace-nowrap
-                    text-[16.8vw] lg:text-[380px]
-                    font-black leading-[0.85]
+                    text-[16.8vw] lg:text-[320px]
+                    font-black leading-[0.8]
                     tracking-[-0.055em] text-[#fe5119]
                   "
-                  style={{ fontFamily: "Arial, Helvetica, sans-serif" }}
+                  style={{
+                    fontFamily: "Arial, Helvetica, sans-serif",
+                  }}
                 >
                   XTREME
                 </span>
@@ -538,7 +602,10 @@ export default function Hero() {
             lg:bottom-0 lg:left-[12%] lg:h-full lg:w-[76%]
           "
         >
-          <div data-image className="relative h-full w-full origin-bottom">
+          <div
+            data-image
+            className="relative h-full w-full origin-bottom"
+          >
             <Image
               src="/assets/images/bg.png"
               alt="Character wearing an orange VR headset"
@@ -551,7 +618,7 @@ export default function Hero() {
           </div>
         </div>
 
-        {/* Mono subcontent: fixed two-line layout */}
+        {/* Mono subcontent */}
         <div
           className="
             absolute bottom-[10%] left-[6%] z-30 max-w-[88%]
