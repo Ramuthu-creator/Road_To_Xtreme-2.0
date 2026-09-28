@@ -51,6 +51,28 @@ export default function Hero() {
     return () => window.clearInterval(timer);
   }, []);
 
+  const prevTimeLeft = useRef(timeLeft);
+
+  // Anime.js countdown effect
+  useEffect(() => {
+    units.forEach((unit) => {
+      const key = unit.key as keyof typeof timeLeft;
+      if (prevTimeLeft.current[key] !== timeLeft[key]) {
+        const el = document.getElementById(`countdown-value-${key}`);
+        if (el) {
+          animate(el, {
+            translateY: [-15, 0],
+            rotateX: [-90, 0],
+            opacity: [0, 1],
+            duration: 500,
+            easing: "easeOutQuint",
+          });
+        }
+      }
+    });
+    prevTimeLeft.current = timeLeft;
+  }, [timeLeft]);
+
   // Keep the 380px desktop text height while fitting its width.
   useEffect(() => {
     const root = heroRef.current;
@@ -420,9 +442,8 @@ export default function Hero() {
                 {index > 0 && (
                   <span
                     aria-hidden="true"
-                    className="text-[10px] text-[#d0d0d0]"
+                    className="w-2"
                   >
-                    ,
                   </span>
                 )}
                 <span
@@ -442,14 +463,15 @@ export default function Hero() {
                 {index > 0 && (
                   <span
                     aria-hidden="true"
-                    className="text-lg text-white sm:text-xl"
+                    className="text-lg text-white sm:text-xl font-bold"
                   >
-                    ,
+                    :
                   </span>
                 )}
                 <span
+                  id={`countdown-value-${unit.key}`}
                   className="
-                    text-xl font-bold italic
+                    inline-block text-xl font-bold italic
                     leading-none tabular-nums text-white
                     sm:text-2xl xl:text-3xl
                   "
