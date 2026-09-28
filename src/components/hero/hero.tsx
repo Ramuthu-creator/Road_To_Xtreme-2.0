@@ -539,7 +539,7 @@ export default function Hero() {
                 >
                   {timeLeft[unit.key]}
                 </span>
-                <span className="sr-only">vdvevbr</span>
+                
               </Fragment>
             ))}
           </div>

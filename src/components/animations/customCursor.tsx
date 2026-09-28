@@ -1,5 +1,3 @@
-// src/components/animations/CustomCursor.tsx
-
 "use client";
 
 import { useEffect, useRef } from "react";
@@ -31,16 +29,37 @@ export default function CustomCursor() {
       () => {
         let visible = false;
         let hovering = false;
+        let hasPointerPosition = false;
+
+        let pointerX = 0;
+        let pointerY = 0;
+        let scrollFrame: number | null = null;
+
+        const nativeSelector = [
+          "input",
+          "textarea",
+          "select",
+          '[contenteditable]:not([contenteditable="false"])',
+          "[data-native-cursor]",
+          "iframe",
+        ].join(",");
+
+        const interactiveSelector = [
+          "a[href]",
+          "button:not(:disabled)",
+          '[role="button"]:not([aria-disabled="true"])',
+          "[data-cursor-hover]",
+        ].join(",");
 
         gsap.set([dotPosition, ringPosition], {
           opacity: 0,
         });
 
-        // Dot stays exactly under the mouse.
+        // Dot follows the pointer immediately.
         const dotX = gsap.quickSetter(dotPosition, "x", "px");
         const dotY = gsap.quickSetter(dotPosition, "y", "px");
 
-        // Ring follows with a smooth delay.
+        // Ring follows with the existing smooth delay.
         const ringX = gsap.quickTo(ringPosition, "x", {
           duration: 0.32,
           ease: "power3.out",
@@ -74,7 +93,6 @@ export default function CustomCursor() {
             0,
           );
 
-        // Separate wrapper prevents click and hover transforms conflicting.
         const pressAnimation = gsap.timeline({ paused: true }).to(press, {
           scale: 0.8,
           duration: 0.15,
@@ -98,41 +116,24 @@ export default function CustomCursor() {
           });
         };
 
-        const move = (event: PointerEvent) => {
-          if (event.pointerType !== "mouse") {
+        const updateCursor = (target: Element | null) => {
+          if (
+            !hasPointerPosition ||
+            document.hidden ||
+            !target ||
+            target.closest(nativeSelector)
+          ) {
             hide();
             return;
           }
 
-          const target =
-            event.target instanceof Element ? event.target : null;
-
-          const nativeCursor = target?.closest(
-            [
-              "input",
-              "textarea",
-              "select",
-              '[contenteditable]:not([contenteditable="false"])',
-              "[data-native-cursor]",
-              "iframe",
-            ].join(","),
-          );
-
-          if (nativeCursor) {
-            hide();
-            return;
-          }
-
-          const x = event.clientX;
-          const y = event.clientY;
-
-          dotX(x);
-          dotY(y);
+          dotX(pointerX);
+          dotY(pointerY);
 
           if (!visible) {
-            // First appearance starts at the mouse, not the screen corner.
-            ringX(x, x);
-            ringY(y, y);
+            // Start both elements at the actual pointer position.
+            ringX(pointerX, pointerX);
+            ringY(pointerY, pointerY);
 
             gsap.set([dotPosition, ringPosition], {
               opacity: 1,
@@ -145,14 +146,12 @@ export default function CustomCursor() {
 
             visible = true;
           } else {
-            ringX(x);
-            ringY(y);
+            ringX(pointerX);
+            ringY(pointerY);
           }
 
           const interactive = Boolean(
-            target?.closest(
-              'a[href], button:not(:disabled), [role="button"], [data-cursor-hover]',
-            ),
+            target.closest(interactiveSelector),
           );
 
           if (interactive !== hovering) {
@@ -166,8 +165,59 @@ export default function CustomCursor() {
           }
         };
 
+        const move = (event: PointerEvent) => {
+          if (event.pointerType !== "mouse") {
+            hasPointerPosition = false;
+            hide();
+            return;
+          }
+
+          // Viewport coordinates stay correct while the page scrolls.
+          pointerX = event.clientX;
+          pointerY = event.clientY;
+          hasPointerPosition = true;
+
+          const target =
+            event.target instanceof Element ? event.target : null;
+
+          updateCursor(target);
+        };
+
+        const scroll = () => {
+          if (!hasPointerPosition || scrollFrame !== null) return;
+
+          // Keep the cursor visible and check what scrolled underneath it.
+          scrollFrame = window.requestAnimationFrame(() => {
+            scrollFrame = null;
+
+            if (!hasPointerPosition) return;
+
+            const target = document.elementFromPoint(
+              pointerX,
+              pointerY,
+            );
+
+            updateCursor(target);
+          });
+        };
+
+        const leave = () => {
+          hasPointerPosition = false;
+
+          if (scrollFrame !== null) {
+            window.cancelAnimationFrame(scrollFrame);
+            scrollFrame = null;
+          }
+
+          hide();
+        };
+
         const pointerDown = (event: PointerEvent) => {
-          if (visible && event.pointerType === "mouse" && event.button === 0) {
+          if (
+            visible &&
+            event.pointerType === "mouse" &&
+            event.button === 0
+          ) {
             pressAnimation.play();
           }
         };
@@ -177,7 +227,7 @@ export default function CustomCursor() {
         };
 
         const visibilityChange = () => {
-          if (document.hidden) hide();
+          if (document.hidden) leave();
         };
 
         window.addEventListener("pointermove", move, {
@@ -189,33 +239,47 @@ export default function CustomCursor() {
         });
 
         window.addEventListener("pointerup", pointerUp);
-        window.addEventListener("pointercancel", hide);
-        window.addEventListener("blur", hide);
+        window.addEventListener("pointercancel", leave);
+        window.addEventListener("blur", leave);
 
-        // Restore the native cursor if scrolling changes what's underneath.
-        window.addEventListener("scroll", hide, {
+        // Scroll now updates the cursor instead of hiding it.
+        window.addEventListener("scroll", scroll, {
           passive: true,
           capture: true,
         });
 
-        document.documentElement.addEventListener("pointerleave", hide);
+        window.addEventListener("resize", scroll, {
+          passive: true,
+        });
+
+        document.documentElement.addEventListener("pointerleave", leave);
         document.addEventListener("visibilitychange", visibilityChange);
 
         return () => {
           window.removeEventListener("pointermove", move);
           window.removeEventListener("pointerdown", pointerDown);
           window.removeEventListener("pointerup", pointerUp);
-          window.removeEventListener("pointercancel", hide);
-          window.removeEventListener("blur", hide);
-          window.removeEventListener("scroll", hide, true);
+          window.removeEventListener("pointercancel", leave);
+          window.removeEventListener("blur", leave);
+          window.removeEventListener("scroll", scroll, true);
+          window.removeEventListener("resize", scroll);
 
-          document.documentElement.removeEventListener("pointerleave", hide);
+          document.documentElement.removeEventListener(
+            "pointerleave",
+            leave,
+          );
+
           document.removeEventListener(
             "visibilitychange",
             visibilityChange,
           );
 
-          hide();
+          leave();
+
+          ringX.tween.kill();
+          ringY.tween.kill();
+          hoverAnimation.kill();
+          pressAnimation.kill();
         };
       },
     );
@@ -277,6 +341,20 @@ export default function CustomCursor() {
           html[data-rtx-cursor="active"],
           html[data-rtx-cursor="active"] * {
             cursor: none !important;
+          }
+
+          html[data-rtx-cursor="active"] input,
+          html[data-rtx-cursor="active"] textarea,
+          html[data-rtx-cursor="active"]
+            [contenteditable]:not([contenteditable="false"]) {
+            cursor: text !important;
+          }
+
+          html[data-rtx-cursor="active"] select,
+          html[data-rtx-cursor="active"] [data-native-cursor],
+          html[data-rtx-cursor="active"] [data-native-cursor] *,
+          html[data-rtx-cursor="active"] iframe {
+            cursor: auto !important;
           }
         }
       `}</style>
