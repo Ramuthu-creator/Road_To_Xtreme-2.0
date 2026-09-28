@@ -4,7 +4,8 @@ import UpcomingSessions from "@/components/sections/upcoming-sessions/UpcomingSe
 import Hero from "@/components/hero/hero";
 import Guidence from "@/components/sections/guidance-resources/HowItWorks";
 import FAQ from "@/components/sections/faq/faq";
-
+import About from "@/components/sections/about/about";
+import Roadmap from "@/components/sections/roadmap/PathToXtreme";
 
 export default function Home() {
   return (
@@ -24,9 +25,16 @@ export default function Home() {
       </section>
 
       <section className="relative w-full z-10 bg-[#0b0b0c]">
-        <FAQ />
+        <About />
       </section>
 
+      <section className="relative w-full z-10 bg-[#0b0b0c]">
+        <Roadmap />
+      </section>
+
+      <section className="relative w-full z-10 bg-[#0b0b0c]">
+        <FAQ />
+      </section>
     </main>
   );
 }
