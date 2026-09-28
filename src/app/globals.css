@@ -417,7 +417,7 @@
                 position: absolute;
                 font-family: "arial", sans-serif;
                 font-weight: 800;
-                line-height: 90%;
+                /* line-height: 90%; */
                 letter-spacing: -8px;
                 color: #fe5119;
                 top: 270px;
