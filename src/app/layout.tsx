@@ -8,8 +8,7 @@ import Preloader from "@/components/animations/xtremepreloader";
 // import Navbar from "@/components/sections/navbar/Navbar";
 // import Footer from "@/components/sections/footer/Footer";
 // import Guidence from "@/components/sections/guidance-resources/HowItWorks";
-import Navbar from "@/components/sections/navbar/Navbar";
-import Footer from "@/components/sections/footer/Footer";
+import { ConditionalNavbar, ConditionalFooter } from "@/components/layout/ConditionalLayout";
 import CustomCursor from "@/components/animations/customCursor";
 
 const inter = Inter({
@@ -46,11 +45,11 @@ export default function RootLayout({
       <body className={`${inter.className} bg-[#0a0a0b] text-white selection:bg-[#ff5500] selection:text-black antialiased overflow-x-hidden flex flex-col min-h-screen`}>
         <CustomCursor />
         <Preloader>
-          <Navbar />
+          <ConditionalNavbar />
           <main className="flex-1 flex flex-col">
             {children}
           </main>
-          <Footer />
+          <ConditionalFooter />
         </Preloader>
       </body>
     </html>
