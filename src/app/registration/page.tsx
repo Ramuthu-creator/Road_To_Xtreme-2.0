@@ -1,9 +1,5 @@
-import SessionRegistration from "@/components/sections/registration/SessionRegistration";
+import { redirect } from "next/navigation";
 
 export default function RegistrationPage() {
-  return (
-    <div className="flex-1 flex flex-col justify-center bg-[#1a1a1a]">
-      <SessionRegistration />
-    </div>
-  );
+  redirect("/registration/team-details");
 }

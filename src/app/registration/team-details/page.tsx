@@ -18,36 +18,33 @@ export default function TeamDetailsPage() {
       <div className="w-full max-w-4xl rounded-2xl bg-[#121316] p-6 shadow-2xl sm:p-10 border border-gray-800/60">
         
         {/* Top Header Row: Logo & Progress Bar */}
-        <div className="mb-10 flex flex-col md:flex-row items-center justify-between gap-6 border-b border-gray-800/80 pb-6">
+        <div className="mb-8 md:mb-10 flex flex-col md:flex-row items-center justify-between gap-6 border-b border-gray-800/80 pb-6">
           {/* Logo Placeholder */}
           <div className="flex items-center gap-2">
-            {/* Replace with your image logo tag if needed: <img src="/logo.png" alt="XTREME" className="h-8" /> */}
-            <span className="text-2xl font-black tracking-wider text-[#FF4D00]">
+            <span className="text-3xl md:text-4xl font-black tracking-wide text-[#FF4D00]">
               XTREME
             </span>
           </div>
 
           {/* Progress Indicator */}
-          <div className="flex items-center gap-6 text-sm font-medium">
-            <div className="flex items-center gap-2 text-[#FF4D00]">
-              <span className="flex h-8 w-8 items-center justify-center rounded-full bg-[#FF4D00] text-xs font-bold text-black">
+          <div className="flex flex-wrap items-center justify-center gap-4 md:gap-10 text-xs md:text-sm font-medium">
+            <div className="flex items-center gap-2 md:gap-3 text-[#FF4D00]">
+              <span className="flex h-8 w-8 md:h-10 md:w-10 items-center justify-center rounded-full bg-[#FF4D00] text-black font-bold">
                 01
               </span>
-              <span>Team Details</span>
+              <span className="hidden sm:inline">Team Details</span>
             </div>
-
-            <div className="flex items-center gap-2 text-gray-300">
-              <span className="flex h-8 w-8 items-center justify-center rounded-full border border-gray-500 text-xs font-bold text-gray-300">
+            <div className="flex items-center gap-2 md:gap-3 text-gray-400">
+              <span className="flex h-8 w-8 md:h-10 md:w-10 items-center justify-center rounded-full border border-gray-600 text-white font-bold">
                 02
               </span>
-              <span>Members</span>
+              <span className="hidden sm:inline">Members</span>
             </div>
-
-            <div className="flex items-center gap-2 text-gray-300">
-              <span className="flex h-8 w-8 items-center justify-center rounded-full border border-gray-500 text-xs font-bold text-gray-300">
+            <div className="flex items-center gap-2 md:gap-3 text-gray-400">
+              <span className="flex h-8 w-8 md:h-10 md:w-10 items-center justify-center rounded-full border border-gray-600 text-white font-bold">
                 03
               </span>
-              <span>Confirmation</span>
+              <span className="hidden sm:inline">Confirmation</span>
             </div>
           </div>
         </div>
