@@ -2,8 +2,8 @@ import React from 'react';
 
 const SessionRegistration: React.FC = () => {
   return (
-    <section className="bg-[#1a1a1a] w-full p-6 md:p-12 lg:p-20 font-sans">
-      <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-8 items-start">
+    <section className="bg-[#1a1a1a] w-full p-6 md:p-12 lg:px-20 lg:py-10 font-sans">
+      <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-8 items-center">
         
         {/* Left Column - Typography & Form */}
         <div className="flex flex-col">

@@ -4,7 +4,7 @@ import UpcomingSessions from "@/components/sections/upcoming-sessions/UpcomingSe
 import Hero from "@/components/hero/hero";
 import Guidence from "@/components/sections/guidance-resources/HowItWorks";
 import FAQ from "@/components/sections/faq/faq";
-import SessionRegistration from "@/components/sections/registration/SessionRegistration";
+
 
 export default function Home() {
   return (
@@ -26,7 +26,7 @@ export default function Home() {
       <section className="relative w-full z-10 bg-[#0b0b0c]">
         <FAQ />
       </section>
-      <SessionRegistration/>
+
     </main>
   );
 }
