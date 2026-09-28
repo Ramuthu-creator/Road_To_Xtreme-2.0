@@ -55,12 +55,32 @@ export default function Preloader({ children }: Props) {
     <div className={active ? "intro-root--active" : undefined}>
       {active && (
         <div className="overlay intro-loader" role="status">
-          <div className="brand">
+          <div
+            className="
+              brand
+              max-md:!top-[max(20px,env(safe-area-inset-top))]
+              max-md:!left-[max(20px,env(safe-area-inset-left))]
+              max-md:!right-[max(20px,env(safe-area-inset-right))]
+              max-md:!text-[10px]
+              max-md:!leading-relaxed
+              max-md:!tracking-[1.5px]
+            "
+          >
             ROAD TO <span>XTREME 2.0</span>
           </div>
 
-          <div className="center">
-            <div className="rotor" aria-hidden="true">
+          <div
+            className="
+              center
+              max-md:!w-[calc(100%_-_40px)]
+              max-md:!max-w-[calc(100%_-_40px)]
+              max-md:!gap-[clamp(20px,5svh,30px)]
+            "
+          >
+            <div
+              className="rotor max-md:!shrink-0"
+              aria-hidden="true"
+            >
               {Array.from({ length: 6 }, (_, index) => (
                 <span
                   className="arm"
@@ -76,14 +96,54 @@ export default function Preloader({ children }: Props) {
               ))}
             </div>
 
-            <div className="status">
-              <span className="dot" />
-              LOADING EXPERIENCE
-              <span className="dots">...</span>
+            <div
+              className="
+                status
+                max-md:!flex
+                max-md:!w-full
+                max-md:!min-w-0
+                max-md:!flex-wrap
+                max-md:!items-center
+                max-md:!justify-center
+                max-md:!gap-x-2
+                max-md:!gap-y-1
+                max-md:!whitespace-normal
+                max-md:!text-center
+                max-md:!text-[10px]
+                max-md:!leading-relaxed
+                max-md:!tracking-[1.5px]
+              "
+            >
+              <span
+                className="dot max-md:!shrink-0"
+                aria-hidden="true"
+              />
+              <span className="max-md:whitespace-nowrap">
+                LOADING EXPERIENCE
+                <span className="dots">...</span>
+              </span>
             </div>
           </div>
 
-          <div className="footer">
+          <div
+            className="
+              footer
+              max-md:!left-[max(20px,env(safe-area-inset-left))]
+              max-md:!right-[max(20px,env(safe-area-inset-right))]
+              max-md:!bottom-[max(20px,env(safe-area-inset-bottom))]
+              max-md:!flex
+              max-md:!w-auto
+              max-md:!flex-col
+              max-md:!items-center
+              max-md:!justify-center
+              max-md:!gap-2
+              max-md:!whitespace-normal
+              max-md:!text-center
+              max-md:!text-[9px]
+              max-md:!leading-relaxed
+              max-md:!tracking-[0.5px]
+            "
+          >
             <span>OUTTHINK THE CHALLENGE.</span>
             <span>OUTCODE THE COMPETITION.</span>
           </div>
