@@ -583,4 +583,498 @@
     .industry-logo {
         transition: none;
     }
+
+/* Group the loader, orange circle, and page layers. */
+.intro-root--active {
+    position: relative;
+    isolation: isolate;
+}
+
+/* Override the original overlay's z-index: 9999. */
+.intro-root--active>.intro-loader {
+    z-index: 1;
+    opacity: 1;
+    transition: none;
+}
+
+/* Orange circle covers the loader. */
+.intro-orange {
+    position: fixed;
+    inset: 0;
+    z-index: 2;
+
+    background: #fe5119;
+    pointer-events: none;
+
+    clip-path: circle(8px at 50% 100%);
+
+    animation: intro-orange-grow 750ms cubic-bezier(0.76, 0, 0.24, 1) both;
+}
+
+/* Main page sits above the orange, initially clipped away. */
+.intro-root--active>.intro-content {
+    position: relative;
+    z-index: 3;
+
+    min-height: 100svh;
+    background: #080808;
+    pointer-events: none;
+}
+
+.intro-content--loading,
+.intro-content--orange {
+    clip-path: circle(0px at 50vw 100vh);
+    clip-path: circle(0px at 50vw 100dvh);
+}
+
+/* Reveal the actual page from the bottom center. */
+.intro-content--revealing {
+    animation: intro-page-grow 750ms cubic-bezier(0.76, 0, 0.24, 1) 100ms both;
+}
+
+.intro-content--done {
+    clip-path: none;
+}
+
+@keyframes intro-orange-grow {
+    from {
+        clip-path: circle(8px at 50% 100%);
+    }
+
+    to {
+        clip-path: circle(150vmax at 50% 100%);
+    }
+}
+
+@keyframes intro-page-grow {
+    from {
+        clip-path: circle(0px at 50vw 100vh);
+        clip-path: circle(0px at 50vw 100dvh);
+    }
+
+    to {
+        clip-path: circle(150vmax at 50vw 100vh);
+        clip-path: circle(150vmax at 50vw 100dvh);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+    .intro-orange,
+    .intro-content--revealing {
+        animation: intro-simple-fade 100ms linear both;
+    }
+
+    @keyframes intro-simple-fade {
+        from {
+            clip-path: none;
+            opacity: 0;
+        }
+
+        to {
+            clip-path: none;
+            opacity: 1;
+        }
+    }
+}
+
+.hero {
+    width: 100%;
+    /* height: 100vh; */
+    /* border: 1px solid red; */
+
+    .hero-content {
+
+        .countdown {
+            /* border: 1px solid blue; */
+            position: absolute;
+            height: 50vh;
+            width: 97%;
+            display: flex;
+            justify-content: center;
+            align-items: flex-end;
+            flex-direction: column;
+            gap: 10px;
+            /* .center{ */
+            /* border: 1px solid red; */
+            /* display: flex; */
+            /* justify-content: center; */
+            /* align-items: center; */
+            /* position: relative; */
+
+            /* right: 200px; */
+            .text {
+                font-size: 23px;
+                font-family: "exo 2", sans-serif;
+                font-weight: bold;
+                font-style: regular;
+                line-height: 100%;
+                letter-spacing: 1px;
+
+            }
+
+            .numCountdown {
+                font-size: 25px;
+                font-family: "exo 2", sans-serif;
+                font-weight: bold;
+                font-style: regular;
+                line-height: 100%;
+                letter-spacing: 1px;
+                position: relative;
+                right: 100px;
+            }
+
+            /* } */
+        }
+
+        .mainContent {
+            position: absolute;
+
+            .roadto {
+                font-family: "exo 2", sans-serif;
+                font-size: 40px;
+                font-weight: bold;
+                letter-spacing: 1px;
+                position: absolute;
+                width: 400px;
+                top: 220px;
+                left: 80px;
+            }
+
+            p {
+                font-size: 19rem;
+                position: absolute;
+                font-family: "arial", sans-serif;
+                font-weight: 800;
+                /* line-height: 90%; */
+                letter-spacing: -8px;
+                color: #fe5119;
+                top: 270px;
+                left: 80px;
+                /* border: 1px solid red; */
+            }
+        }
+
+        .mainimage {
+            display: flex;
+            justify-content: center;
+            align-items: flex-end;
+            /* border: 2px solid red; */
+            height: 90vh;
+
+            .img {
+                position: relative;
+                width: 60%;
+            }
+        }
+
+        .subcontent {
+            position: absolute;
+            /* border: 1px solid red; */
+            top: 670px;
+            left: 120px;
+
+            /* flex-direction: column; */
+            p {
+                font-family: "exo 2", sans-serif;
+                font-size: 20px;
+                letter-spacing: 0.5px;
+                line-height: 30px;
+                font-weight: 400;
+                color: #d0d0d0;
+
+            }
+        }
+    }
+}
+
+.howitworks {
+    width: 100%;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 120px 10%;
+    gap: 40px;
+    background-color: transparent;
+
+    .top {
+        display: flex;
+        justify-content: space-between;
+        width: 100%;
+        max-width: 100%;
+        position: relative;
+
+        .left {
+            color: #fe5119;
+            font-size: 11px;
+            font-family: Verdana, Geneva, Tahoma, sans-serif;
+            letter-spacing: 1px;
+        }
+
+        .right {
+            color: #d0d0d0;
+            font-family: Verdana, Geneva, Tahoma, sans-serif;
+            font-size: 11px;
+            letter-spacing: 1px;
+        }
+    }
+
+    .content {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        max-width: 850px;
+        gap: 60px;
+        position: relative;
+
+        .text-box {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+
+            h1 {
+                font-size: 72px;
+                line-height: 1.1;
+                letter-spacing: -1.5px;
+                font-weight: 700;
+                margin: 0;
+            }
+
+            .orange {
+                color: #fe5119;
+            }
+
+            .subtext {
+                margin-top: 12px;
+                
+                .text {
+                    font-family: "Inter", sans-serif;
+                    font-weight: 400;
+                    font-size: 20px;
+                    line-height: 1.5;
+                    color: #d0d0d0;
+                    margin: 0;
+                }
+            }
+        }
+    }
+}
+
+
+ /* MOBILE PHONES */
+@media (max-width: 767px) {
+  /* PRELOADER */
+  .overlay {
+    box-sizing: border-box;
+  }
+
+  .overlay .brand {
+    overflow-wrap: anywhere;
+  }
+
+  .overlay .center {
+    box-sizing: border-box;
+    max-width: calc(100% - 40px);
+    gap: clamp(20px, 5vh, 30px);
+  }
+
+  .overlay .rotor {
+    width: clamp(100px, 32vw, 160px);
+    height: clamp(100px, 32vw, 160px);
+    flex-shrink: 0;
+  }
+
+  .overlay .status {
+    box-sizing: border-box;
+    width: 100%;
+    min-width: 0;
+  }
+
+  .overlay .footer {
+    box-sizing: border-box;
+    max-width: none;
+  }
+
+  /* HERO CONTAINER */
+  .hero {
+    box-sizing: border-box;
+    height: auto;
+    min-width: 0;
+  }
+
+  .hero .hero-content {
+    box-sizing: border-box;
+    height: auto;
+    min-width: 0;
+    max-width: 100%;
+  }
+
+  .hero .hero-content > * {
+    min-width: 0;
+    max-width: 100%;
+  }
+
+  .hero .hero-content .countdown {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+  }
+
+  .hero .hero-content .mainContent {
+    height: auto;
+    text-align: center;
+  }
+
+  .hero .hero-content .mainContent .roadto {
+    max-width: 100%;
+  }
+
+  .hero .hero-content .mainContent p {
+    /* Keeps the title manageable on narrow phones */
+    font-size: clamp(44px, 14vw, 104px);
+  }
+
+  .hero .hero-content .mainimage {
+    inset: auto;
+    display: flex;
+    justify-content: center;
+    height: auto;
+  }
+
+  .hero .hero-content .mainimage .img {
+    display: block;
+    inset: auto;
+    min-width: 0;
+    max-width: 560px;
+    object-fit: contain;
+  }
+
+  .hero .hero-content .mainimage .img img {
+    width: 100%;
+    object-fit: contain;
+  }
+
+  .hero .hero-content .subcontent {
+    height: auto;
+    max-width: 100%;
+  }
+
+  /* HOW IT WORKS */
+  .howitworks {
+    display: flex;
+    flex-direction: column;
+    height: auto;
+    min-height: 100vh;
+    padding: 60px 20px;
+    gap: 30px;
+  }
+
+  .howitworks .top {
+    position: relative;
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    margin-bottom: 20px;
+  }
+
+  .howitworks .content {
+    position: relative;
+    right: auto;
+    display: flex;
+    flex-direction: column;
+    height: auto;
+    width: 100%;
+    gap: 30px;
+  }
+
+  .howitworks .content .text-box h1 {
+    font-size: 28px;
+    line-height: 1.1;
+    letter-spacing: -1px;
+    white-space: normal;
+  }
+
+  .howitworks .content .text-box .subtext .text {
+    width: 100%;
+    font-size: 15px;
+    line-height: 1.5;
+    white-space: normal;
+    margin-top: 8px;
+    color: #d0d0d0;
+    letter-spacing: normal;
+  }
+}
+
+/* SMALL PHONES */
+@media (max-width: 360px) {
+  .overlay .brand {
+    font-size: 9px;
+    letter-spacing: 1px;
+  }
+
+  .overlay .center {
+    gap: 20px;
+  }
+
+  .hero .hero-content .mainContent {
+    padding-inline: 12px;
+  }
+
+  .hero .hero-content .mainContent .roadto {
+    font-size: 18px;
+  }
+
+  .hero .hero-content .mainimage {
+    padding-top: 80px;
+  }
+
+  .hero .hero-content .subcontent p {
+    font-size: 14px;
+  }
+
+  .howitworks {
+    padding-block: 36px;
+    gap: 20px;
+  }
+
+  .howitworks .content {
+    gap: 24px;
+  }
+
+  .howitworks .content .text-box h1 {
+    font-size: 24px;
+  }
+
+  .howitworks .content .text-box .subtext .text {
+    font-size: 14px;
+  }
+}
+
+/* SHORT PHONE SCREENS / LANDSCAPE */
+@media (max-width: 767px) and (max-height: 480px) {
+  .overlay .brand {
+    top: max(12px, env(safe-area-inset-top));
+  }
+
+  .overlay .center {
+    gap: 14px;
+  }
+
+  .overlay .rotor {
+    width: 80px;
+    height: 80px;
+  }
+
+  .overlay .status {
+    font-size: 9px;
+    letter-spacing: 1px;
+  }
+
+  .overlay .footer {
+    bottom: max(12px, env(safe-area-inset-bottom));
+    font-size: 8px;
+    gap: 6px;
+  }
 }
