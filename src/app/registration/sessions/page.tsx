@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import SessionRegistration from "@/components/sections/registration/SessionRegistration";
 
 interface MemberDetails {
   fullName: string;
@@ -93,6 +94,7 @@ export default function SessionsPage() {
             </div>
           </div>
         </div>
+          <SessionRegistration/>
 
         {/* Title */}
         <div className="mb-12 text-center">
