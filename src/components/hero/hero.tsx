@@ -5,6 +5,7 @@ import { Fragment, useEffect, useRef, useState } from "react";
 import { gsap } from "gsap";
 import { animate } from "animejs";
 import Typed from "typed.js";
+import Starfield from "@/components/animations/Starfield";
 
 const TARGET = new Date("2026-10-31T00:00:00+05:30").getTime();
 
@@ -227,14 +228,16 @@ export default function Hero() {
             .set(image, { clearProps: "filter" });
         }
 
+        const isDesktop = window.matchMedia("(min-width: 1024px)").matches;
+
         const syncFloat = reduced
           ? undefined
           : gsap.timeline({ paused: true, repeat: -1, yoyo: true });
 
         if (syncFloat) {
           syncFloat.to(arrow, { y: 8, duration: 2.2, ease: "sine.inOut" }, 0);
-          if (!pointer) {
-            // Float character only on mobile/touch devices
+          // Float character on touch devices OR narrow screens
+          if (!pointer || !isDesktop) {
             syncFloat.to(character, { y: 6, duration: 2.2, ease: "sine.inOut" }, 0);
           }
         }
@@ -284,7 +287,7 @@ export default function Hero() {
 
         let removeListeners = () => {};
 
-        if (!reduced && pointer) {
+        if (!reduced && pointer && isDesktop) {
           const options = { duration: 0.9, ease: "power3.out" };
 
           const imageX = gsap.quickTo(character, "x", options);
@@ -377,6 +380,8 @@ export default function Hero() {
           lg:h-[clamp(580px,calc(100svh_-_110px),980px)]
         "
       >
+        <Starfield />
+
         {/* Orange aura */}
         <div
           aria-hidden="true"
