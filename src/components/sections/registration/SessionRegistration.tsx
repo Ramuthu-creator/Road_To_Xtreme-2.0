@@ -1,3 +1,4 @@
+"use client";
 import React from 'react';
 
 const SessionRegistration: React.FC = () => {
@@ -35,7 +36,7 @@ const SessionRegistration: React.FC = () => {
                 <label className="text-white text-sm md:text-base mb-2">Registration Number</label>
                 <input
                   type="text"
-                  placeholder="e.g. IT21..."
+                  placeholder="e.g. M200 or F200"
                   className="bg-transparent border-b border-gray-600 focus:border-orange-500 focus:outline-none py-2 text-white w-full transition-colors placeholder:text-gray-600"
                 />
               </div>
@@ -75,7 +76,12 @@ const SessionRegistration: React.FC = () => {
                 <label className="text-white text-sm md:text-base mb-2">Contact Number</label>
                 <input
                   type="tel"
-                  placeholder="+94 7X XXX XXXX"
+                  placeholder="07XXXXXXXX"
+                  maxLength={10}
+                  pattern="[0-9]{10}"
+                  onInput={(e) => {
+                    e.currentTarget.value = e.currentTarget.value.replace(/[^0-9]/g, '');
+                  }}
                   className="bg-transparent border-b border-gray-600 focus:border-orange-500 focus:outline-none py-2 text-white w-full transition-colors placeholder:text-gray-600"
                 />
               </div>

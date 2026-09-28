@@ -11,7 +11,7 @@ const sessions: SessionCardProps[] = [
     date: 'SEPTEMBER 28',
     audience: 'OC-VIRTUAL',
     status: 'live',
-    actionHref: '/registration',
+    actionHref: '/session-registration',
   },
   {
     sessionNumber: '02',

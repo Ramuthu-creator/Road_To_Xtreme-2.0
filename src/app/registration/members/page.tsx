@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import SessionRegistration from "@/components/sections/registration/SessionRegistration";
 
 interface MemberDetails {
   fullName: string;
@@ -72,52 +71,51 @@ export default function MembersPage() {
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-[#0b0b0c] p-4 font-sans text-white">
-      <div className="w-full max-w-[1050px] rounded-3xl bg-[#121214] p-8 shadow-2xl sm:p-12">
+      <div className="w-full max-w-[1050px] rounded-3xl bg-[#121214] p-6 sm:p-8 md:p-12 shadow-2xl">
         
         {/* Top Navigation */}
-        <div className="mb-10 flex items-center justify-between">
-          <div className="text-3xl font-black tracking-wide text-[#ff4500]">
+        <div className="mb-8 md:mb-10 flex flex-col md:flex-row items-center justify-between gap-6">
+          <div className="text-3xl md:text-4xl font-black tracking-wide text-[#ff4500]">
             XTREME
           </div>
-          <div className="flex items-center gap-10 text-sm font-medium">
-            <div className="flex items-center gap-3 text-gray-400">
-              <span className="flex h-10 w-10 items-center justify-center rounded-full border border-gray-600 text-white">01</span>
-              <span>Team Details</span>
+          <div className="flex flex-wrap items-center justify-center gap-4 md:gap-10 text-xs md:text-sm font-medium">
+            <div className="flex items-center gap-2 md:gap-3 text-gray-400">
+              <span className="flex h-8 w-8 md:h-10 md:w-10 items-center justify-center rounded-full border border-gray-600 text-white">01</span>
+              <span className="hidden sm:inline">Team Details</span>
             </div>
-            <div className="flex items-center gap-3 text-[#ff4500]">
-              <span className="flex h-10 w-10 items-center justify-center rounded-full bg-[#ff4500] text-black">02</span>
-              <span>Members</span>
+            <div className="flex items-center gap-2 md:gap-3 text-[#ff4500]">
+              <span className="flex h-8 w-8 md:h-10 md:w-10 items-center justify-center rounded-full bg-[#ff4500] text-black">02</span>
+              <span className="hidden sm:inline">Members</span>
             </div>
-            <div className="flex items-center gap-3 text-gray-400">
-              <span className="flex h-10 w-10 items-center justify-center rounded-full border border-gray-600 text-white">03</span>
-              <span>Confirmation</span>
+            <div className="flex items-center gap-2 md:gap-3 text-gray-400">
+              <span className="flex h-8 w-8 md:h-10 md:w-10 items-center justify-center rounded-full border border-gray-600 text-white">03</span>
+              <span className="hidden sm:inline">Confirmation</span>
             </div>
           </div>
         </div>
-          <SessionRegistration/>
-
+        
         {/* Title */}
-        <div className="mb-12 text-center">
-          <h1 className="mb-2 text-[44px] font-extrabold tracking-tight text-white">
-            Build Your <span className="border-b-[4px] border-cyan-400 pb-1">Lineup</span>
+        <div className="mb-10 md:mb-12 text-center">
+          <h1 className="mb-2 text-3xl md:text-[44px] font-extrabold tracking-tight text-white leading-tight">
+            Build Your <span className="border-b-[3px] md:border-b-[4px] border-cyan-400 pb-1">Lineup</span>
           </h1>
-          <p className="text-[15px] font-bold text-white">
-            Add up 3 members.only the team leader is required.
+          <p className="text-xs md:text-[15px] font-bold text-white px-4">
+            Add up to 3 members. Only the team leader is required.
           </p>
         </div>
 
         {/* Tabs */}
-        <div className="mb-10 flex overflow-hidden rounded-lg border border-gray-800 bg-[#161618]">
+        <div className="mb-10 flex flex-col sm:flex-row overflow-hidden rounded-lg border border-gray-800 bg-[#161618]">
           {[1, 2, 3].map((num) => (
             <button
               key={num}
               type="button"
               onClick={() => setActiveSession(num)}
-              className={`flex flex-1 items-center justify-center gap-4 py-5 text-sm font-bold transition-all duration-300 ${
+              className={`flex flex-1 items-center justify-center gap-2 sm:gap-4 py-3 sm:py-5 text-xs sm:text-sm font-bold transition-all duration-300 ${
                 activeSession === num
-                  ? 'border-b-2 border-[#ff4500] bg-[#1a1a1c] text-[#ff4500]'
-                  : 'border-b-2 border-transparent text-gray-400 hover:text-gray-200'
-              } ${num !== 1 ? 'border-l border-gray-800' : ''}`}
+                  ? 'border-b-2 sm:border-b-0 sm:border-l-2 border-[#ff4500] bg-[#1a1a1c] text-[#ff4500]'
+                  : 'border-b border-transparent sm:border-b-0 text-gray-400 hover:text-gray-200'
+              } ${num !== 1 ? 'sm:border-l sm:border-gray-800 border-t border-gray-800 sm:border-t-0' : ''}`}
             >
               <span className={activeSession === num ? 'text-[#ff4500]' : 'text-white'}>
                 0{num}
@@ -213,18 +211,18 @@ export default function MembersPage() {
         </div>
 
         {/* Navigation Buttons */}
-        <div className="mt-10 flex items-center justify-between">
+        <div className="mt-10 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4">
           <button 
             type="button"
             onClick={handleBack}
-            className="flex items-center gap-2 rounded-full bg-[#2a2a2e] px-8 py-3 text-sm font-semibold text-white transition-colors hover:bg-gray-700"
+            className="flex items-center justify-center gap-2 rounded-full bg-[#2a2a2e] px-8 py-3 text-sm font-semibold text-white transition-colors hover:bg-gray-700 w-full sm:w-auto"
           >
             ← Back
           </button>
           <button 
             type="button"
             onClick={handleContinue}
-            className="flex items-center gap-2 rounded-full bg-[#ff4500] px-10 py-3 text-sm font-bold text-black transition-colors hover:bg-[#e03d00]"
+            className="flex items-center justify-center gap-2 rounded-full bg-[#ff4500] px-10 py-3 text-sm font-bold text-black transition-colors hover:bg-[#e03d00] w-full sm:w-auto"
           >
             {activeSession === 3 ? 'Review Details →' : 'Continue →'}
           </button>
