@@ -11,6 +11,7 @@ import Preloader from "@/components/animations/xtremepreloader";
 import { ConditionalNavbar, ConditionalFooter } from "@/components/layout/ConditionalLayout";
 import CustomCursor from "@/components/animations/customCursor";
 
+
 const inter = Inter({
   subsets: ["latin"],
   variable: "--font-inter",

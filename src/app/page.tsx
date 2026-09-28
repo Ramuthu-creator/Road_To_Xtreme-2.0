@@ -19,6 +19,8 @@ export default function Home() {
       <section className="relative w-full z-10 bg-[#0b0b0c] shadow-[0_-20px_50px_rgba(0,0,0,0.8)]">
         <UpcomingSessions />
       </section>
+
+     
       
       <section className="relative w-full z-10 bg-[#0b0b0c]">
         <Guidence />
