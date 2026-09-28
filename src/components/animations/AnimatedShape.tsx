@@ -170,5 +170,7 @@ export default function AnimatedShape({
         <circle r={5} fill="#FFF0DC" />
       </g>
     </svg>
+
+    
   );
 }
