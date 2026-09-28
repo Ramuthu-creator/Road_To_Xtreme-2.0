@@ -1,10 +1,17 @@
 'use client';
 
 import React, { useState } from 'react';
+import { useRouter } from 'next/navigation';
 
 export default function TeamDetailsPage() {
+  const router = useRouter();
   const [faculty, setFaculty] = useState('computing');
   const [compete, setCompete] = useState('yes');
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    router.push('/registration/members');
+  };
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-[#0a0a0a] p-4 sm:p-8 font-sans text-white">
@@ -40,7 +47,7 @@ export default function TeamDetailsPage() {
               <span className="flex h-8 w-8 items-center justify-center rounded-full border border-gray-500 text-xs font-bold text-gray-300">
                 03
               </span>
-              <span>Conformation</span>
+              <span>Confirmation</span>
             </div>
           </div>
         </div>
@@ -56,7 +63,7 @@ export default function TeamDetailsPage() {
         </div>
 
         {/* Form Fields */}
-        <form className="grid grid-cols-1 gap-x-8 gap-y-6 md:grid-cols-2">
+        <form onSubmit={handleSubmit} className="grid grid-cols-1 gap-x-8 gap-y-6 md:grid-cols-2">
           
           {/* Email */}
           <div>

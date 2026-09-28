@@ -3,6 +3,7 @@
 import UpcomingSessions from "@/components/sections/upcoming-sessions/UpcomingSessions";
 import Hero from "@/components/hero/hero";
 import Guidence from "@/components/sections/guidance-resources/HowItWorks";
+import FAQ from "@/components/sections/faq/faq";
 import SessionRegistration from "@/components/sections/registration/SessionRegistration";
 
 export default function Home() {
@@ -15,15 +16,17 @@ export default function Home() {
       
       {/* The next sections slide up OVER the Hero */}
       <section className="relative w-full z-10 bg-[#0b0b0c] shadow-[0_-20px_50px_rgba(0,0,0,0.8)]">
-        <Guidence />
+        <UpcomingSessions />
       </section>
       
       <section className="relative w-full z-10 bg-[#0b0b0c]">
-        <UpcomingSessions />
+        <Guidence />
+      </section>
+
+      <section className="relative w-full z-10 bg-[#0b0b0c]">
+        <FAQ />
       </section>
       <SessionRegistration/>
     </main>
   );
 }
-
-
