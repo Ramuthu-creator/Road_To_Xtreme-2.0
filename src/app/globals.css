@@ -1,5 +1,6 @@
 /* =========================================================
    PRELOADER
+   ========================================================= */
 
 .overlay {
   --orange: #fe5119;
@@ -17,11 +18,11 @@
   transition: opacity 600ms cubic-bezier(0.76, 0, 0.24, 1);
 }
 
-.leaving {
+.overlay.leaving {
   opacity: 0;
 }
 
-.brand {
+.overlay .brand {
   position: absolute;
   top: 32px;
   left: 32px;
@@ -29,11 +30,11 @@
   letter-spacing: 2px;
 }
 
-.brand span {
+.overlay .brand span {
   color: var(--white);
 }
 
-.center {
+.overlay .center {
   position: absolute;
   top: 50%;
   left: 50%;
@@ -44,7 +45,7 @@
   transform: translate(-50%, -50%);
 }
 
-.rotor {
+.overlay .rotor {
   position: relative;
   width: 160px;
   height: 160px;
@@ -52,7 +53,7 @@
   will-change: transform;
 }
 
-.arm {
+.overlay .arm {
   position: absolute;
   left: 80px;
   top: 80px;
@@ -61,7 +62,7 @@
   transform: rotate(var(--angle));
 }
 
-.arm i {
+.overlay .arm i {
   position: absolute;
   display: block;
   top: -7px;
@@ -73,11 +74,11 @@
   animation: foldBar 6s cubic-bezier(0.76, 0, 0.24, 1) infinite;
 }
 
-.arm:nth-child(even) i {
+.overlay .arm:nth-child(even) i {
   animation-name: foldAlternate;
 }
 
-.arm:first-child i::after {
+.overlay .arm:first-child i::after {
   content: "";
   position: absolute;
   top: 0;
@@ -87,7 +88,7 @@
   background: var(--white);
 }
 
-.status {
+.overlay .status {
   display: flex;
   align-items: center;
   gap: 10px;
@@ -96,18 +97,19 @@
   letter-spacing: 3px;
 }
 
-.dot {
+.overlay .dot {
   width: 4px;
   height: 4px;
+  flex-shrink: 0;
   background: var(--orange);
 }
 
-.dots {
+.overlay .dots {
   color: var(--orange);
   animation: pulse 1.5s ease-in-out infinite;
 }
 
-.footer {
+.overlay .footer {
   position: absolute;
   bottom: 28px;
   left: 32px;
@@ -120,124 +122,58 @@
 }
 
 @keyframes rotateMark {
-  0%,
-  8% {
-    transform: rotate(0deg);
-  }
-
-  25%,
-  33% {
-    transform: rotate(60deg);
-  }
-
-  50%,
-  58% {
-    transform: rotate(180deg);
-  }
-
-  75%,
-  83% {
-    transform: rotate(240deg);
-  }
-
-  100% {
-    transform: rotate(360deg);
-  }
+  0%, 8% { transform: rotate(0deg); }
+  25%, 33% { transform: rotate(60deg); }
+  50%, 58% { transform: rotate(180deg); }
+  75%, 83% { transform: rotate(240deg); }
+  100% { transform: rotate(360deg); }
 }
 
 @keyframes foldBar {
-  0%,
-  8%,
-  100% {
+  0%, 8%, 100% {
     transform: translateX(0) rotate(0deg);
     width: 64px;
   }
-
-  25%,
-  33% {
+  25%, 33% {
     transform: translateX(38px) rotate(90deg);
     width: 47px;
   }
-
-  50%,
-  58% {
+  50%, 58% {
     transform: translateX(7px) rotate(60deg);
     width: 68px;
   }
-
-  75%,
-  83% {
+  75%, 83% {
     transform: translateX(30px) rotate(-30deg);
     width: 44px;
   }
 }
 
 @keyframes foldAlternate {
-  0%,
-  8%,
-  100% {
+  0%, 8%, 100% {
     transform: translateX(0) rotate(0deg);
     width: 64px;
   }
-
-  25%,
-  33% {
+  25%, 33% {
     transform: translateX(38px) rotate(90deg);
     width: 47px;
   }
-
-  50%,
-  58% {
+  50%, 58% {
     transform: translateX(7px) rotate(-60deg);
     width: 68px;
   }
-
-  75%,
-  83% {
+  75%, 83% {
     transform: translateX(30px) rotate(30deg);
     width: 44px;
   }
 }
 
 @keyframes pulse {
-  0%,
-  100% {
-    opacity: 0.25;
-  }
-
-  50% {
-    opacity: 1;
-  }
-}
-
-@media (max-width: 480px) {
-  .brand {
-    top: 24px;
-    left: 20px;
-  }
-
-  .footer {
-    left: 20px;
-    right: 20px;
-    font-size: 9px;
-    letter-spacing: 0;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .rotor,
-  .arm i,
-  .dots {
-    animation: none;
-  }
-
-  .overlay {
-    transition-duration: 100ms;
-  }
+  0%, 100% { opacity: 0.25; }
+  50% { opacity: 1; }
 }
 
 /* =========================================================
-   ORANGE PAGE REVEAL
+   INTRO PAGE REVEAL
    ========================================================= */
 
 .intro-root--active {
@@ -286,13 +222,8 @@
 }
 
 @keyframes intro-orange-grow {
-  from {
-    clip-path: circle(8px at 50% 100%);
-  }
-
-  to {
-    clip-path: circle(150vmax at 50% 100%);
-  }
+  from { clip-path: circle(8px at 50% 100%); }
+  to { clip-path: circle(150vmax at 50% 100%); }
 }
 
 @keyframes intro-page-grow {
@@ -300,7 +231,6 @@
     clip-path: circle(0px at 50vw 100vh);
     clip-path: circle(0px at 50vw 100dvh);
   }
-
   to {
     clip-path: circle(150vmax at 50vw 100vh);
     clip-path: circle(150vmax at 50vw 100dvh);
@@ -312,18 +242,51 @@
     clip-path: none;
     opacity: 0;
   }
-
   to {
     clip-path: none;
     opacity: 1;
   }
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .intro-orange,
-  .intro-content--revealing {
-    animation: intro-simple-fade 100ms linear both;
-  }
+/* Alternative preloader classes present in your file */
+
+.preloader-orange-wipe {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  background: #fe5119;
+  pointer-events: none;
+  animation: preloader-orange-expand 750ms
+    cubic-bezier(0.76, 0, 0.24, 1) both;
+}
+
+.preloader-page {
+  background: #080808;
+}
+
+.preloader-page--revealing {
+  position: relative;
+  z-index: 10001;
+  height: 100vh;
+  height: 100dvh;
+  overflow: hidden;
+  pointer-events: none;
+  animation: preloader-page-expand 750ms
+    cubic-bezier(0.76, 0, 0.24, 1) both;
+}
+
+.preloader-page--done {
+  clip-path: none;
+}
+
+@keyframes preloader-orange-expand {
+  from { clip-path: circle(8px at 50% 100%); }
+  to { clip-path: circle(150% at 50% 100%); }
+}
+
+@keyframes preloader-page-expand {
+  from { clip-path: circle(0% at 50% 100%); }
+  to { clip-path: circle(150% at 50% 100%); }
 }
 
 /* =========================================================
@@ -355,14 +318,14 @@
 }
 
 .hero .hero-content .countdown .numCountdown {
+  position: relative;
+  right: 100px;
   font-size: 25px;
   font-family: "exo 2", sans-serif;
   font-weight: bold;
   font-style: normal;
   line-height: 100%;
   letter-spacing: 1px;
-  position: relative;
-  right: 100px;
 }
 
 .hero .hero-content .mainContent {
@@ -370,25 +333,25 @@
 }
 
 .hero .hero-content .mainContent .roadto {
-  font-family: "exo 2", sans-serif;
-  font-size: 40px;
-  font-weight: bold;
-  letter-spacing: 1px;
   position: absolute;
   width: 400px;
   top: 220px;
   left: 80px;
+  font-family: "exo 2", sans-serif;
+  font-size: 40px;
+  font-weight: bold;
+  letter-spacing: 1px;
 }
 
 .hero .hero-content .mainContent p {
-  font-size: 19rem;
   position: absolute;
-  font-family: "arial", sans-serif;
+  top: 270px;
+  left: 80px;
+  font-size: 19rem;
+  font-family: Arial, sans-serif;
   font-weight: 800;
   letter-spacing: -8px;
   color: #fe5119;
-  top: 270px;
-  left: 80px;
 }
 
 .hero .hero-content .mainimage {
@@ -418,15 +381,30 @@
   color: #d0d0d0;
 }
 
-    top: -7px;
-    left: 0;
+/* =========================================================
+   HOW IT WORKS
+   ========================================================= */
 
-    width: 64px;
-    height: 14px;
+.hiw-section {
+  --orange: #fe5119;
+  --background: #101010;
+  --muted: #8d8d8d;
+  --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+    "Liberation Mono", monospace;
 
-    background: var(--orange);
+  position: relative;
+  z-index: 10;
+  isolation: isolate;
+  width: 100%;
+  padding: 56px 24px 28px;
+  background: var(--background);
+  color: #fff;
+}
 
-    transform-origin: 7px 7px;
+.hiw-section,
+.hiw-section * {
+  box-sizing: border-box;
+}
 
 .hiw-ambient {
   position: absolute;
@@ -455,10 +433,14 @@
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
 }
 
-    width: 3px;
-    height: 100%;
-
-    background: var(--white);
+.hiw-eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 0;
+  font: 500 10px / 1.6 var(--mono);
+  letter-spacing: 0.13em;
+  color: var(--orange);
 }
 
 .hiw-eyebrow > span {
@@ -468,17 +450,17 @@
   background: var(--orange);
 }
 
-    white-space: nowrap;
-
-    font-size: 11px;
-    letter-spacing: 3px;
+.hiw-version {
+  flex-shrink: 0;
+  font: 400 10px / 1.5 var(--mono);
+  color: var(--muted);
 }
 
-.dot {
-    width: 4px;
-    height: 4px;
-
-    background: var(--orange);
+.hiw-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 48px;
+  margin-top: 18px;
 }
 
 .hiw-list {
@@ -508,11 +490,23 @@
   padding: 34px 0;
 }
 
-@keyframes rotateMark {
-    0%,
-    8% {
-        transform: rotate(0deg);
-    }
+.hiw-railNode {
+  position: absolute;
+  top: 42px;
+  left: -29px;
+  width: 7px;
+  height: 7px;
+  border: 1px solid #555;
+  background: var(--background);
+  transition:
+    background-color 300ms ease,
+    border-color 300ms ease;
+}
+
+.hiw-step[data-active="true"] .hiw-railNode {
+  border-color: var(--orange);
+  background: var(--orange);
+}
 
 .hiw-stepMeta {
   display: flex;
@@ -540,13 +534,20 @@
   background: rgba(254, 81, 25, 0.4);
 }
 
-@keyframes foldBar {
-    0%,
-    8%,
-    100% {
-        transform: translateX(0) rotate(0deg);
-        width: 64px;
-    }
+.hiw-heading {
+  margin: 0;
+  font-size: clamp(27px, 6.7vw, 56px);
+  font-weight: 800;
+  line-height: 1.06;
+  letter-spacing: -0.045em;
+  color: #f5f5f5;
+}
+
+.hiw-lineMask {
+  display: block;
+  overflow: hidden;
+  padding-bottom: 0.06em;
+}
 
 .hiw-lineMask > span {
   display: block;
@@ -564,15 +565,22 @@
   overflow-wrap: anywhere;
 }
 
-@keyframes foldAlternate {
-    0%,
-    8%,
-    100% {
-        transform: translateX(0) rotate(0deg);
-        width: 64px;
-    }
+.hiw-rowRule {
+  height: 1px;
+  margin-top: 34px;
+  background: linear-gradient(
+    90deg,
+    rgba(254, 81, 25, 0.35),
+    rgba(255, 255, 255, 0.08) 40%,
+    transparent
+  );
+}
 
-/* Sticky desktop display */
+.hiw-step:last-child .hiw-rowRule {
+  display: none;
+}
+
+/* Sticky display */
 
 .hiw-sidebar {
   display: none;
@@ -599,11 +607,22 @@
   background-size: 30px 30px, 30px 30px, auto;
 }
 
-@keyframes pulse {
-    0%,
-    100% {
-        opacity: 0.25;
-    }
+.hiw-visualTop,
+.hiw-visualBottom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  font: 400 9px / 1.5 var(--mono);
+  letter-spacing: 0.1em;
+  color: #777;
+}
+
+.hiw-statusDot {
+  width: 5px;
+  height: 5px;
+  background: var(--orange);
+}
 
 .hiw-orbit {
   position: relative;
@@ -624,319 +643,20 @@
   transform-origin: 160px 160px;
 }
 
-
-/* =========================================================
-   PRELOADER PAGE REVEAL
-
-.preloader-orange-wipe {
-    position: fixed;
-    inset: 0;
-    z-index: 10000;
-
-    background: #fe5119;
-    pointer-events: none;
-
-    animation: preloader-orange-expand 750ms
-        cubic-bezier(0.76, 0, 0.24, 1) both;
+.hiw-orbitCenter {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  animation: hiw-icon-enter 450ms ease-out both;
 }
 
-.preloader-page {
-    background: #080808;
+.hiw-mainIcon {
+  color: var(--orange);
 }
-
-.preloader-page--revealing {
-    position: relative;
-    z-index: 10001;
-
-    height: 100vh;
-    height: 100dvh;
-
-    overflow: hidden;
-    pointer-events: none;
-
-    animation: preloader-page-expand 750ms
-        cubic-bezier(0.76, 0, 0.24, 1) both;
-}
-
-.preloader-page--done {
-    clip-path: none;
-}
-
-@keyframes preloader-orange-expand {
-    from {
-        clip-path: circle(8px at 50% 100%);
-    }
-
-    to {
-        clip-path: circle(150% at 50% 100%);
-    }
-}
-
-@keyframes preloader-page-expand {
-    from {
-        clip-path: circle(0% at 50% 100%);
-    }
-
-    to {
-        clip-path: circle(150% at 50% 100%);
-    }
-}
-
-
-/* =========================================================
-   MODERN XTREME UI
-   Glass + 3D + Spotlight + Moving Border
-
-/* Custom animated angle property */
-@property --border-angle {
-    syntax: "<angle>";
-    initial-value: 0deg;
-    inherits: false;
-}
-
-
-/* =========================================================
-   INTERACTIVE GLASS CARD
-
-.interactive-card {
-    position: relative;
-
-    border-radius: 8px;
-    border: 1px solid rgba(255, 255, 255, 0.08);
-
-    background: rgba(255, 255, 255, 0.025);
-
-    backdrop-filter: blur(18px);
-    -webkit-backdrop-filter: blur(18px);
-
-    box-shadow:
-        0 10px 35px rgba(0, 0, 0, 0.25),
-        inset 0 1px 0 rgba(255, 255, 255, 0.025);
-
-    transition:
-        border-color 400ms ease,
-        box-shadow 400ms ease,
-        background 400ms ease;
-
-    will-change: transform;
-
-    transform-style: preserve-3d;
-}
-
-.interactive-card:hover {
-    border-color: rgba(254, 81, 25, 0.28);
-
-    background: rgba(255, 255, 255, 0.035);
-
-    box-shadow:
-        0 20px 60px rgba(254, 81, 25, 0.07),
-        0 10px 30px rgba(0, 0, 0, 0.3),
-        inset 0 1px 0 rgba(255, 255, 255, 0.035);
-}
-
-
-/* =========================================================
-   MOVING BORDER
-
-.animated-border {
-    position: absolute;
-    inset: -1px;
-
-    border-radius: inherit;
-
-    background: conic-gradient(
-        from var(--border-angle),
-        transparent 0deg,
-        transparent 285deg,
-        rgba(254, 81, 25, 0.8) 320deg,
-        rgba(254, 81, 25, 0.15) 345deg,
-        transparent 360deg
-    );
-
-    animation: rotateBorder 4s linear infinite;
-
-    pointer-events: none;
-
-    mask:
-        linear-gradient(#000 0 0) content-box,
-        linear-gradient(#000 0 0);
-
-    mask-composite: exclude;
-
-    -webkit-mask:
-        linear-gradient(#000 0 0) content-box,
-        linear-gradient(#000 0 0);
-
-    -webkit-mask-composite: xor;
-
-    padding: 1px;
-}
-
-@keyframes rotateBorder {
-    from {
-        --border-angle: 0deg;
-    }
-
-    to {
-        --border-angle: 360deg;
-    }
-}
-
-
-/* =========================================================
-   CARD NUMBER
-
-.card-number {
-    transition:
-        color 300ms ease,
-        text-shadow 300ms ease,
-        transform 300ms ease;
-}
-
-.interactive-card:hover .card-number {
-    color: #fe5119;
-
-    text-shadow:
-        0 0 15px rgba(254, 81, 25, 0.35);
-
-    transform: translateY(-2px);
-}
-
-
-/* =========================================================
-   CARD ICON
-
-.card-icon {
-    transition:
-        transform 450ms cubic-bezier(0.22, 1, 0.36, 1),
-        box-shadow 450ms ease,
-        border-color 450ms ease,
-        background 450ms ease;
-}
-
-.interactive-card:hover .card-icon {
-    transform:
-        translateZ(20px)
-        scale(1.12)
-        rotate(4deg);
-
-    border-color: rgba(254, 81, 25, 0.55);
-
-    background: rgba(254, 81, 25, 0.12);
-
-    box-shadow:
-        0 0 25px rgba(254, 81, 25, 0.18),
-        inset 0 0 15px rgba(254, 81, 25, 0.04);
-}
-
-
-/* =========================================================
-   CARD TITLE
-
-.card-title {
-    transition:
-        color 300ms ease,
-        transform 300ms ease;
-}
-
-.interactive-card:hover .card-title {
-    color: #fe5119;
-
-    transform: translateX(2px);
-}
-
-
-/* =========================================================
-   BOTTOM ACCENT
-
-.card-accent {
-    width: 18px;
-
-    transition:
-        width 400ms cubic-bezier(0.22, 1, 0.36, 1),
-        background 300ms ease;
-}
-
-.interactive-card:hover .card-accent {
-    width: 42px;
-    background: #fe5119;
-}
-
-
-/* =========================================================
-   INDUSTRY LOGO
-
-.industry-logo {
-    transition:
-        transform 350ms ease,
-        color 350ms ease,
-        letter-spacing 350ms ease;
-}
-
-.industry-logo:hover {
-    transform:
-        translateY(-3px)
-        scale(1.04);
-
-    color: rgba(254, 81, 25, 0.75);
-
-    letter-spacing: 0.22em;
-}
-
-
-/* =========================================================
-   EXTRA GLASS HIGHLIGHT
-
-.interactive-card::after {
-    content: "";
-
-    position: absolute;
-    inset: 0;
-
-    border-radius: inherit;
-
-    background:
-        linear-gradient(
-            135deg,
-            rgba(255, 255, 255, 0.055),
-            transparent 30%,
-            transparent 70%,
-            rgba(254, 81, 25, 0.025)
-        );
-
-    pointer-events: none;
-
-    opacity: 0.7;
-}
-
-
-/* =========================================================
-   MOBILE
-
-@media (max-width: 767px) {
-    .interactive-card {
-        backdrop-filter: blur(12px);
-        -webkit-backdrop-filter: blur(12px);
-    }
-
-    .animated-border {
-        animation-duration: 5s;
-    }
-}
-
-
-/* =========================================================
-   REDUCED MOTION
-
-@media (prefers-reduced-motion: reduce) {
-    .rotor,
-    .arm i,
-    .dots,
-    .preloader-orange-wipe,
-    .preloader-page--revealing,
-    .animated-border {
-        animation: none;
-    }
 
 .hiw-orbitNumber {
   font: 600 24px / 1 var(--mono);
@@ -952,14 +672,13 @@
   color: var(--muted);
 }
 
-    .interactive-card,
-    .card-icon,
-    .card-title,
-    .card-number,
-    .card-accent,
-    .industry-logo {
-        transition: none;
-    }
+/* Typed terminal */
+
+.hiw-terminal {
+  padding: 16px;
+  border: 1px solid rgba(254, 81, 25, 0.17);
+  background: rgba(8, 8, 8, 0.94);
+}
 
 .hiw-terminalHeader {
   display: flex;
@@ -1024,8 +743,6 @@
   color: var(--orange);
 }
 
-/* Corner accents */
-
 .hiw-cornerTop,
 .hiw-cornerBottom {
   position: absolute;
@@ -1047,8 +764,6 @@
   border-right: 1px solid var(--orange);
   border-bottom: 1px solid var(--orange);
 }
-
-/* Section footer */
 
 .hiw-footer {
   display: flex;
@@ -1085,14 +800,164 @@
     opacity: 0;
     transform: translateY(8px) scale(0.96);
   }
-
   to {
     opacity: 1;
     transform: translateY(0) scale(1);
   }
 }
 
-/* HOW IT WORKS — TABLET */
+/* =========================================================
+   INTERACTIVE GLASS CARDS
+   ========================================================= */
+
+@property --border-angle {
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: false;
+}
+
+.interactive-card {
+  position: relative;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.025);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  box-shadow:
+    0 10px 35px rgba(0, 0, 0, 0.25),
+    inset 0 1px 0 rgba(255, 255, 255, 0.025);
+  transition:
+    border-color 400ms ease,
+    box-shadow 400ms ease,
+    background 400ms ease;
+  will-change: transform;
+  transform-style: preserve-3d;
+}
+
+.interactive-card:hover {
+  border-color: rgba(254, 81, 25, 0.28);
+  background: rgba(255, 255, 255, 0.035);
+  box-shadow:
+    0 20px 60px rgba(254, 81, 25, 0.07),
+    0 10px 30px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.035);
+}
+
+.animated-border {
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  padding: 1px;
+  pointer-events: none;
+  background: conic-gradient(
+    from var(--border-angle),
+    transparent 0deg,
+    transparent 285deg,
+    rgba(254, 81, 25, 0.8) 320deg,
+    rgba(254, 81, 25, 0.15) 345deg,
+    transparent 360deg
+  );
+  animation: rotateBorder 4s linear infinite;
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  mask-composite: exclude;
+}
+
+@keyframes rotateBorder {
+  from { --border-angle: 0deg; }
+  to { --border-angle: 360deg; }
+}
+
+.card-number {
+  transition:
+    color 300ms ease,
+    text-shadow 300ms ease,
+    transform 300ms ease;
+}
+
+.interactive-card:hover .card-number {
+  color: #fe5119;
+  text-shadow: 0 0 15px rgba(254, 81, 25, 0.35);
+  transform: translateY(-2px);
+}
+
+.card-icon {
+  transition:
+    transform 450ms cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 450ms ease,
+    border-color 450ms ease,
+    background 450ms ease;
+}
+
+.interactive-card:hover .card-icon {
+  transform: translateZ(20px) scale(1.12) rotate(4deg);
+  border-color: rgba(254, 81, 25, 0.55);
+  background: rgba(254, 81, 25, 0.12);
+  box-shadow:
+    0 0 25px rgba(254, 81, 25, 0.18),
+    inset 0 0 15px rgba(254, 81, 25, 0.04);
+}
+
+.card-title {
+  transition:
+    color 300ms ease,
+    transform 300ms ease;
+}
+
+.interactive-card:hover .card-title {
+  color: #fe5119;
+  transform: translateX(2px);
+}
+
+.card-accent {
+  width: 18px;
+  transition:
+    width 400ms cubic-bezier(0.22, 1, 0.36, 1),
+    background 300ms ease;
+}
+
+.interactive-card:hover .card-accent {
+  width: 42px;
+  background: #fe5119;
+}
+
+.industry-logo {
+  transition:
+    transform 350ms ease,
+    color 350ms ease,
+    letter-spacing 350ms ease;
+}
+
+.industry-logo:hover {
+  transform: translateY(-3px) scale(1.04);
+  color: rgba(254, 81, 25, 0.75);
+  letter-spacing: 0.22em;
+}
+
+.interactive-card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  opacity: 0.7;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.055),
+    transparent 30%,
+    transparent 70%,
+    rgba(254, 81, 25, 0.025)
+  );
+}
+
+/* =========================================================
+   HOW IT WORKS — RESPONSIVE
+   ========================================================= */
 
 @media (min-width: 640px) {
   .hiw-section {
@@ -1125,17 +990,13 @@
   }
 }
 
-/* HOW IT WORKS — DESKTOP */
-
 @media (min-width: 1024px) {
   .hiw-section {
     padding: 72px 6% 36px;
   }
 
   .hiw-layout {
-    grid-template-columns:
-      minmax(0, 1fr)
-      minmax(280px, 350px);
+    grid-template-columns: minmax(0, 1fr) minmax(280px, 350px);
     gap: clamp(40px, 5vw, 100px);
     margin-top: 32px;
   }
@@ -1168,15 +1029,6 @@
 
   .hiw-footer {
     margin-top: 40px;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .hiw-section *,
-  .hiw-section *::before,
-  .hiw-section *::after {
-    animation: none !important;
-    transition: none !important;
   }
 }
 
@@ -1277,9 +1129,30 @@
     height: auto;
     max-width: 100%;
   }
+
+  .interactive-card {
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+  }
+
+  .animated-border {
+    animation-duration: 5s;
+  }
 }
 
-/* SMALL PHONES */
+@media (max-width: 480px) {
+  .overlay .brand {
+    top: 24px;
+    left: 20px;
+  }
+
+  .overlay .footer {
+    left: 20px;
+    right: 20px;
+    font-size: 9px;
+    letter-spacing: 0;
+  }
+}
 
 @media (max-width: 360px) {
   .overlay .brand {
@@ -1308,8 +1181,6 @@
   }
 }
 
-/* SHORT PHONE SCREENS / LANDSCAPE */
-
 @media (max-width: 767px) and (max-height: 480px) {
   .overlay .brand {
     top: max(12px, env(safe-area-inset-top));
@@ -1333,5 +1204,45 @@
     bottom: max(12px, env(safe-area-inset-bottom));
     font-size: 8px;
     gap: 6px;
+  }
+}
+
+/* =========================================================
+   REDUCED MOTION
+   ========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+  .overlay .rotor,
+  .overlay .arm i,
+  .overlay .dots,
+  .preloader-orange-wipe,
+  .preloader-page--revealing,
+  .animated-border {
+    animation: none;
+  }
+
+  .overlay {
+    transition-duration: 100ms;
+  }
+
+  .intro-orange,
+  .intro-content--revealing {
+    animation: intro-simple-fade 100ms linear both;
+  }
+
+  .hiw-section *,
+  .hiw-section *::before,
+  .hiw-section *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+
+  .interactive-card,
+  .card-icon,
+  .card-title,
+  .card-number,
+  .card-accent,
+  .industry-logo {
+    transition: none;
   }
 }
