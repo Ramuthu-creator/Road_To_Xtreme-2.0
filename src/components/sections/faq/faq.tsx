@@ -2,7 +2,6 @@
 
 import { useEffect, useId, useRef, useState } from "react";
 import { gsap } from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { animate } from "animejs";
 import Typed from "typed.js";
 
@@ -57,219 +56,363 @@ export default function FAQ() {
 
     if (!section || !typedElement) return;
 
-    gsap.registerPlugin(ScrollTrigger);
+    const motionQuery = window.matchMedia(
+      "(prefers-reduced-motion: reduce)",
+    );
 
-    const media = gsap.matchMedia();
+    let dispose = () => {};
 
-    media.add(
-      {
-        regular: "(prefers-reduced-motion: no-preference)",
-        reduced: "(prefers-reduced-motion: reduce)",
-      },
-      (context) => {
-        if (context.conditions?.reduced) {
-          typedElement.innerHTML = description;
+    const setup = () => {
+      dispose();
+      dispose = () => {};
 
-          return () => {
-            typedElement.textContent = "";
-          };
-        }
+      if (motionQuery.matches) {
+        typedElement.innerHTML = description;
 
-        let typed: Typed | undefined;
+        dispose = () => {
+          typedElement.textContent = "";
+        };
 
-        const top = section.querySelector(".faq-top");
-        const label = section.querySelector(".faq-label");
-        const heading = section.querySelectorAll("[data-faq-heading]");
-        const graphic = section.querySelector(".faq-code-graphic");
-        const bottom = section.querySelector(".faq-bottom-text");
-        const items = section.querySelectorAll(".faq-item");
-        const contact = section.querySelector(".faq-contact");
+        return;
+      }
 
-        const outerRing = section.querySelector("[data-faq-ring-outer]");
-        const innerRing = section.querySelector("[data-faq-ring-inner]");
+      const top = section.querySelector<HTMLElement>(".faq-top");
+      const left = section.querySelector<HTMLElement>(".faq-left");
+      const label = section.querySelector(".faq-label");
+      const heading = section.querySelectorAll("[data-faq-heading]");
+      const graphic = section.querySelector<HTMLElement>(
+        ".faq-code-graphic",
+      );
+      const bottom = section.querySelector(".faq-bottom-text");
+      const descriptionBox = section.querySelector<HTMLElement>(
+        ".faq-description",
+      );
+      const items = Array.from(
+        section.querySelectorAll<HTMLElement>(".faq-item"),
+      );
+      const contact = section.querySelector<HTMLElement>(".faq-contact");
 
-        const ringAnimations: ReturnType<typeof animate>[] = [];
+      const outerRing = section.querySelector<SVGGElement>(
+        "[data-faq-ring-outer]",
+      );
+      const innerRing = section.querySelector<SVGGElement>(
+        "[data-faq-ring-inner]",
+      );
 
-        if (outerRing) {
-          ringAnimations.push(
-            animate(outerRing, {
-              rotate: [0, 360],
-              duration: 24000,
-              ease: "linear",
-              loop: true,
-              autoplay: false,
-            }),
-          );
-        }
+      let typed: Typed | null = null;
+      let graphicVisible = false;
+      let disposed = false;
+      let ready = false;
 
-        if (innerRing) {
-          ringAnimations.push(
-            animate(innerRing, {
-              rotate: [0, -360],
-              duration: 17000,
-              ease: "linear",
-              loop: true,
-              autoplay: false,
-            }),
-          );
-        }
+      const visibleElements = new Set<Element>();
+      const reveals = new Map<Element, gsap.core.Timeline>();
+      const rings: ReturnType<typeof animate>[] = [];
 
-        const observer = new IntersectionObserver(
-          ([entry]) => {
-            if (!entry) return;
+      const clearTyping = () => {
+        typed?.destroy();
+        typed = null;
+        typedElement.textContent = "";
+      };
 
-            ringAnimations.forEach((animation) => {
-              if (entry.isIntersecting) {
-                animation.play();
-              } else {
-                animation.pause();
-              }
-            });
-          },
-          { threshold: 0.05 },
-        );
+      const startTyping = () => {
+        clearTyping();
 
-        if (graphic) observer.observe(graphic);
-
-        const reveal = gsap.timeline({
-          scrollTrigger: {
-            trigger: section,
-            start: "top 82%",
-            once: true,
-          },
-          onStart: () => {
-            if (typed) return;
-
-            typed = new Typed(typedElement, {
-              strings: [description],
-              typeSpeed: 28,
-              startDelay: 650,
-              showCursor: true,
-              cursorChar: "_",
-              loop: false,
-              contentType: "html",
-            });
-          },
+        typed = new Typed(typedElement, {
+          strings: [description],
+          typeSpeed: 28,
+          startDelay: 250,
+          showCursor: true,
+          cursorChar: "_",
+          loop: false,
+          contentType: "html",
         });
+      };
 
-        reveal
-          .fromTo(
+      // All GSAP animations are paused until their targets enter view.
+      const context = gsap.context(() => {
+        if (top) {
+          reveals.set(
             top,
-            { autoAlpha: 0, y: 15 },
-            {
-              autoAlpha: 1,
-              y: 0,
-              duration: 0.7,
-              ease: "power3.out",
-            },
-            0,
-          )
-          .fromTo(
-            label,
-            { autoAlpha: 0, x: -20 },
-            {
-              autoAlpha: 1,
-              x: 0,
-              duration: 0.7,
-              ease: "power3.out",
-            },
-            0.1,
-          )
-          .fromTo(
+            gsap
+              .timeline({ paused: true })
+              .fromTo(
+                top,
+                { opacity: 0, y: 15 },
+                {
+                  opacity: 1,
+                  y: 0,
+                  duration: 0.7,
+                  ease: "power3.out",
+                },
+              ),
+          );
+        }
+
+        if (left) {
+          const reveal = gsap.timeline({ paused: true });
+
+          if (label) {
+            reveal.fromTo(
+              label,
+              { opacity: 0, x: -20 },
+              {
+                opacity: 1,
+                x: 0,
+                duration: 0.7,
+                ease: "power3.out",
+              },
+              0,
+            );
+          }
+
+          reveal.fromTo(
             heading,
-            { yPercent: 110, autoAlpha: 0 },
+            { yPercent: 110, opacity: 0 },
             {
               yPercent: 0,
-              autoAlpha: 1,
+              opacity: 1,
               duration: 1.1,
               stagger: 0.12,
               ease: "power4.out",
             },
-            0.2,
-          )
-          .fromTo(
-            graphic,
-            { autoAlpha: 0, scale: 0.85 },
-            {
-              autoAlpha: 1,
-              scale: 1,
-              duration: 1,
-              ease: "power3.out",
-            },
-            0.5,
-          )
-          .fromTo(
-            bottom,
-            { autoAlpha: 0, y: 10 },
-            {
-              autoAlpha: 1,
-              y: 0,
-              duration: 0.7,
-              ease: "power3.out",
-            },
-            0.7,
+            0.1,
           );
 
-        // Separate triggers also work when the columns stack on mobile.
-        items.forEach((item) => {
-          gsap.fromTo(
+          reveals.set(left, reveal);
+        }
+
+        if (graphic) {
+          reveals.set(
+            graphic,
+            gsap
+              .timeline({ paused: true })
+              .fromTo(
+                graphic,
+                { opacity: 0, scale: 0.85 },
+                {
+                  opacity: 1,
+                  scale: 1,
+                  duration: 1,
+                  ease: "power3.out",
+                },
+              ),
+          );
+        }
+
+        if (bottom) {
+          reveals.set(
+            bottom,
+            gsap
+              .timeline({ paused: true })
+              .fromTo(
+                bottom,
+                { opacity: 0, y: 10 },
+                {
+                  opacity: 1,
+                  y: 0,
+                  duration: 0.7,
+                  ease: "power3.out",
+                },
+              ),
+          );
+        }
+
+        items.forEach((item, index) => {
+          // Observe the row itself; animate its contents so the
+          // observer's target does not move during the reveal.
+          const contents = item.querySelectorAll(
+            ".faq-question-heading, .faq-answer",
+          );
+
+          reveals.set(
             item,
-            { autoAlpha: 0, y: 24 },
-            {
-              autoAlpha: 1,
-              y: 0,
-              duration: 0.75,
-              ease: "power3.out",
-              scrollTrigger: {
-                trigger: item,
-                start: "top 92%",
-                once: true,
-              },
-            },
+            gsap
+              .timeline({ paused: true })
+              .fromTo(
+                contents,
+                { opacity: 0, y: 22 },
+                {
+                  opacity: 1,
+                  y: 0,
+                  duration: 0.75,
+                  ease: "power3.out",
+                },
+                index * 0.06,
+              ),
           );
         });
 
-        gsap.fromTo(
-          contact,
-          { autoAlpha: 0, y: 12 },
-          {
-            autoAlpha: 1,
-            y: 0,
-            duration: 0.7,
-            ease: "power3.out",
-            scrollTrigger: {
-              trigger: contact,
-              start: "top 95%",
-              once: true,
-            },
-          },
+        if (contact) {
+          reveals.set(
+            contact,
+            gsap
+              .timeline({ paused: true })
+              .fromTo(
+                contact,
+                { opacity: 0, y: 12 },
+                {
+                  opacity: 1,
+                  y: 0,
+                  duration: 0.7,
+                  ease: "power3.out",
+                },
+              ),
+          );
+        }
+      }, section);
+
+      if (outerRing) {
+        rings.push(
+          animate(outerRing, {
+            rotate: [0, 360],
+            duration: 24000,
+            ease: "linear",
+            loop: true,
+            autoplay: false,
+          }),
+        );
+      }
+
+      if (innerRing) {
+        rings.push(
+          animate(innerRing, {
+            rotate: [0, -360],
+            duration: 17000,
+            ease: "linear",
+            loop: true,
+            autoplay: false,
+          }),
+        );
+      }
+
+      const updateRingPlayback = () => {
+        rings.forEach((animation) => {
+          if (ready && graphicVisible && !document.hidden) {
+            animation.play();
+          } else {
+            animation.pause();
+          }
+        });
+      };
+
+      const enter = (target: Element) => {
+        reveals.get(target)?.restart();
+
+        if (target === descriptionBox) {
+          startTyping();
+        }
+      };
+
+      const observer = new IntersectionObserver(
+        (entries) => {
+          if (disposed) return;
+
+          entries.forEach((entry) => {
+            const target = entry.target;
+
+            if (entry.isIntersecting) {
+              visibleElements.add(target);
+
+              if (ready) enter(target);
+            } else {
+              visibleElements.delete(target);
+
+              // Reset offscreen, ready for the next visit.
+              reveals.get(target)?.pause(0);
+
+              if (target === descriptionBox) {
+                clearTyping();
+              }
+            }
+
+            if (target === graphic) {
+              graphicVisible = entry.isIntersecting;
+            }
+          });
+
+          updateRingPlayback();
+        },
+        {
+          root: null,
+          threshold: 0,
+        },
+      );
+
+      reveals.forEach((_, target) => observer.observe(target));
+
+      if (descriptionBox) {
+        observer.observe(descriptionBox);
+      }
+
+      // Prevent animations finishing behind the existing preloader.
+      const intro = section.closest(".intro-content");
+
+      const checkReady = () => {
+        if (disposed) return;
+
+        const nextReady =
+          !intro || intro.classList.contains("intro-content--done");
+
+        if (nextReady === ready) return;
+
+        ready = nextReady;
+
+        if (ready) {
+          visibleElements.forEach(enter);
+        } else {
+          reveals.forEach((timeline) => timeline.pause(0));
+          clearTyping();
+        }
+
+        updateRingPlayback();
+      };
+
+      const introObserver = new MutationObserver(checkReady);
+
+      if (intro) {
+        introObserver.observe(intro, {
+          attributes: true,
+          attributeFilter: ["class"],
+        });
+      }
+
+      checkReady();
+
+      const handleVisibility = () => {
+        updateRingPlayback();
+
+        if (document.hidden) {
+          typed?.stop();
+        } else {
+          typed?.start();
+        }
+      };
+
+      document.addEventListener("visibilitychange", handleVisibility);
+
+      dispose = () => {
+        disposed = true;
+
+        observer.disconnect();
+        introObserver.disconnect();
+
+        document.removeEventListener(
+          "visibilitychange",
+          handleVisibility,
         );
 
-        return () => {
-          observer.disconnect();
-          ringAnimations.forEach((animation) => animation.revert());
-          typed?.destroy();
-          typedElement.textContent = "";
-        };
-      },
-      section,
-    );
-
-    // Keep scroll measurements accurate after an accordion opens.
-    const refreshAfterTransition = (event: TransitionEvent) => {
-      if (event.propertyName === "grid-template-rows") {
-        ScrollTrigger.refresh();
-      }
+        clearTyping();
+        rings.forEach((animation) => animation.revert());
+        context.revert();
+      };
     };
 
-    section.addEventListener("transitionend", refreshAfterTransition);
+    setup();
+    motionQuery.addEventListener("change", setup);
 
     return () => {
-      section.removeEventListener(
-        "transitionend",
-        refreshAfterTransition,
-      );
-      media.revert();
+      motionQuery.removeEventListener("change", setup);
+      dispose();
     };
   }, []);
 
@@ -321,7 +464,6 @@ export default function FAQ() {
             </p>
           </div>
 
-          {/* Animated code graphic */}
           <div className="faq-code-graphic" aria-hidden="true">
             <span className="faq-crosshair faq-crosshair-top" />
             <span className="faq-crosshair faq-crosshair-right" />
@@ -332,6 +474,7 @@ export default function FAQ() {
               viewBox="0 0 140 140"
               fill="none"
               className="faq-ring-svg"
+              focusable="false"
             >
               <g
                 data-faq-ring-outer
@@ -345,7 +488,6 @@ export default function FAQ() {
                   strokeWidth="1"
                   strokeDasharray="2 7"
                 />
-
                 <circle
                   cx="70"
                   cy="6"
@@ -438,7 +580,10 @@ export default function FAQ() {
             >
               IEEEXtreme.org
               <span aria-hidden="true"> ↗</span>
-              <span className="faq-sr-only"> (opens in a new tab)</span>
+              <span className="faq-sr-only">
+                {" "}
+                (opens in a new tab)
+              </span>
             </a>
           </p>
         </div>
