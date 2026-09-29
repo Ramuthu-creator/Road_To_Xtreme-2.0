@@ -6,6 +6,7 @@ import Guidence from "@/components/sections/guidance-resources/HowItWorks";
 import FAQ from "@/components/sections/faq/faq";
 import About from "@/components/sections/about/about";
 import Roadmap from "@/components/sections/roadmap/PathToXtreme";
+import ContactUs from "@/components/sections/contact-us/ContactUs";
 
 export default function Home() {
   return (
@@ -36,6 +37,10 @@ export default function Home() {
 
       <section className="relative w-full z-10 bg-[#0b0b0c]">
         <FAQ />
+      </section>
+
+      <section className="relative w-full z-10 bg-[#0b0b0c]">
+        <ContactUs />
       </section>
     </main>
   );
