@@ -282,15 +282,30 @@ export default function Footer() {
           </ul>
         </nav>
 
-        <p
-          data-footer-copyright
-          className="
-            m-0 text-center text-xs font-normal
-            tracking-wide text-zinc-400 sm:text-sm
-          "
+        <div 
+          data-footer-copyright 
+          className="flex flex-col items-center justify-center gap-2"
         >
-          © {currentYear} Road to Xtreme 2.0. All rights reserved.
-        </p>
+          <p
+            className="
+              m-0 text-center text-xs font-normal
+              tracking-wide text-zinc-400 sm:text-sm
+            "
+          >
+            © {currentYear} Road to Xtreme 2.0. All rights reserved.
+          </p>
+          <p
+            className="
+              m-0 flex items-center justify-center gap-1.5 text-center text-[11px] 
+              font-normal tracking-wide text-zinc-500 sm:text-xs
+            "
+          >
+            Designed & Developed by 
+            <span className="font-semibold text-zinc-300 transition-colors hover:text-[#fe5119]">
+              CINEC IEEE Web Development Team
+            </span>
+          </p>
+        </div>
       </div>
 
       <style jsx global>{`

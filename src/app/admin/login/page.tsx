@@ -4,22 +4,29 @@ import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Lock, ArrowRight } from 'lucide-react';
 import Image from 'next/image';
+import { signInWithEmailAndPassword } from 'firebase/auth';
+import { auth } from '@/lib/firebase/firebase';
 
 export default function AdminLogin() {
   const router = useRouter();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
+    setError(null);
     
-    // Simulate login delay
-    setTimeout(() => {
-      // Mock login success - redirect to registrations dashboard
+    try {
+      await signInWithEmailAndPassword(auth, email, password);
       router.push('/admin/registrations');
-    }, 800);
+    } catch (err: any) {
+      console.error("Login error:", err);
+      setError("Invalid email or password. Please try again.");
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -45,6 +52,11 @@ export default function AdminLogin() {
           </div>
 
           <form onSubmit={handleLogin} className="flex flex-col gap-5">
+            {error && (
+              <div className="bg-red-500/10 border border-red-500/20 text-red-500 text-xs font-medium rounded-lg p-3 text-center">
+                {error}
+              </div>
+            )}
             <div className="flex flex-col gap-1.5">
               <label className="text-xs font-semibold text-gray-400 uppercase tracking-wider ml-1">Email / Username</label>
               <input

@@ -30,8 +30,35 @@ const spaceGrotesk = Space_Grotesk({
 });
 
 export const metadata: Metadata = {
-  title: "Road To Xtreme 2.0",
-  description: "Outthink the challenge. Outcode the competition.",
+  title: "CINEC IEEE Road to Xtreme 2.0",
+  description: "Join CINEC IEEE Road to Xtreme 2.0, the ultimate algorithmic coding competition designed to prepare Sri Lankan undergraduates for IEEEXtreme.",
+  keywords: ["IEEE", "IEEEXtreme", "CINEC", "Coding Competition", "Road to Xtreme 2.0", "Sri Lanka", "Hackathon", "Algorithms"],
+  authors: [{ name: "CINEC IEEE Student Branch" }],
+  openGraph: {
+    title: "CINEC IEEE Road to Xtreme 2.0",
+    description: "Outthink the challenge. Outcode the competition. The premier algorithmic coding preparation event hosted by CINEC IEEE Student Branch.",
+    url: "https://road-to-xtreme-2.web.app", // Update this with your actual production URL later
+    siteName: "CINEC IEEE Road to Xtreme 2.0",
+    images: [
+      {
+        url: "/assets/logos/xtreme-logo.png", // Update this with your actual logo path in public/assets/
+        width: 1200,
+        height: 630,
+        alt: "CINEC IEEE Road to Xtreme 2.0 Logo",
+      },
+    ],
+    locale: "en_US",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "CINEC IEEE Road to Xtreme 2.0",
+    description: "Outthink the challenge. Outcode the competition.",
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
 };
 
 export default function RootLayout({
@@ -40,7 +67,7 @@ export default function RootLayout({
   children: ReactNode;
 }) {
   return (
-    <html lang="en" className={`${inter.variable} ${orbitron.variable} ${spaceGrotesk.variable}`}>
+    <html lang="en" className={`scroll-smooth ${inter.variable} ${orbitron.variable} ${spaceGrotesk.variable}`}>
     
         
       <body className={`${inter.className} bg-[#0a0a0b] text-white selection:bg-[#ff5500] selection:text-black antialiased overflow-x-hidden flex flex-col min-h-screen`}>

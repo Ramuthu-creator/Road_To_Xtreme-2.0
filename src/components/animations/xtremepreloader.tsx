@@ -6,6 +6,7 @@ import {
   type CSSProperties,
   type ReactNode,
 } from "react";
+import { usePathname } from "next/navigation";
 
 type Phase = "loading" | "orange" | "revealing" | "done";
 
@@ -14,9 +15,19 @@ type Props = {
 };
 
 export default function Preloader({ children }: Props) {
+  const pathname = usePathname();
+  const isHomePage = pathname === "/";
+  
+  // Start with "loading" to match SSR, then update on mount
   const [phase, setPhase] = useState<Phase>("loading");
 
   useEffect(() => {
+    // If not on home page, or if already played in this session, skip animation
+    if (!isHomePage || sessionStorage.getItem("xtreme_preloader_done")) {
+      setPhase("done");
+      return;
+    }
+
     const previousOverflow = document.body.style.overflow;
     const reducedMotion = window.matchMedia(
       "(prefers-reduced-motion: reduce)",
@@ -24,6 +35,7 @@ export default function Preloader({ children }: Props) {
 
     document.body.style.overflow = "hidden";
 
+    // Restored loading time to 6000ms so the animation can play fully
     const loadingTime = reducedMotion ? 0 : 6000;
     const orangeTime = reducedMotion ? 100 : 750;
     const revealTime = reducedMotion ? 100 : 850;
@@ -40,6 +52,7 @@ export default function Preloader({ children }: Props) {
       window.setTimeout(() => {
         setPhase("done");
         document.body.style.overflow = previousOverflow;
+        sessionStorage.setItem("xtreme_preloader_done", "true");
       }, loadingTime + orangeTime + revealTime),
     ];
 
@@ -47,7 +60,7 @@ export default function Preloader({ children }: Props) {
       timers.forEach(window.clearTimeout);
       document.body.style.overflow = previousOverflow;
     };
-  }, []);
+  }, [isHomePage]);
 
   const active = phase !== "done";
 
@@ -156,7 +169,7 @@ export default function Preloader({ children }: Props) {
 
       <div
         className={`intro-content intro-content--${phase}`}
-        inert={active}
+        inert={active ? ("true" as any) : undefined}
         aria-hidden={active}
       >
         {children}

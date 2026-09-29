@@ -14,9 +14,9 @@ export default function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const navLinks = [
-    { name: "Home", href: "/" },
-    { name: "Contact Us", href: "/contact" },
-    { name: "About", href: "/about" },
+    { name: "Home", href: "/#home" },
+    { name: "About", href: "/#about" },
+    { name: "Contact Us", href: "/#contact" },
   ];
 
   return (
@@ -80,6 +80,20 @@ export default function Navbar() {
             <Link
               key={link.href}
               href={link.href}
+              onClick={(e) => {
+                if (pathname === "/") {
+                  e.preventDefault();
+                  if (link.name === "Home") {
+                    window.scrollTo({ top: 0, behavior: "smooth" });
+                  } else {
+                    const targetId = link.href.split("#")[1];
+                    const element = document.getElementById(targetId);
+                    if (element) {
+                      element.scrollIntoView({ behavior: "smooth" });
+                    }
+                  }
+                }
+              }}
               aria-current={pathname === link.href ? "page" : undefined}
               className="
                 group relative whitespace-nowrap py-2
@@ -183,7 +197,21 @@ export default function Navbar() {
             key={link.href}
             href={link.href}
             aria-current={pathname === link.href ? "page" : undefined}
-            onClick={() => setMobileMenuOpen(false)}
+            onClick={(e) => {
+              if (pathname === "/") {
+                e.preventDefault();
+                if (link.name === "Home") {
+                  window.scrollTo({ top: 0, behavior: "smooth" });
+                } else {
+                  const targetId = link.href.split("#")[1];
+                  const element = document.getElementById(targetId);
+                  if (element) {
+                    element.scrollIntoView({ behavior: "smooth" });
+                  }
+                }
+              }
+              setMobileMenuOpen(false);
+            }}
             className="
               group flex min-h-11 items-center
               rounded-sm px-3 py-3

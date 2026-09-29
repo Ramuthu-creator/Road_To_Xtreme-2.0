@@ -10,13 +10,13 @@ import ContactUs from "@/components/sections/contact-us/ContactUs";
 
 export default function Home() {
   return (
-    <main className="flex flex-col w-full relative">
+    <main id="home" className="flex flex-col w-full relative">
       {/* The Hero stays fixed at the top while scrolling down */}
       <section className="sticky top-0 w-full min-h-screen z-0">
         <Hero />
       </section>
       
-      <section className="relative w-full z-10 bg-[#0b0b0c]">
+      <section id="about" className="relative w-full z-10 bg-[#0b0b0c]">
         <About />
       </section>
 
@@ -39,7 +39,7 @@ export default function Home() {
         <FAQ />
       </section>
 
-      <section className="relative w-full z-10 bg-[#0b0b0c]">
+      <section id="contact" className="relative w-full z-10 bg-[#0b0b0c]">
         <ContactUs />
       </section>
     </main>
