@@ -5,6 +5,7 @@ import { Fragment, useEffect, useRef, useState } from "react";
 import { gsap } from "gsap";
 import { animate } from "animejs";
 import Typed from "typed.js";
+
 import Starfield from "@/components/animations/Starfield";
 
 const TARGET = new Date("2026-10-31T00:00:00+05:30").getTime();
@@ -36,18 +37,9 @@ export default function Hero() {
 
       setTimeLeft({
         days: String(Math.floor(remaining / 86400000)).padStart(2, "0"),
-        hours: String(Math.floor(remaining / 3600000) % 24).padStart(
-          2,
-          "0",
-        ),
-        minutes: String(Math.floor(remaining / 60000) % 60).padStart(
-          2,
-          "0",
-        ),
-        seconds: String(Math.floor(remaining / 1000) % 60).padStart(
-          2,
-          "0",
-        ),
+        hours: String(Math.floor(remaining / 3600000) % 24).padStart(2, "0"),
+        minutes: String(Math.floor(remaining / 60000) % 60).padStart(2, "0"),
+        seconds: String(Math.floor(remaining / 1000) % 60).padStart(2, "0"),
       });
 
       return remaining;
@@ -62,7 +54,7 @@ export default function Hero() {
     return () => window.clearInterval(timer);
   }, []);
 
-  // Anime.js countdown effect
+  // Countdown number animations
   useEffect(() => {
     const root = heroRef.current;
     if (!root) return;
@@ -102,7 +94,7 @@ export default function Hero() {
     };
   }, [timeLeft]);
 
-  // Fit XTREME across the heading width with a shorter desktop font.
+  // Fit XTREME to its existing container.
   useEffect(() => {
     const root = heroRef.current;
     if (!root) return;
@@ -134,7 +126,7 @@ export default function Hero() {
     };
   }, []);
 
-  // Reveal animations, parallax, floating arrow, and typing.
+  // Existing hero reveal, parallax and typing.
   useEffect(() => {
     const root = heroRef.current;
     const text = typedRef.current;
@@ -156,21 +148,13 @@ export default function Hero() {
         const isDesktop = Boolean(context.conditions?.desktop);
 
         const title = root.querySelector<HTMLElement>("[data-title]")!;
-        const character = root.querySelector<HTMLElement>(
-          "[data-character]",
-        )!;
+        const character = root.querySelector<HTMLElement>("[data-character]")!;
         const image = root.querySelector<HTMLElement>("[data-image]")!;
         const arrow = root.querySelector<SVGSVGElement>("[data-arrow]")!;
-        const countdown = root.querySelector<HTMLElement>(
-          "[data-countdown]",
-        )!;
-        const baseline = root.querySelector<HTMLElement>(
-          "[data-baseline]",
-        )!;
+        const countdown = root.querySelector<HTMLElement>("[data-countdown]")!;
+        const baseline = root.querySelector<HTMLElement>("[data-baseline]")!;
         const roadTo = root.querySelector<HTMLElement>("[data-road-to]")!;
-        const xtreme = root.querySelector<HTMLElement>(
-          "[data-xtreme-word]",
-        )!;
+        const xtreme = root.querySelector<HTMLElement>("[data-xtreme-word]")!;
 
         const message =
           "Outthink the challenge.<br />Outcode the competition.";
@@ -466,8 +450,10 @@ export default function Hero() {
       >
         <Starfield />
 
+        {/* <HeroReactors /> */}
+
         {/* Orange aura */}
-        <div
+        {/* <div
           aria-hidden="true"
           className="
             pointer-events-none absolute left-1/2 top-1/2
@@ -478,7 +464,7 @@ export default function Hero() {
             background:
               "radial-gradient(circle, rgba(254,81,25,0.12) 0%, rgba(0,0,0,0) 70%)",
           }}
-        />
+        /> */}
 
         {/* Countdown */}
         <div
@@ -539,7 +525,6 @@ export default function Hero() {
                 >
                   {timeLeft[unit.key]}
                 </span>
-                
               </Fragment>
             ))}
           </div>
@@ -567,7 +552,6 @@ export default function Hero() {
               </span>
             </span>
 
-            {/* Shorter XTREME text, fitted to the same width */}
             <span
               data-xtreme-mask
               className="block w-full overflow-hidden pb-1"
@@ -603,10 +587,7 @@ export default function Hero() {
             lg:bottom-0 lg:left-[12%] lg:h-full lg:w-[76%]
           "
         >
-          <div
-            data-image
-            className="relative h-full w-full origin-bottom"
-          >
+          <div data-image className="relative h-full w-full origin-bottom">
             <Image
               src="/assets/images/bg.png"
               alt="Character wearing an orange VR headset"
@@ -619,7 +600,7 @@ export default function Hero() {
           </div>
         </div>
 
-        {/* Mono subcontent */}
+        {/* Subcontent */}
         <div
           className="
             absolute bottom-[10%] left-[6%] z-30 max-w-[88%]
@@ -715,3 +696,204 @@ export default function Hero() {
     </section>
   );
 }
+
+// Decorative cyberpunk emblems.
+// function HeroReactors() {
+//   const layerRef = useRef<HTMLDivElement>(null);
+
+//   useEffect(() => {
+//     const layer = layerRef.current;
+//     const hero = layer?.closest("section");
+
+//     if (!layer || !hero) return;
+
+//     const media = gsap.matchMedia();
+
+//     media.add(
+//       {
+//         all: "all",
+//         reduced: "(prefers-reduced-motion: reduce)",
+//         fine: "(hover: hover) and (pointer: fine)",
+//       },
+//       (context) => {
+//         const reduced = Boolean(context.conditions?.reduced);
+//         const fine = Boolean(context.conditions?.fine);
+
+//         const shells = Array.from(
+//           layer.querySelectorAll<HTMLElement>(".rtx-reactor-shell"),
+//         );
+
+//         const movers = Array.from(
+//           layer.querySelectorAll<HTMLElement>(".rtx-reactor-parallax"),
+//         );
+
+//         const intro = hero.closest(".intro-content");
+
+//         let visible = false;
+//         let started = false;
+//         let ready =
+//           !intro || intro.classList.contains("intro-content--done");
+
+//         const entrance = gsap.timeline({ paused: true }).fromTo(
+//           shells,
+//           {
+//             opacity: 0,
+//             scale: 0.82,
+//           },
+//           {
+//             opacity: 1,
+//             scale: 1,
+//             duration: reduced ? 0 : 1.2,
+//             stagger: reduced ? 0 : 0.18,
+//             ease: "power3.out",
+//           },
+//         );
+
+//         const setters =
+//           reduced || !fine
+//             ? []
+//             : movers.map((element) => ({
+//                 x: gsap.quickTo(element, "x", {
+//                   duration: 0.85,
+//                   ease: "power3.out",
+//                 }),
+//                 y: gsap.quickTo(element, "y", {
+//                   duration: 0.85,
+//                   ease: "power3.out",
+//                 }),
+//               }));
+
+//         const update = () => {
+//           ready =
+//             !intro || intro.classList.contains("intro-content--done");
+
+//           const running = ready && visible && !document.hidden;
+
+//           layer.dataset.running = String(running && !reduced);
+
+//           if (running) {
+//             started = true;
+//             entrance.play();
+//           } else {
+//             entrance.pause();
+//           }
+//         };
+
+//         const observer = new IntersectionObserver(
+//           ([entry]) => {
+//             visible = Boolean(entry?.isIntersecting);
+//             update();
+//           },
+//           { threshold: 0 },
+//         );
+
+//         observer.observe(hero);
+
+//         const introObserver = new MutationObserver(update);
+
+//         if (intro) {
+//           introObserver.observe(intro, {
+//             attributes: true,
+//             attributeFilter: ["class"],
+//           });
+//         }
+
+//         const move = (event: PointerEvent) => {
+//           if (
+//             !started ||
+//             !ready ||
+//             !visible ||
+//             event.pointerType !== "mouse"
+//           ) {
+//             return;
+//           }
+
+//           const rect = hero.getBoundingClientRect();
+//           if (!rect.width || !rect.height) return;
+
+//           const x = (event.clientX - rect.left) / rect.width - 0.5;
+//           const y = (event.clientY - rect.top) / rect.height - 0.5;
+
+//           setters.forEach((setter, index) => {
+//             const direction = index === 0 ? 1 : -1;
+
+//             setter.x(x * 18 * direction);
+//             setter.y(y * 12 * direction);
+//           });
+//         };
+
+//         const reset = () => {
+//           setters.forEach((setter) => {
+//             setter.x(0);
+//             setter.y(0);
+//           });
+//         };
+
+//         hero.addEventListener("pointermove", move, { passive: true });
+//         hero.addEventListener("pointerleave", reset);
+//         document.addEventListener("visibilitychange", update);
+
+//         update();
+
+//         return () => {
+//           observer.disconnect();
+//           introObserver.disconnect();
+
+//           hero.removeEventListener("pointermove", move);
+//           hero.removeEventListener("pointerleave", reset);
+
+//           document.removeEventListener("visibilitychange", update);
+
+//           delete layer.dataset.running;
+//         };
+//       },
+//       layer,
+//     );
+
+//     return () => media.revert();
+//   }, []);
+
+//   return (
+//     <div
+//       ref={layerRef}
+//       className="rtx-reactor-layer"
+//       aria-hidden="true"
+//     >
+//       {[
+//         { side: "left", label: "RX–02" },
+//         { side: "right", label: "CORE / X" },
+//       ].map(({ side, label }) => (
+//         <div
+//           key={side}
+//           className={`rtx-reactor rtx-reactor--${side}`}
+//         >
+//           <div className="rtx-reactor-shell">
+//             <div className="rtx-reactor-parallax">
+//               <div className="rtx-reactor-float">
+//                 <div className="rtx-reactor-brackets" />
+//                 <div className="rtx-reactor-ticks" />
+//                 <div className="rtx-reactor-arc" />
+
+//                 <div className="rtx-reactor-blades">
+//                   <b />
+//                   <b />
+//                   <b />
+//                   <b />
+//                 </div>
+
+//                 <div className="rtx-reactor-hub">
+//                   <i />
+//                 </div>
+
+//                 <div className="rtx-reactor-scan" />
+
+//                 <span className="rtx-reactor-tag">{label}</span>
+//                 <span className="rtx-reactor-trace" />
+//               </div>
+//             </div>
+//           </div>
+//         </div>
+//       ))}
+//     </div>
+//   );
+// }
