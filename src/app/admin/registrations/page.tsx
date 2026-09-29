@@ -2,8 +2,8 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { Database, LogOut, Download, CheckCircle2, Users, Calendar } from "lucide-react";
-import { collection, getDocs, query, orderBy, Timestamp } from "firebase/firestore";
+import { Database, LogOut, Download, CheckCircle2, Users, Calendar, Settings } from "lucide-react";
+import { collection, getDocs, query, orderBy, Timestamp, doc, getDoc, setDoc } from "firebase/firestore";
 import { onAuthStateChanged, signOut } from "firebase/auth";
 import { db, auth } from "@/lib/firebase/firebase";
 
@@ -38,10 +38,16 @@ interface PreXtremeRegistrationData {
 
 export default function DashboardPage() {
   const router = useRouter();
-  const [activeTab, setActiveTab] = useState<"session" | "prextreme">("session");
+  const [activeTab, setActiveTab] = useState<"session" | "prextreme" | "settings">("session");
   
   const [sessionData, setSessionData] = useState<SessionRegistrationData[]>([]);
   const [prextremeData, setPrextremeData] = useState<PreXtremeRegistrationData[]>([]);
+  
+  // Settings state
+  const [isRegistrationOpen, setIsRegistrationOpen] = useState(true);
+  const [currentSessionName, setCurrentSessionName] = useState("Session 01");
+  const [isSavingSettings, setIsSavingSettings] = useState(false);
+  const [settingsMessage, setSettingsMessage] = useState<{type: "success" | "error", text: string} | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isAuthChecking, setIsAuthChecking] = useState(true);
 
@@ -66,12 +72,38 @@ export default function DashboardPage() {
 
         const prextremeSnap = await getDocs(query(collection(db, "prextreme_registrations"), orderBy("createdAt", "desc")));
         setPrextremeData(prextremeSnap.docs.map(doc => ({ id: doc.id, ...doc.data() } as PreXtremeRegistrationData)));
+
+        // Fetch Settings
+        const settingsSnap = await getDoc(doc(db, "settings", "general"));
+        if (settingsSnap.exists()) {
+          const data = settingsSnap.data();
+          if (data.isRegistrationOpen !== undefined) setIsRegistrationOpen(data.isRegistrationOpen);
+          if (data.currentSession) setCurrentSessionName(data.currentSession);
+        }
       } catch (error) {
         console.error("Error fetching data:", error);
       } finally {
         setIsLoading(false);
       }
     }
+
+  async function saveSettings() {
+    setIsSavingSettings(true);
+    setSettingsMessage(null);
+    try {
+      await setDoc(doc(db, "settings", "general"), {
+        isRegistrationOpen,
+        currentSession: currentSessionName,
+        updatedAt: new Date()
+      }, { merge: true });
+      setSettingsMessage({ type: "success", text: "Settings saved successfully!" });
+      setTimeout(() => setSettingsMessage(null), 3000);
+    } catch (error: any) {
+      setSettingsMessage({ type: "error", text: "Error saving settings: " + error.message });
+    } finally {
+      setIsSavingSettings(false);
+    }
+  }
 
   function downloadExcel() {
     const isSession = activeTab === "session";
@@ -207,9 +239,21 @@ export default function DashboardPage() {
             <Users size={18} />
             PreXtreme Registration
           </button>
+          
+          <button
+            onClick={() => setActiveTab("settings")}
+            className={`flex items-center gap-2 px-6 py-3 rounded-xl text-sm font-bold transition-all ${
+              activeTab === "settings"
+                ? "bg-[#fe5119] text-white shadow-[0_0_20px_rgba(254,81,25,0.4)]"
+                : "bg-white/[0.02] text-gray-400 border border-white/5 hover:bg-white/[0.05]"
+            }`}
+          >
+            <Settings size={18} />
+            Site Settings
+          </button>
         </div>
 
-        {/* Content Section */}
+        {activeTab !== "settings" ? (
         <section className="flex flex-col gap-6">
           
           {/* Table Header Controls */}
@@ -349,8 +393,72 @@ export default function DashboardPage() {
               </span>
             </div>
           </div>
-
         </section>
+        ) : (
+          <section className="flex flex-col gap-6 max-w-2xl">
+            <div className="flex items-center gap-3 mb-4">
+              <h2 className="text-xl font-bold text-white">Global Settings</h2>
+            </div>
+            
+            <div className="w-full p-8 rounded-3xl border border-white/5 bg-white/[0.02] backdrop-blur-xl shadow-2xl flex flex-col gap-6">
+              {settingsMessage && (
+                <div className={`p-4 rounded-md text-sm font-bold ${settingsMessage.type === 'success' ? 'bg-green-500/10 text-green-500' : 'bg-red-500/10 text-red-500'}`}>
+                  {settingsMessage.text}
+                </div>
+              )}
+              
+              <div className="flex flex-col gap-2">
+                <label className="text-sm font-semibold text-gray-300">Session Registration Status</label>
+                <div className="flex items-center gap-4">
+                  <button 
+                    onClick={() => setIsRegistrationOpen(true)}
+                    className={`flex-1 py-3 rounded-lg font-bold transition-all ${isRegistrationOpen ? 'bg-green-500/20 text-green-500 border border-green-500/30' : 'bg-white/5 text-gray-500 hover:bg-white/10'}`}
+                  >
+                    OPEN
+                  </button>
+                  <button 
+                    onClick={() => setIsRegistrationOpen(false)}
+                    className={`flex-1 py-3 rounded-lg font-bold transition-all ${!isRegistrationOpen ? 'bg-red-500/20 text-red-500 border border-red-500/30' : 'bg-white/5 text-gray-500 hover:bg-white/10'}`}
+                  >
+                    CLOSED
+                  </button>
+                </div>
+                <p className="text-xs text-gray-500 mt-1">When closed, the registration form is hidden and a closed message is shown.</p>
+              </div>
+
+              <div className="flex flex-col gap-2 mt-4">
+                <label className="text-sm font-semibold text-gray-300">Current Active Session Name</label>
+                <div className="relative">
+                  <select 
+                    value={currentSessionName}
+                    onChange={(e) => setCurrentSessionName(e.target.value)}
+                    className="w-full appearance-none bg-black/50 border border-white/10 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-[#fe5119] cursor-pointer"
+                  >
+                    <option value="Session 01">Session 01</option>
+                    <option value="Session 02">Session 02</option>
+                    <option value="Session 03">Session 03</option>
+                    <option value="Session 04">Session 04</option>
+                    <option value="Session 05">Session 05</option>
+                  </select>
+                  <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-gray-400">
+                    <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </div>
+                </div>
+                <p className="text-xs text-gray-500 mt-1">This name will be saved to the database alongside new registrations, and shown to users.</p>
+              </div>
+
+              <button 
+                onClick={saveSettings}
+                disabled={isSavingSettings}
+                className="mt-6 w-full py-4 rounded-xl bg-[#fe5119] text-white font-bold tracking-wider hover:bg-[#ff6a3b] transition-all disabled:opacity-50"
+              >
+                {isSavingSettings ? 'SAVING...' : 'SAVE SETTINGS'}
+              </button>
+            </div>
+          </section>
+        )}
       </div>
     </main>
   );

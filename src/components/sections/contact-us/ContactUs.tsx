@@ -128,7 +128,7 @@ export default function ContactUs() {
   return (
     <section
       ref={sectionRef}
-      className="w-full py-16 md:py-20 bg-[#070708] relative overflow-hidden flex flex-col justify-center z-10"
+      className="w-full py-10 md:py-12 bg-[#070708] relative overflow-hidden flex flex-col justify-center z-10"
       id="contact-us"
     >
       {/* Background Decorative Grid */}
@@ -173,7 +173,7 @@ export default function ContactUs() {
         </div>
 
         {/* Right Slider Section (Text-based Cyber Cards) */}
-        <div className="w-full lg:w-2/3 relative h-[450px] md:h-[500px] flex items-center justify-center">
+        <div className="w-full lg:w-2/3 relative h-[300px] md:h-[320px] flex items-center justify-center">
           
           {/* Navigation Controls (Desktop only) */}
           <div className="absolute left-0 right-0 top-1/2 -translate-y-1/2 hidden md:flex justify-between z-40 px-2 lg:px-0 pointer-events-none">
@@ -200,13 +200,13 @@ export default function ContactUs() {
               let styleClass = "absolute transition-all duration-700 ease-in-out w-[90vw] max-w-[340px] md:max-w-[380px] rounded-xl border flex flex-col justify-between";
               
               if (isActive) {
-                styleClass += " z-30 scale-100 opacity-100 border-[#ff5500]/50 bg-[#141416] shadow-[0_0_40px_rgba(255,85,0,0.15)] top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-auto min-h-[380px] md:h-[420px]";
+                styleClass += " z-30 scale-100 opacity-100 border-[#ff5500]/50 bg-[#141416] shadow-[0_0_40px_rgba(255,85,0,0.15)] top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-auto min-h-[220px]";
               } else if (isPrev) {
-                styleClass += " z-20 scale-85 md:scale-90 opacity-0 md:opacity-40 pointer-events-none md:pointer-events-auto border-gray-800 bg-[#0a0a0b] top-1/2 left-[25%] lg:left-[22%] -translate-x-1/2 -translate-y-1/2 md:cursor-pointer hover:opacity-70 h-auto min-h-[340px] md:h-[360px]";
+                styleClass += " z-20 scale-85 md:scale-90 opacity-0 md:opacity-40 pointer-events-none md:pointer-events-auto border-gray-800 bg-[#0a0a0b] top-1/2 left-[25%] lg:left-[22%] -translate-x-1/2 -translate-y-1/2 md:cursor-pointer hover:opacity-70 h-auto min-h-[220px]";
               } else if (isNext) {
-                styleClass += " z-20 scale-85 md:scale-90 opacity-0 md:opacity-40 pointer-events-none md:pointer-events-auto border-gray-800 bg-[#0a0a0b] top-1/2 left-[75%] lg:left-[78%] -translate-x-1/2 -translate-y-1/2 md:cursor-pointer hover:opacity-70 h-auto min-h-[340px] md:h-[360px]";
+                styleClass += " z-20 scale-85 md:scale-90 opacity-0 md:opacity-40 pointer-events-none md:pointer-events-auto border-gray-800 bg-[#0a0a0b] top-1/2 left-[75%] lg:left-[78%] -translate-x-1/2 -translate-y-1/2 md:cursor-pointer hover:opacity-70 h-auto min-h-[220px]";
               } else {
-                styleClass += " z-10 scale-75 opacity-0 pointer-events-none top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-[340px]";
+                styleClass += " z-10 scale-75 opacity-0 pointer-events-none top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-[220px]";
               }
 
               return (
@@ -226,24 +226,13 @@ export default function ContactUs() {
                       <p className={`font-space text-xs font-bold tracking-widest mb-2 transition-colors duration-500 ${isActive ? 'text-[#ff5500]' : 'text-gray-500'}`}>
                         {lead.role.toUpperCase()}
                       </p>
-                      <h3 className="font-orbitron font-bold text-2xl md:text-3xl text-white mb-6">
+                      <h3 className="font-orbitron font-bold text-2xl md:text-3xl text-white mb-2">
                         {lead.name}
                       </h3>
-                      
-                      <div className="font-inter space-y-4">
-                        <div className="bg-[#0b0b0c] p-3 rounded-md border border-gray-800/50">
-                          <p className="text-[10px] text-gray-500 font-space tracking-widest mb-1">EXPERIENCE</p>
-                          <p className="text-sm text-gray-300">{lead.experience}</p>
-                        </div>
-                        <div className="bg-[#0b0b0c] p-3 rounded-md border border-gray-800/50">
-                          <p className="text-[10px] text-gray-500 font-space tracking-widest mb-1">EDUCATION</p>
-                          <p className="text-sm text-gray-300">{lead.education}</p>
-                        </div>
-                      </div>
                     </div>
 
-                    <div className={`mt-6 pt-6 border-t transition-colors duration-500 ${isActive ? 'border-gray-800' : 'border-gray-800/30'}`}>
-                      <div className="flex flex-col space-y-2 font-inter text-xs md:text-sm">
+                    <div className={`mt-6 pt-5 border-t transition-colors duration-500 ${isActive ? 'border-gray-800' : 'border-gray-800/30'}`}>
+                      <div className="flex flex-col space-y-2.5 font-inter text-xs md:text-sm">
                         <a href={`mailto:${lead.email}`} className="flex items-center text-gray-400 hover:text-white transition-colors group/link">
                           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mr-3 text-gray-600 group-hover/link:text-[#ff5500] transition-colors"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
                           {lead.email}
