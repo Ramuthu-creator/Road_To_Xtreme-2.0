@@ -1246,3 +1246,294 @@
     transition: none;
   }
 }
+/* =========================================================
+   HERO — CYBERPUNK REACTORS
+   ========================================================= */
+
+.rtx-reactor-layer {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  pointer-events: none;
+}
+
+.rtx-reactor-layer *,
+.rtx-reactor-layer *::after {
+  box-sizing: border-box;
+}
+
+.rtx-reactor {
+  position: absolute;
+  aspect-ratio: 1;
+}
+
+.rtx-reactor--left {
+  left: 8%;
+  top: 7%;
+  width: clamp(110px, 13vw, 205px);
+  opacity: 0.88;
+}
+
+.rtx-reactor--right {
+  right: 14%;
+  top: 76%;
+  width: clamp(76px, 8vw, 125px);
+  opacity: 0.8;
+}
+
+.rtx-reactor-shell,
+.rtx-reactor-parallax,
+.rtx-reactor-float {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+/* Floating movement */
+
+.rtx-reactor-float {
+  animation: rtx-reactor-float 6s ease-in-out infinite alternate;
+}
+
+.rtx-reactor--right .rtx-reactor-float {
+  animation-delay: -3s;
+  animation-duration: 7s;
+}
+
+/* Corner brackets */
+
+.rtx-reactor-brackets {
+  position: absolute;
+  inset: -6%;
+  opacity: 0.8;
+
+  background:
+    linear-gradient(#fe511955, #fe511955)
+      left top / 18% 1px no-repeat,
+    linear-gradient(#fe511955, #fe511955)
+      left top / 1px 18% no-repeat,
+    linear-gradient(#fe511955, #fe511955)
+      right bottom / 18% 1px no-repeat,
+    linear-gradient(#fe511955, #fe511955)
+      right bottom / 1px 18% no-repeat;
+}
+
+/* Outer segmented ring */
+
+.rtx-reactor-ticks {
+  position: absolute;
+  inset: 1%;
+  border-radius: 50%;
+
+  background: repeating-conic-gradient(
+    from 4deg,
+    #fe511970 0deg 1deg,
+    transparent 1deg 12deg
+  );
+
+  -webkit-mask: radial-gradient(
+    closest-side,
+    transparent 92%,
+    #000 93%
+  );
+
+  mask: radial-gradient(
+    closest-side,
+    transparent 92%,
+    #000 93%
+  );
+
+  animation: rtx-reactor-spin 48s linear infinite;
+}
+
+/* Counter-rotating arcs */
+
+.rtx-reactor-arc {
+  position: absolute;
+  inset: 8%;
+  border-radius: 50%;
+
+  background: conic-gradient(
+    transparent 0deg 12deg,
+    #fe5119 12deg 57deg,
+    transparent 57deg 112deg,
+    #fe511980 112deg 180deg,
+    transparent 180deg 230deg,
+    #fe5119 230deg 272deg,
+    transparent 272deg 360deg
+  );
+
+  -webkit-mask: radial-gradient(
+    closest-side,
+    transparent 94%,
+    #000 95%
+  );
+
+  mask: radial-gradient(
+    closest-side,
+    transparent 94%,
+    #000 95%
+  );
+
+  animation: rtx-reactor-spin 18s linear infinite reverse;
+}
+
+/* Mechanical blades */
+
+.rtx-reactor-blades {
+  position: absolute;
+  inset: 13%;
+  animation: rtx-reactor-spin 22s linear infinite;
+  filter: drop-shadow(0 0 3px #fe511960);
+}
+
+.rtx-reactor-blades b {
+  position: absolute;
+  inset: 0;
+
+  clip-path: polygon(
+    48% 47%,
+    51% 0%,
+    66% 8%,
+    63% 17%,
+    68% 20%,
+    62% 23%,
+    65% 27%,
+    59% 30%,
+    62% 34%,
+    55% 39%,
+    57% 46%
+  );
+
+  background: linear-gradient(
+    110deg,
+    #3b1006 30%,
+    #ad310e 44%,
+    #fe5119 55%,
+    #ffbd8c 58%,
+    #fe5119 60%,
+    #481509 78%
+  );
+}
+
+.rtx-reactor-blades b::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+
+  background: repeating-linear-gradient(
+    0deg,
+    transparent 0 7px,
+    #08080895 7px 8px
+  );
+
+  clip-path: polygon(
+    55% 13%,
+    60% 12%,
+    54% 43%,
+    50% 45%
+  );
+}
+
+.rtx-reactor-blades b:nth-child(2) {
+  transform: rotate(90deg);
+}
+
+.rtx-reactor-blades b:nth-child(3) {
+  transform: rotate(180deg);
+}
+
+.rtx-reactor-blades b:nth-child(4) {
+  transform: rotate(270deg);
+}
+
+/* Illuminated core */
+
+.rtx-reactor-hub {
+  position: absolute;
+  inset: 40%;
+  display: grid;
+  place-items: center;
+
+  background: #130b08;
+  border: 1px solid #fe5119;
+  transform: rotate(45deg);
+
+  box-shadow:
+    0 0 12px #fe511944,
+    inset 0 0 9px #fe511925;
+}
+
+.rtx-reactor-hub i {
+  display: block;
+  width: 34%;
+  height: 34%;
+  background: #ffd1ab;
+
+  animation: rtx-reactor-core 4s ease-in-out infinite alternate;
+}
+
+/* Scanning light */
+
+.rtx-reactor-scan {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  border-radius: 50%;
+  opacity: 0.45;
+}
+
+.rtx-reactor-scan::after {
+  content: "";
+  position: absolute;
+  left: 12%;
+  width: 76%;
+  height: 1px;
+
+  background: linear-gradient(
+    90deg,
+    transparent,
+    #ffa56e,
+    transparent
+  );
+
+  box-shadow: 0 -2px 8px #fe511930;
+
+  animation: rtx-reactor-scan 5s ease-in-out infinite;
+}
+
+/* Small decorative labels */
+
+.rtx-reactor-tag {
+  position: absolute;
+  top: 113%;
+  left: 0;
+
+  color: #ba6a4b;
+  font: 400 9px / 1.3
+    ui-monospace,
+    SFMono-Regular,
+    Menlo,
+    Consolas,
+    monospace;
+
+  letter-spacing: 2px;
+  white-space: nowrap;
+}
+
+.rtx-reactor-trace {
+  position: absolute;
+  top: 113%;
+  right: 0;
+
+  width: 20%;
+  height: 5px;
+
+  background: repeating-linear-gradient(
+    90deg,
+    #fe511990 0 2px,
+    transparent 2px 4px
+  );
+}
+
+/* Different speeds and directions for the second emblem */
