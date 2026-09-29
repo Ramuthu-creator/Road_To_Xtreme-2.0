@@ -4,14 +4,26 @@ import { useEffect, useRef, useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
 
 const steps = ["Team Details", "Members", "Confirmation"];
-const batches = ["2026", "2025", "2024"];
+const batches = [
+  "UGC Batch 04",
+  "UGC Batch 05",
+  "UGC Batch 06",
+  "UGC Batch 07",
+  "UGC Batch 08",
+  "UK Batch 07",
+  "UK Batch 08",
+  "Network Batch 01",
+  "Network Batch 02",
+  "ARU Batch 01",
+  "ARU Batch 02",
+];
 
 export default function TeamDetailsPage() {
   const router = useRouter();
 
   const [faculty, setFaculty] = useState("computing");
   const [compete, setCompete] = useState("yes");
-  const [batch, setBatch] = useState("2026");
+  const [batch, setBatch] = useState("UGC Batch 04");
   const [batchOpen, setBatchOpen] = useState(false);
   const [focusedBatch, setFocusedBatch] = useState(0);
 
