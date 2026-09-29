@@ -12,7 +12,7 @@ export default function Home() {
   return (
     <main id="home" className="flex flex-col w-full relative">
       {/* The Hero stays fixed at the top while scrolling down */}
-      <section className="sticky top-0 w-full min-h-screen z-0">
+      <section className="sticky top-0 w-full h-[100svh] z-0">
         <Hero />
       </section>
       

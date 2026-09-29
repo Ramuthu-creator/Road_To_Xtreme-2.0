@@ -17,8 +17,9 @@ export default function Starfield() {
 
     const initStars = (width: number, height: number) => {
       stars = [];
-      // Calculate number of stars based on area to keep density consistent
-      const numStars = Math.floor((width * height) / 10000); 
+      // Calculate number of stars based on area to keep density consistent. Less stars on mobile
+      const density = width < 768 ? 15000 : 10000;
+      const numStars = Math.floor((width * height) / density); 
       for (let i = 0; i < numStars; i++) {
         stars.push({
           x: Math.random() * width,
@@ -63,8 +64,8 @@ export default function Starfield() {
       if (!canvas) return;
       for (let entry of entries) {
         const { width, height } = entry.contentRect;
-        // Increase resolution for retina displays
-        const dpr = window.devicePixelRatio || 1;
+        // Increase resolution for retina displays, cap to 1.5 for performance on mobile
+        const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
         canvas.width = width * dpr;
         canvas.height = height * dpr;
         ctx.scale(dpr, dpr);

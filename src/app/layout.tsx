@@ -70,7 +70,7 @@ export default function RootLayout({
     <html lang="en" className={`scroll-smooth ${inter.variable} ${orbitron.variable} ${spaceGrotesk.variable}`}>
     
         
-      <body className={`${inter.className} bg-[#0a0a0b] text-white selection:bg-[#ff5500] selection:text-black antialiased overflow-x-hidden flex flex-col min-h-screen`}>
+      <body className={`${inter.className} bg-[#0a0a0b] text-white selection:bg-[#ff5500] selection:text-black antialiased overflow-x-clip flex flex-col min-h-screen`}>
         <CustomCursor />
         <Preloader>
           <ConditionalNavbar />

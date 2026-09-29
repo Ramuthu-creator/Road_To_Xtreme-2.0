@@ -180,7 +180,6 @@ export default function Hero() {
             autoAlpha: 0,
             y: 45,
             scale: 1.06,
-            filter: "blur(12px)",
             transformOrigin: "50% 100%",
           });
 
@@ -241,15 +240,6 @@ export default function Hero() {
               0.65,
             )
             .to(
-              image,
-              {
-                filter: "blur(0px)",
-                duration: 0.85,
-                ease: "power2.out",
-              },
-              0.65,
-            )
-            .to(
               countdown,
               {
                 autoAlpha: 1,
@@ -267,10 +257,7 @@ export default function Hero() {
                 ease: "power2.out",
               },
               1.55,
-            )
-            .set(image, {
-              clearProps: "filter",
-            });
+            );
         }
 
         const syncFloat = reduced
