@@ -80,7 +80,7 @@ export default function AnimatedShape({
         onComplete: () => {
           revealed = true;
 
-          if (visible) {
+          if (visible && !document.hidden) {
             travellingLight.play();
           }
         },
@@ -94,37 +94,41 @@ export default function AnimatedShape({
         })
         .to(
           light,
-          {
-            opacity: 1,
-            duration: 0.4,
-          },
+          { opacity: 1, duration: 0.4 },
           "-=0.1",
         );
 
+      const updatePlayback = () => {
+        if (!visible || document.hidden) {
+          reveal.pause();
+          travellingLight.pause();
+          return;
+        }
+
+        if (revealed) {
+          travellingLight.play();
+        } else {
+          reveal.play();
+        }
+      };
+
       const observer = new IntersectionObserver(
         ([entry]) => {
-          if (!entry) return;
-
-          visible = entry.isIntersecting;
-
-          if (visible) {
-            if (revealed) {
-              travellingLight.play();
-            } else {
-              reveal.play();
-            }
-          } else {
-            reveal.pause();
-            travellingLight.pause();
-          }
+          visible = Boolean(entry?.isIntersecting);
+          updatePlayback();
         },
-        { threshold: 0.05 },
+        { threshold: 0 },
       );
 
       observer.observe(svg);
+      document.addEventListener("visibilitychange", updatePlayback);
 
       return () => {
         observer.disconnect();
+        document.removeEventListener(
+          "visibilitychange",
+          updatePlayback,
+        );
         travellingLight.revert();
         light.removeAttribute("transform");
       };
@@ -132,6 +136,12 @@ export default function AnimatedShape({
 
     return () => media.revert();
   }, []);
+
+  // A non-scaling stroke prevents the mobile path from becoming
+  // thick vertically and thin horizontally when the SVG stretches.
+  const strokeClass = stretch
+    ? "stroke-[10px] sm:stroke-[12px] lg:stroke-[33.333px]"
+    : "stroke-[40px]";
 
   return (
     <svg
@@ -141,36 +151,56 @@ export default function AnimatedShape({
       fill="none"
       aria-hidden="true"
       focusable="false"
-      className={`block w-full ${
+      className={`pointer-events-none block w-full overflow-visible ${
         stretch ? "h-full" : "h-auto"
       } ${className}`}
     >
-      {/* Dim track visible before the drawing animation */}
       <path
         d={SHAPE_PATH}
         stroke="#FE5119"
         strokeOpacity={0.08}
-        strokeWidth={40}
         strokeLinecap="round"
         strokeLinejoin="round"
+        vectorEffect={stretch ? "non-scaling-stroke" : undefined}
+        className={strokeClass}
       />
 
       <path
         ref={pathRef}
         d={SHAPE_PATH}
         stroke="#FE5119"
-        strokeWidth={40}
         strokeLinecap="round"
         strokeLinejoin="round"
+        vectorEffect={stretch ? "non-scaling-stroke" : undefined}
+        className={strokeClass}
       />
 
+      {/* Zero-length round strokes stay circular when stretched. */}
       <g ref={lightRef} opacity={0}>
-        <circle r={18} fill="#FFD3A0" opacity={0.12} />
-        <circle r={11} fill="#FFD3A0" opacity={0.25} />
-        <circle r={5} fill="#FFF0DC" />
+        <path
+          d="M0 0h0.01"
+          stroke="#FFD3A0"
+          strokeWidth={18}
+          strokeLinecap="round"
+          strokeOpacity={0.12}
+          vectorEffect="non-scaling-stroke"
+        />
+        <path
+          d="M0 0h0.01"
+          stroke="#FFD3A0"
+          strokeWidth={10}
+          strokeLinecap="round"
+          strokeOpacity={0.3}
+          vectorEffect="non-scaling-stroke"
+        />
+        <path
+          d="M0 0h0.01"
+          stroke="#FFF0DC"
+          strokeWidth={4}
+          strokeLinecap="round"
+          vectorEffect="non-scaling-stroke"
+        />
       </g>
     </svg>
-
-    
   );
 }

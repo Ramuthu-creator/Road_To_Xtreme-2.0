@@ -2,7 +2,6 @@
 
 import { useEffect, useRef, useState } from "react";
 import { gsap } from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { animate } from "animejs";
 import Typed from "typed.js";
 import {
@@ -14,7 +13,6 @@ import {
   ArrowDownRight,
 } from "lucide-react";
 
-// import styles from "./HowItWorks.module.css";
 const styles: Record<string, string> = Object.fromEntries(
   [
     "section",
@@ -129,59 +127,60 @@ export default function Guidence() {
   const current = steps[activeStep];
   const CurrentIcon = current.icon;
 
-  // Headings, rows, and vertical progress.
+  // GSAP reveals and scroll progress without ScrollTrigger.
   useEffect(() => {
     const section = sectionRef.current;
     if (!section) return;
 
-    gsap.registerPlugin(ScrollTrigger);
+    const rows = Array.from(
+      section.querySelectorAll<HTMLElement>("[data-guide-step]"),
+    );
 
-    const media = gsap.matchMedia();
+    const list = section.querySelector<HTMLElement>("[data-guide-list]");
+    const progress = section.querySelector<HTMLElement>(
+      "[data-guide-progress]",
+    );
 
-    media.add(
-      {
-        regular: "(prefers-reduced-motion: no-preference)",
-        reduced: "(prefers-reduced-motion: reduce)",
-      },
-      (context) => {
-        const reduced = Boolean(context.conditions?.reduced);
+    if (!rows.length || !list || !progress) return;
 
-        const rows = section.querySelectorAll<HTMLElement>(
-          "[data-guide-step]",
-        );
+    const motionQuery = window.matchMedia(
+      "(prefers-reduced-motion: reduce)",
+    );
 
-        rows.forEach((row, index) => {
-          const activate = () => setActiveStep(index);
+    let disposeAnimations = () => {};
 
-          ScrollTrigger.create({
-            trigger: row,
-            start: "top 60%",
-            end: "bottom 60%",
-            onEnter: activate,
-            onEnterBack: activate,
-          });
+    const setup = () => {
+      disposeAnimations();
 
-          if (reduced) return;
+      const reduced = motionQuery.matches;
+      const revealed = new Set<number>();
+      const timelines: gsap.core.Timeline[] = [];
 
+      let frame: number | null = null;
+      let disposed = false;
+      let previousActive = -1;
+      let previousProgress = -1;
+      let progressInitialized = false;
+
+      const context = gsap.context(() => {
+        gsap.set(progress, {
+          scaleY: 0,
+          transformOrigin: "center top",
+        });
+
+        if (reduced) return;
+
+        rows.forEach((row) => {
           const lines = row.querySelectorAll("[data-title-line]");
           const details = row.querySelectorAll("[data-row-detail]");
           const rule = row.querySelector("[data-row-rule]");
 
-          const reveal = gsap.timeline({
-            scrollTrigger: {
-              trigger: row,
-              start: "top 88%",
-              once: true,
-            },
-          });
+          const timeline = gsap.timeline({ paused: true });
 
-          reveal
+          timeline
             .fromTo(
               lines,
-              {
-                yPercent: 110,
-                autoAlpha: 0,
-              },
+              { yPercent: 110, autoAlpha: 0 },
               {
                 yPercent: 0,
                 autoAlpha: 1,
@@ -193,10 +192,7 @@ export default function Guidence() {
             )
             .fromTo(
               details,
-              {
-                y: 16,
-                autoAlpha: 0,
-              },
+              { y: 16, autoAlpha: 0 },
               {
                 y: 0,
                 autoAlpha: 1,
@@ -205,13 +201,12 @@ export default function Guidence() {
                 ease: "power3.out",
               },
               0.25,
-            )
-            .fromTo(
+            );
+
+          if (rule) {
+            timeline.fromTo(
               rule,
-              {
-                scaleX: 0,
-                transformOrigin: "left center",
-              },
+              { scaleX: 0, transformOrigin: "left center" },
               {
                 scaleX: 1,
                 duration: 0.9,
@@ -219,132 +214,276 @@ export default function Guidence() {
               },
               0.15,
             );
+          }
+
+          timelines.push(timeline);
+        });
+      }, section);
+
+      // Register this tween with the same cleanup context.
+      let smoothProgress:
+        | ReturnType<typeof gsap.quickTo>
+        | undefined;
+
+      context.add(() => {
+        if (!reduced) {
+          smoothProgress = gsap.quickTo(progress, "scaleY", {
+            duration: 0.5,
+            ease: "power2.out",
+          });
+        }
+      });
+
+      const update = () => {
+        frame = null;
+
+        if (disposed || !section.isConnected) return;
+
+        const viewportHeight = window.innerHeight;
+        const activationLine = viewportHeight * 0.6;
+        const revealLine = viewportHeight * 0.88;
+
+        let nextActive = 0;
+
+        rows.forEach((row, index) => {
+          const bounds = row.getBoundingClientRect();
+
+          if (bounds.top <= activationLine) {
+            nextActive = index;
+          }
+
+          if (
+            !reduced &&
+            !revealed.has(index) &&
+            bounds.top <= revealLine
+          ) {
+            revealed.add(index);
+
+            // Restore already-passed content immediately.
+            if (bounds.bottom <= 0) {
+              timelines[index]?.progress(1);
+            } else {
+              timelines[index]?.play();
+            }
+          }
         });
 
-        if (!reduced) {
-          const progress = section.querySelector("[data-guide-progress]");
-          const list = section.querySelector("[data-guide-list]");
-
-          gsap.fromTo(
-            progress,
-            { scaleY: 0 },
-            {
-              scaleY: 1,
-              ease: "none",
-              scrollTrigger: {
-                trigger: list,
-                start: "top 65%",
-                end: "bottom 65%",
-                scrub: 0.5,
-              },
-            },
-          );
+        if (nextActive !== previousActive) {
+          previousActive = nextActive;
+          setActiveStep(nextActive);
         }
-      },
-      section,
-    );
 
-    return () => media.revert();
+        const listBounds = list.getBoundingClientRect();
+        const amount = Math.max(
+          0,
+          Math.min(
+            1,
+            (viewportHeight * 0.65 - listBounds.top) /
+              Math.max(listBounds.height, 1),
+          ),
+        );
+
+        if (Math.abs(amount - previousProgress) > 0.0001) {
+          previousProgress = amount;
+
+          if (smoothProgress) {
+            if (!progressInitialized) {
+              smoothProgress(amount, amount);
+            } else {
+              smoothProgress(amount);
+            }
+          } else {
+            progress.style.transform = `scaleY(${amount})`;
+          }
+
+          progressInitialized = true;
+        }
+      };
+
+      const scheduleUpdate = () => {
+        if (disposed || frame !== null) return;
+        frame = window.requestAnimationFrame(update);
+      };
+
+      window.addEventListener("scroll", scheduleUpdate, {
+        passive: true,
+        capture: true,
+      });
+
+      window.addEventListener("resize", scheduleUpdate, {
+        passive: true,
+      });
+
+      const resizeObserver = new ResizeObserver(scheduleUpdate);
+      resizeObserver.observe(list);
+
+      // Recheck after the preloader finishes its transition.
+      const intro = section.closest(".intro-content");
+      const introObserver = new MutationObserver(scheduleUpdate);
+
+      if (intro) {
+        introObserver.observe(intro, {
+          attributes: true,
+          attributeFilter: ["class"],
+        });
+      }
+
+      document.fonts.ready.then(() => {
+        if (!disposed) scheduleUpdate();
+      });
+
+      scheduleUpdate();
+
+      disposeAnimations = () => {
+        disposed = true;
+
+        if (frame !== null) {
+          window.cancelAnimationFrame(frame);
+        }
+
+        window.removeEventListener("scroll", scheduleUpdate, true);
+        window.removeEventListener("resize", scheduleUpdate);
+
+        resizeObserver.disconnect();
+        introObserver.disconnect();
+        context.revert();
+      };
+    };
+
+    setup();
+    motionQuery.addEventListener("change", setup);
+
+    return () => {
+      motionQuery.removeEventListener("change", setup);
+      disposeAnimations();
+    };
   }, []);
 
-  // Anime.js: rotating SVG rings inside the desktop display.
+  // Anime.js: rotate the desktop display rings while visible.
   useEffect(() => {
     const visual = visualRef.current;
     if (!visual) return;
 
-    const media = gsap.matchMedia();
-
-    media.add(
+    const query = window.matchMedia(
       "(min-width: 1024px) and (prefers-reduced-motion: no-preference)",
-      () => {
-        const outer = visual.querySelector("[data-orbit-outer]");
-        const inner = visual.querySelector("[data-orbit-inner]");
-
-        if (!outer || !inner) return;
-
-        const outerAnimation = animate(outer, {
-          rotate: [0, 360],
-          duration: 28000,
-          ease: "linear",
-          loop: true,
-          autoplay: false,
-        });
-
-        const innerAnimation = animate(inner, {
-          rotate: [0, -360],
-          duration: 19000,
-          ease: "linear",
-          loop: true,
-          autoplay: false,
-        });
-
-        const observer = new IntersectionObserver(
-          ([entry]) => {
-            if (!entry) return;
-
-            if (entry.isIntersecting) {
-              outerAnimation.play();
-              innerAnimation.play();
-            } else {
-              outerAnimation.pause();
-              innerAnimation.pause();
-            }
-          },
-          { threshold: 0.1 },
-        );
-
-        observer.observe(visual);
-
-        return () => {
-          observer.disconnect();
-          outerAnimation.revert();
-          innerAnimation.revert();
-        };
-      },
     );
 
-    return () => media.revert();
+    let disposeRings = () => {};
+
+    const setup = () => {
+      disposeRings();
+      disposeRings = () => {};
+
+      if (!query.matches) return;
+
+      const outer = visual.querySelector<SVGGElement>(
+        "[data-orbit-outer]",
+      );
+      const inner = visual.querySelector<SVGGElement>(
+        "[data-orbit-inner]",
+      );
+
+      if (!outer || !inner) return;
+
+      const outerAnimation = animate(outer, {
+        rotate: [0, 360],
+        duration: 28000,
+        ease: "linear",
+        loop: true,
+        autoplay: false,
+      });
+
+      const innerAnimation = animate(inner, {
+        rotate: [0, -360],
+        duration: 19000,
+        ease: "linear",
+        loop: true,
+        autoplay: false,
+      });
+
+      let inView = false;
+
+      const updatePlayback = () => {
+        if (inView && !document.hidden) {
+          outerAnimation.play();
+          innerAnimation.play();
+        } else {
+          outerAnimation.pause();
+          innerAnimation.pause();
+        }
+      };
+
+      const observer = new IntersectionObserver(
+        ([entry]) => {
+          inView = Boolean(entry?.isIntersecting);
+          updatePlayback();
+        },
+        { threshold: 0.1 },
+      );
+
+      observer.observe(visual);
+      document.addEventListener("visibilitychange", updatePlayback);
+
+      disposeRings = () => {
+        observer.disconnect();
+        document.removeEventListener(
+          "visibilitychange",
+          updatePlayback,
+        );
+        outerAnimation.revert();
+        innerAnimation.revert();
+      };
+    };
+
+    setup();
+    query.addEventListener("change", setup);
+
+    return () => {
+      query.removeEventListener("change", setup);
+      disposeRings();
+    };
   }, []);
 
-  // Typed.js: update the display when the active step changes.
+  // Typed.js: update the terminal when the active step changes.
   useEffect(() => {
     const element = typedRef.current;
     if (!element) return;
 
-    const media = gsap.matchMedia();
-
-    media.add(
-      {
-        regular: "(prefers-reduced-motion: no-preference)",
-        reduced: "(prefers-reduced-motion: reduce)",
-      },
-      (context) => {
-        if (context.conditions?.reduced) {
-          element.textContent = current.command;
-
-          return () => {
-            element.textContent = "";
-          };
-        }
-
-        const typed = new Typed(element, {
-          strings: [current.command],
-          typeSpeed: 24,
-          startDelay: 100,
-          showCursor: true,
-          cursorChar: "_",
-          loop: false,
-          contentType: "null",
-        });
-
-        return () => {
-          typed.destroy();
-          element.textContent = "";
-        };
-      },
+    const query = window.matchMedia(
+      "(prefers-reduced-motion: reduce)",
     );
 
-    return () => media.revert();
+    let typed: Typed | null = null;
+
+    const setup = () => {
+      typed?.destroy();
+      typed = null;
+      element.textContent = "";
+
+      if (query.matches) {
+        element.textContent = current.command;
+        return;
+      }
+
+      typed = new Typed(element, {
+        strings: [current.command],
+        typeSpeed: 24,
+        startDelay: 100,
+        showCursor: true,
+        cursorChar: "_",
+        loop: false,
+        contentType: "null",
+      });
+    };
+
+    setup();
+    query.addEventListener("change", setup);
+
+    return () => {
+      query.removeEventListener("change", setup);
+      typed?.destroy();
+      element.textContent = "";
+    };
   }, [current.command]);
 
   return (
@@ -373,7 +512,6 @@ export default function Guidence() {
         </header>
 
         <div className={styles.layout}>
-          {/* Main content */}
           <div data-guide-list className={styles.list}>
             <div className={styles.progressTrack} aria-hidden="true">
               <div
@@ -396,14 +534,9 @@ export default function Guidence() {
                   <span className={styles.railNode} aria-hidden="true" />
 
                   <div data-row-detail className={styles.stepMeta}>
-                    <span className={styles.stepNumber}>
-                      {step.id}
-                    </span>
-
-                    <span className={styles.metaLine} />
-
+                    <span className={styles.stepNumber}>{step.id}</span>
+                    <span className={styles.metaLine} aria-hidden="true" />
                     <span>{step.label}</span>
-
                     <Icon size={15} strokeWidth={1.5} aria-hidden="true" />
                   </div>
 
@@ -448,7 +581,6 @@ export default function Guidence() {
             })}
           </div>
 
-          {/* Sticky visual display */}
           <aside className={styles.sidebar} aria-hidden="true">
             <div ref={visualRef} className={styles.visual}>
               <div className={styles.visualTop}>
@@ -489,7 +621,6 @@ export default function Guidence() {
                       strokeWidth="2"
                       strokeDasharray="170 35 45 35"
                     />
-
                     <circle cx="160" cy="34" r="4" fill="#FE5119" />
                   </g>
 
@@ -505,7 +636,6 @@ export default function Guidence() {
                       strokeOpacity="0.25"
                       strokeDasharray="3 12"
                     />
-
                     <path
                       d="M160 52a108 108 0 0 1 108 108"
                       stroke="#FE5119"
@@ -529,11 +659,9 @@ export default function Guidence() {
                     strokeWidth={1.1}
                     className={styles.mainIcon}
                   />
-
                   <span className={styles.orbitNumber}>
                     {current.id}
                   </span>
-
                   <span className={styles.orbitLabel}>
                     {current.label}
                   </span>
