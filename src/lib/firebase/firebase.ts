@@ -1,11 +1,8 @@
-// Import the functions you need from the SDKs you need
-import { initializeApp } from "firebase/app";
-import { getAnalytics } from "firebase/analytics";
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
+import { initializeApp, getApps, getApp } from "firebase/app";
+import { getAnalytics, isSupported, Analytics } from "firebase/analytics";
+import { getFirestore } from "firebase/firestore";
 
 // Your web app's Firebase configuration
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
   apiKey: "AIzaSyBz6Z2lwwIdgTo-2WT8e1FGdfFeW-8kuVE",
   authDomain: "road-to-xtreme-2-0.firebaseapp.com",
@@ -16,6 +13,20 @@ const firebaseConfig = {
   measurementId: "G-1N9K6NRDKZ"
 };
 
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
-const analytics = getAnalytics(app);
+// Initialize Firebase safely for Next.js
+const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
+
+// Initialize Firestore
+const db = getFirestore(app);
+
+// Initialize Analytics conditionally
+let analytics: Analytics | null = null;
+if (typeof window !== "undefined") {
+  isSupported().then((supported: boolean) => {
+    if (supported) {
+      analytics = getAnalytics(app);
+    }
+  });
+}
+
+export { app, analytics, db };

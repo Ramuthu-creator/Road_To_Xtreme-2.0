@@ -7,6 +7,9 @@ import {
   type CSSProperties,
   type FormEventHandler,
 } from "react";
+import { useRouter } from "next/navigation";
+import { collection, addDoc } from "firebase/firestore";
+import { db } from "@/lib/firebase/firebase";
 
 type SessionRegistrationProps = {
   onSubmit?: FormEventHandler<HTMLFormElement>;
@@ -29,8 +32,11 @@ const batches = [
 export default function SessionRegistration({
   onSubmit,
 }: SessionRegistrationProps) {
+  const router = useRouter();
   const sectionRef = useRef<HTMLElement>(null);
   const [contact, setContact] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [message, setMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
 
   useEffect(() => {
     const section = sectionRef.current;
@@ -140,14 +146,58 @@ export default function SessionRegistration({
 
           <form
             className="flex flex-col gap-8 md:gap-10"
-            onSubmit={(event) => {
+            onSubmit={async (event) => {
               if (onSubmit) {
                 onSubmit(event);
-              } else {
-                event.preventDefault();
+                return;
+              }
+              event.preventDefault();
+              
+              const form = event.currentTarget;
+              
+              setIsSubmitting(true);
+              setMessage(null);
+
+              try {
+                const formData = new FormData(form);
+                const batchValue = formData.get("batch") as string;
+                const batchLabel = batches.find(b => b.value === batchValue)?.label || batchValue;
+
+                const data = {
+                  fullName: formData.get("fullName"),
+                  registrationNumber: formData.get("registrationNumber"),
+                  batch: batchLabel,
+                  email: formData.get("email"),
+                  contact: formData.get("contact"),
+                  createdAt: new Date(),
+                };
+
+                await addDoc(collection(db, "session_registrations"), data);
+                setMessage({ type: "success", text: "Successfully registered! Redirecting..." });
+                form.reset();
+                setContact("");
+                setTimeout(() => {
+                  router.push("/");
+                }, 2000);
+              } catch (error: any) {
+                console.error("Error adding document: ", error);
+                setMessage({ type: "error", text: `Error: ${error?.message || "Something went wrong. Please try again."}` });
+              } finally {
+                setIsSubmitting(false);
               }
             }}
           >
+            {message && (
+              <div
+                className={`p-4 rounded-md text-sm font-medium ${
+                  message.type === "success"
+                    ? "bg-green-500/10 text-green-500 border border-green-500/20"
+                    : "bg-red-500/10 text-red-500 border border-red-500/20"
+                }`}
+              >
+                {message.text}
+              </div>
+            )}
             {/* Full name */}
             <div data-reveal>
               <div className="field reveal-inner">
@@ -308,15 +358,18 @@ export default function SessionRegistration({
               <div className="reveal-inner">
                 <button
                   type="submit"
-                  className="register-button relative isolate mt-4 flex min-h-14 w-full items-center justify-center gap-5 overflow-hidden bg-[#101010] px-8 py-4 font-mono text-sm font-semibold text-white md:mt-2 md:w-fit"
+                  disabled={isSubmitting}
+                  className="register-button relative isolate mt-4 flex min-h-14 w-full items-center justify-center gap-5 overflow-hidden bg-[#101010] px-8 py-4 font-mono text-sm font-semibold text-white md:mt-2 md:w-fit disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   <span className="button-fill" aria-hidden="true" />
-                  <span className="relative z-10">Register Now</span>
+                  <span className="relative z-10">{isSubmitting ? "Registering..." : "Register Now"}</span>
 
-                  <span className="button-arrow relative z-10" aria-hidden="true">
-                    <span className="arrow-first">↗</span>
-                    <span className="arrow-second">↗</span>
-                  </span>
+                  {!isSubmitting && (
+                    <span className="button-arrow relative z-10" aria-hidden="true">
+                      <span className="arrow-first">↗</span>
+                      <span className="arrow-second">↗</span>
+                    </span>
+                  )}
                 </button>
               </div>
             </div>

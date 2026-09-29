@@ -3,6 +3,8 @@
 import { useEffect, useState, type CSSProperties } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { collection, addDoc } from "firebase/firestore";
+import { db } from "@/lib/firebase/firebase";
 
 interface MemberDetails {
   fullName: string;
@@ -44,15 +46,24 @@ export default function ConfirmationPage() {
 
   const [members, setMembers] =
     useState<Record<number, MemberDetails>>(initialMembers);
+    
+  const [teamDetails, setTeamDetails] = useState<any>(null);
 
   const [loaded, setLoaded] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [message, setMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
 
   useEffect(() => {
     try {
-      const savedData = sessionStorage.getItem("xtreme_members");
+      const savedMembers = sessionStorage.getItem("xtreme_members");
+      const savedTeamDetails = sessionStorage.getItem("xtreme_team_details");
+      
+      if (savedTeamDetails) {
+        setTeamDetails(JSON.parse(savedTeamDetails));
+      }
 
-      if (savedData) {
-        const parsed: unknown = JSON.parse(savedData);
+      if (savedMembers) {
+        const parsed: unknown = JSON.parse(savedMembers);
         const restored = initialMembers();
 
         if (parsed && typeof parsed === "object") {
@@ -84,9 +95,39 @@ export default function ConfirmationPage() {
     }
   }, []);
 
-  const handleSubmit = () => {
-    alert("Registration submitted successfully!");
-    router.push("/");
+  const handleSubmit = async () => {
+    if (!teamDetails) {
+      setMessage({ type: "error", text: "Team details are missing. Please go back and fill them." });
+      return;
+    }
+
+    setIsSubmitting(true);
+    setMessage(null);
+
+    try {
+      const payload = {
+        teamName: teamDetails.teamName,
+        email: teamDetails.email,
+        faculty: teamDetails.faculty,
+        batch: teamDetails.batch,
+        compete: teamDetails.compete,
+        members: members,
+        createdAt: new Date(),
+      };
+
+      await addDoc(collection(db, "prextreme_registrations"), payload);
+      setMessage({ type: "success", text: "Registration submitted successfully!" });
+      sessionStorage.removeItem("xtreme_team_details");
+      sessionStorage.removeItem("xtreme_members");
+      setTimeout(() => {
+        router.push("/");
+      }, 2000);
+    } catch (error) {
+      console.error("Error submitting registration: ", error);
+      setMessage({ type: "error", text: "Something went wrong. Please try again." });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -145,6 +186,17 @@ export default function ConfirmationPage() {
 
         {/* Team summary: existing placeholder values */}
         <div className="reveal summary-entry mb-8">
+          {message && (
+            <div
+              className={`mb-6 p-4 rounded-md text-sm font-medium ${
+                message.type === "success"
+                  ? "bg-green-500/10 text-green-500 border border-green-500/20"
+                  : "bg-red-500/10 text-red-500 border border-red-500/20"
+              }`}
+            >
+              {message.text}
+            </div>
+          )}
           <section
             aria-labelledby="team-summary-heading"
             className="summary-card relative overflow-hidden rounded-2xl border border-gray-800/80 bg-[#161618] p-6 sm:p-8"
@@ -165,10 +217,10 @@ export default function ConfirmationPage() {
               <dl className="min-w-0 space-y-3">
                 <div>
                   <dt className="text-xs font-medium text-gray-400">
-                    Full name
+                    Team Name
                   </dt>
                   <dd className="mt-1 break-words font-semibold text-white">
-                    Jhon doe
+                    {!loaded ? "..." : teamDetails?.teamName || "N/A"}
                   </dd>
                 </div>
 
@@ -177,7 +229,7 @@ export default function ConfirmationPage() {
                     Batch
                   </dt>
                   <dd className="mt-1 font-semibold text-white">
-                    2026
+                    {!loaded ? "..." : teamDetails?.batch || "N/A"}
                   </dd>
                 </div>
               </dl>
@@ -188,7 +240,7 @@ export default function ConfirmationPage() {
                     Email
                   </dt>
                   <dd className="mt-1 break-words font-semibold text-white">
-                    abcd@cinec.edu / abcd@gmail.com
+                    {!loaded ? "..." : teamDetails?.email || "N/A"}
                   </dd>
                 </div>
 
@@ -196,8 +248,8 @@ export default function ConfirmationPage() {
                   <dt className="text-xs font-medium text-gray-400">
                     Planning to compete in IEEEXtreme?
                   </dt>
-                  <dd className="mt-1 font-semibold text-white">
-                    Yes / No
+                  <dd className="mt-1 font-semibold text-white capitalize">
+                    {!loaded ? "..." : teamDetails?.compete || "N/A"}
                   </dd>
                 </div>
               </dl>
@@ -207,8 +259,8 @@ export default function ConfirmationPage() {
                   <dt className="text-xs font-medium text-gray-400">
                     Faculty
                   </dt>
-                  <dd className="mt-1 break-words font-semibold text-white">
-                    Computing / Engineering
+                  <dd className="mt-1 break-words font-semibold text-white capitalize">
+                    {!loaded ? "..." : teamDetails?.faculty || "N/A"}
                   </dd>
                 </div>
               </dl>
@@ -311,22 +363,24 @@ export default function ConfirmationPage() {
           <button
             type="button"
             onClick={handleSubmit}
-            disabled={!loaded}
+            disabled={!loaded || isSubmitting}
             className="nav-button submit-button relative isolate flex min-h-12 w-full items-center justify-center gap-4 overflow-hidden rounded-full bg-[#080808] px-6 py-3 font-mono text-sm font-bold text-white disabled:cursor-wait disabled:opacity-50 sm:w-auto sm:px-10"
           >
             <span className="button-fill" aria-hidden="true" />
 
             <span className="relative z-10">
-              Submit Registration
+              {isSubmitting ? "Submitting..." : "Submit Registration"}
             </span>
 
-            <span
-              className="arrow-window relative z-10 shrink-0"
-              aria-hidden="true"
-            >
-              <span className="arrow-current">→</span>
-              <span className="arrow-next">→</span>
-            </span>
+            {!isSubmitting && (
+              <span
+                className="arrow-window relative z-10 shrink-0"
+                aria-hidden="true"
+              >
+                <span className="arrow-current">→</span>
+                <span className="arrow-next">→</span>
+              </span>
+            )}
           </button>
         </div>
       </div>
