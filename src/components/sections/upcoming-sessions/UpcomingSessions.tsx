@@ -6,37 +6,42 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { animate } from "animejs";
 import Typed from "typed.js";
 
+import { doc, onSnapshot } from "firebase/firestore";
+import { db } from "@/lib/firebase/firebase";
+
 import SessionCard, { type SessionCardProps } from "./SessionCard";
 
-const sessions: SessionCardProps[] = [
+// We omit status and actionHref here because we compute them dynamically!
+const sessionsBase = [
   {
     sessionNumber: "01",
     title: "Introducing Session",
     date: "SEPTEMBER 28",
     audience: "OC-VIRTUAL",
-    status: "live",
-    actionHref: "/session-registration",
   },
   {
     sessionNumber: "02",
     title: "Shanodh Sir's Session",
     date: "OCTOBER 5",
     audience: "PHYSICAL",
-    status: "upcoming",
   },
   {
     sessionNumber: "03",
     title: "Manosha Sir's Session",
     date: "OCTOBER 6",
     audience: "PHYSICAL",
-    status: "upcoming",
   },
   {
     sessionNumber: "04",
     title: "Naveen Sir's Session",
     date: "OCTOBER 19",
     audience: "PHYSICAL",
-    status: "upcoming",
+  },
+  {
+    sessionNumber: "05",
+    title: "Final Prep Session",
+    date: "OCTOBER 26",
+    audience: "PHYSICAL",
   },
 ];
 
@@ -50,6 +55,41 @@ export default function UpcomingSessions() {
   const [reminders, setReminders] = useState<Record<string, boolean>>(
     {},
   );
+
+  const [activeSessionNumber, setActiveSessionNumber] = useState<string>("01");
+  const [isRegistrationOpen, setIsRegistrationOpen] = useState(true);
+
+  // Fetch Global Settings
+  useEffect(() => {
+    const unsub = onSnapshot(doc(db, "settings", "general"), (docSnap) => {
+      if (docSnap.exists()) {
+        const data = docSnap.data();
+        if (data.isRegistrationOpen !== undefined) setIsRegistrationOpen(data.isRegistrationOpen);
+        if (data.currentSession) {
+          // e.g., "Session 01" -> "01"
+          const num = data.currentSession.replace("Session ", "");
+          setActiveSessionNumber(num);
+        }
+      }
+    });
+    return () => unsub();
+  }, []);
+
+  const sessions: SessionCardProps[] = sessionsBase.map(session => {
+    if (session.sessionNumber === activeSessionNumber) {
+      return {
+        ...session,
+        status: isRegistrationOpen ? "live" : "upcoming",
+        actionHref: isRegistrationOpen ? "/session-registration" : undefined,
+      } as SessionCardProps;
+    } else {
+      return {
+        ...session,
+        status: "upcoming",
+        actionHref: undefined,
+      } as SessionCardProps;
+    }
+  });
 
   useEffect(() => {
     const section = sectionRef.current;

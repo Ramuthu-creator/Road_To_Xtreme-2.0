@@ -8,7 +8,7 @@ import {
   type FormEventHandler,
 } from "react";
 import { useRouter } from "next/navigation";
-import { collection, addDoc } from "firebase/firestore";
+import { collection, addDoc, doc, onSnapshot } from "firebase/firestore";
 import { db } from "@/lib/firebase/firebase";
 
 type SessionRegistrationProps = {
@@ -37,6 +37,23 @@ export default function SessionRegistration({
   const [contact, setContact] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [message, setMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
+  
+  const [isRegistrationOpen, setIsRegistrationOpen] = useState(true);
+  const [currentSession, setCurrentSession] = useState("Session 01");
+  const [isSettingsLoading, setIsSettingsLoading] = useState(true);
+
+  // Listen to global settings from Firestore
+  useEffect(() => {
+    const unsub = onSnapshot(doc(db, "settings", "general"), (docSnap) => {
+      if (docSnap.exists()) {
+        const data = docSnap.data();
+        if (data.isRegistrationOpen !== undefined) setIsRegistrationOpen(data.isRegistrationOpen);
+        if (data.currentSession) setCurrentSession(data.currentSession);
+      }
+      setIsSettingsLoading(false);
+    });
+    return () => unsub();
+  }, []);
 
   useEffect(() => {
     const section = sectionRef.current;
@@ -144,49 +161,55 @@ export default function SessionRegistration({
             </p>
           </div>
 
-          <form
-            className="flex flex-col gap-8 md:gap-10"
-            onSubmit={async (event) => {
-              if (onSubmit) {
-                onSubmit(event);
-                return;
-              }
-              event.preventDefault();
-              
-              const form = event.currentTarget;
-              
-              setIsSubmitting(true);
-              setMessage(null);
+          {isSettingsLoading ? (
+            <div className="flex h-32 items-center justify-center">
+              <div className="h-8 w-8 animate-spin rounded-full border-2 border-[#fe5119]/20 border-t-[#fe5119]"></div>
+            </div>
+          ) : isRegistrationOpen ? (
+            <form
+              className="flex flex-col gap-8 md:gap-10"
+              onSubmit={async (event) => {
+                if (onSubmit) {
+                  onSubmit(event);
+                  return;
+                }
+                event.preventDefault();
+                
+                const form = event.currentTarget;
+                
+                setIsSubmitting(true);
+                setMessage(null);
 
-              try {
-                const formData = new FormData(form);
-                const batchValue = formData.get("batch") as string;
-                const batchLabel = batches.find(b => b.value === batchValue)?.label || batchValue;
+                try {
+                  const formData = new FormData(form);
+                  const batchValue = formData.get("batch") as string;
+                  const batchLabel = batches.find(b => b.value === batchValue)?.label || batchValue;
 
-                const data = {
-                  fullName: formData.get("fullName"),
-                  registrationNumber: formData.get("registrationNumber"),
-                  batch: batchLabel,
-                  email: formData.get("email"),
-                  contact: formData.get("contact"),
-                  createdAt: new Date(),
-                };
+                  const data = {
+                    fullName: formData.get("fullName"),
+                    registrationNumber: formData.get("registrationNumber"),
+                    batch: batchLabel,
+                    email: formData.get("email"),
+                    contact: formData.get("contact"),
+                    session: currentSession,
+                    createdAt: new Date(),
+                  };
 
-                await addDoc(collection(db, "session_registrations"), data);
-                setMessage({ type: "success", text: "Successfully registered! Redirecting..." });
-                form.reset();
-                setContact("");
-                setTimeout(() => {
-                  router.push("/");
-                }, 2000);
-              } catch (error: any) {
-                console.error("Error adding document: ", error);
-                setMessage({ type: "error", text: `Error: ${error?.message || "Something went wrong. Please try again."}` });
-              } finally {
-                setIsSubmitting(false);
-              }
-            }}
-          >
+                  await addDoc(collection(db, "session_registrations"), data);
+                  setMessage({ type: "success", text: "Successfully registered! Redirecting..." });
+                  form.reset();
+                  setContact("");
+                  setTimeout(() => {
+                    router.push("/");
+                  }, 2000);
+                } catch (error: any) {
+                  console.error("Error adding document: ", error);
+                  setMessage({ type: "error", text: `Error: ${error?.message || "Something went wrong. Please try again."}` });
+                } finally {
+                  setIsSubmitting(false);
+                }
+              }}
+            >
             {message && (
               <div
                 className={`p-4 rounded-md text-sm font-medium ${
@@ -373,7 +396,17 @@ export default function SessionRegistration({
                 </button>
               </div>
             </div>
-          </form>
+            </form>
+          ) : (
+            <div data-reveal>
+              <div className="reveal-inner mt-4 rounded-md border border-[#fe5119]/20 bg-[#fe5119]/10 p-6 md:p-8">
+                <h3 className="mb-2 text-xl font-bold text-white">Registration Closed</h3>
+                <p className="text-sm text-gray-400 leading-relaxed">
+                  The registration for {currentSession} is currently closed. Keep an eye on our social media for updates on upcoming sessions!
+                </p>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Right column */}
