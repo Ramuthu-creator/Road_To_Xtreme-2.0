@@ -1,9 +1,15 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { gsap } from "gsap";
 
 export default function CustomCursor() {
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
   const dotPositionRef = useRef<HTMLDivElement>(null);
   const ringPositionRef = useRef<HTMLDivElement>(null);
 
@@ -12,6 +18,8 @@ export default function CustomCursor() {
   const pressRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    if (!isMounted) return;
+
     const dotPosition = dotPositionRef.current;
     const ringPosition = ringPositionRef.current;
     const dot = dotRef.current;
@@ -285,7 +293,9 @@ export default function CustomCursor() {
     );
 
     return () => media.revert();
-  }, []);
+  }, [isMounted]);
+
+  if (!isMounted) return null;
 
   return (
     <>

@@ -7,8 +7,12 @@ import Footer from "@/components/sections/footer/Footer";
 export function ConditionalNavbar() {
   const pathname = usePathname();
   
-  // Hide Navbar on all admin routes
-  if (pathname?.startsWith("/admin")) {
+  // Hide Navbar on admin and registration routes
+  if (
+    pathname?.startsWith("/admin") || 
+    pathname?.startsWith("/session-registration") ||
+    pathname?.startsWith("/registration")
+  ) {
     return null;
   }
   
@@ -18,8 +22,12 @@ export function ConditionalNavbar() {
 export function ConditionalFooter() {
   const pathname = usePathname();
   
-  // Hide Footer on all admin routes
-  if (pathname?.startsWith("/admin")) {
+  // Hide Footer on admin and registration routes
+  if (
+    pathname?.startsWith("/admin") || 
+    pathname?.startsWith("/session-registration") ||
+    pathname?.startsWith("/registration")
+  ) {
     return null;
   }
   
