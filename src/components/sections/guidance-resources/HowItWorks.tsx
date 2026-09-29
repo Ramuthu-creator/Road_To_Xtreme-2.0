@@ -246,6 +246,7 @@ export default function Guidence() {
         let nextActive = 0;
 
         rows.forEach((row, index) => {
+          // Optimization: only get bounding client rect if we haven't revealed it or if we are close to active
           const bounds = row.getBoundingClientRect();
 
           if (bounds.top <= activationLine) {

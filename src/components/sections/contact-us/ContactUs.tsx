@@ -135,8 +135,8 @@ export default function ContactUs() {
       <div className="absolute inset-0 pointer-events-none opacity-[0.03] bg-[linear-gradient(rgba(255,255,255,1)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,1)_1px,transparent_1px)] bg-[size:40px_40px]" />
       
       {/* Glowing Orbs */}
-      <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-[#ff5500] rounded-full blur-[200px] opacity-10 pointer-events-none" />
-      <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-[#ff5500] rounded-full blur-[150px] opacity-[0.05] pointer-events-none" />
+      <div className="absolute top-0 right-0 w-[500px] h-[500px] rounded-full pointer-events-none" style={{ background: "radial-gradient(circle, rgba(255,85,0,0.15) 0%, rgba(0,0,0,0) 70%)" }} />
+      <div className="absolute bottom-0 left-0 w-[400px] h-[400px] rounded-full pointer-events-none" style={{ background: "radial-gradient(circle, rgba(255,85,0,0.08) 0%, rgba(0,0,0,0) 70%)" }} />
 
       <div className="container mx-auto px-6 md:px-12 relative z-10 max-w-7xl flex flex-col lg:flex-row items-center justify-between gap-12">
         

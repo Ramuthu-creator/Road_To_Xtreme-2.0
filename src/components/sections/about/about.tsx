@@ -52,9 +52,9 @@ export default function About() {
   return (
     <section className="relative overflow-hidden bg-[#090909] px-6 py-10 text-white md:px-12 md:py-14 lg:px-16">
       {/* Background atmosphere */}
-      <div className="pointer-events-none absolute left-1/2 top-24 h-[420px] w-[700px] -translate-x-1/2 rounded-full bg-[#fe5119]/[0.04] blur-[120px]" />
+      <div className="pointer-events-none absolute left-1/2 top-24 h-[420px] w-[700px] -translate-x-1/2 rounded-full" style={{ background: "radial-gradient(circle, rgba(254,81,25,0.06) 0%, rgba(0,0,0,0) 70%)" }} />
 
-      <div className="pointer-events-none absolute -left-40 top-[40%] h-[300px] w-[300px] rounded-full bg-[#fe5119]/[0.025] blur-[100px]" />
+      <div className="pointer-events-none absolute -left-40 top-[40%] h-[300px] w-[300px] rounded-full" style={{ background: "radial-gradient(circle, rgba(254,81,25,0.04) 0%, rgba(0,0,0,0) 70%)" }} />
 
       <div className="relative mx-auto max-w-6xl">
         {/* Top labels */}
@@ -89,7 +89,7 @@ export default function About() {
             </h2>
 
             <p className="mx-auto mt-7 max-w-2xl text-[10px] leading-5 text-[#d0d0d0]/55 md:text-xs md:leading-6">
-              Clarity Dental brings you an intellectual arena designed for
+              Road to Xtreme 2.0 brings you an intellectual arena designed for
               elite tactical thinkers. Compete in gruelling stages to prove
               your team&apos;s computational dominance.
             </p>
