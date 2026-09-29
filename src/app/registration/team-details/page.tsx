@@ -26,6 +26,9 @@ export default function TeamDetailsPage() {
   const [batch, setBatch] = useState("UGC Batch 04");
   const [batchOpen, setBatchOpen] = useState(false);
   const [focusedBatch, setFocusedBatch] = useState(0);
+  
+  const [email, setEmail] = useState("");
+  const [teamName, setTeamName] = useState("");
 
   const batchRef = useRef<HTMLDivElement>(null);
   const batchButtonRef = useRef<HTMLButtonElement>(null);
@@ -56,6 +59,22 @@ export default function TeamDetailsPage() {
     }
   }, [batchOpen, focusedBatch]);
 
+  useEffect(() => {
+    const saved = sessionStorage.getItem("xtreme_team_details");
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        if (parsed.email) setEmail(parsed.email);
+        if (parsed.teamName) setTeamName(parsed.teamName);
+        if (parsed.faculty) setFaculty(parsed.faculty);
+        if (parsed.batch) setBatch(parsed.batch);
+        if (parsed.compete) setCompete(parsed.compete);
+      } catch (e) {
+        console.error("Failed to parse saved team details");
+      }
+    }
+  }, []);
+
   const selectBatch = (value: string) => {
     setBatch(value);
     setBatchOpen(false);
@@ -64,6 +83,13 @@ export default function TeamDetailsPage() {
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    sessionStorage.setItem("xtreme_team_details", JSON.stringify({
+      email,
+      teamName,
+      faculty,
+      batch,
+      compete
+    }));
     router.push("/registration/members");
   };
 
@@ -140,6 +166,8 @@ export default function TeamDetailsPage() {
               type="email"
               autoComplete="email"
               required
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
               placeholder="abcd@cinec.edu / abcd@gmail.com"
               className="form-control w-full rounded-md border border-gray-800 bg-[#1a1b1e] px-4 py-3 text-base text-white placeholder:text-gray-500 sm:text-sm"
             />
@@ -159,6 +187,8 @@ export default function TeamDetailsPage() {
               name="teamName"
               type="text"
               required
+              value={teamName}
+              onChange={(e) => setTeamName(e.target.value)}
               placeholder="Enter your team name"
               className="form-control w-full rounded-md border border-gray-800 bg-[#1a1b1e] px-4 py-3 text-base text-white placeholder:text-gray-500 sm:text-sm"
             />
