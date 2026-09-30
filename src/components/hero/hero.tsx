@@ -318,9 +318,9 @@ export default function Hero() {
         const intro = root.closest(".intro-content");
         let observer: MutationObserver | undefined;
 
-        if (intro && !intro.classList.contains("intro-content--done")) {
+        if (intro && !intro.classList.contains("intro-content--done") && !intro.classList.contains("intro-content--revealing")) {
           observer = new MutationObserver(() => {
-            if (intro.classList.contains("intro-content--done")) {
+            if (intro.classList.contains("intro-content--done") || intro.classList.contains("intro-content--revealing")) {
               observer?.disconnect();
               start();
             }
