@@ -85,8 +85,6 @@ export default function Preloader({ children }: Props) {
           <div
             className="
               center
-              max-md:!w-[calc(100%_-_40px)]
-              max-md:!max-w-[calc(100%_-_40px)]
               max-md:!gap-[clamp(20px,5svh,30px)]
             "
           >

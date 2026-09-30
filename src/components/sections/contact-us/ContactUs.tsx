@@ -9,86 +9,50 @@ gsap.registerPlugin(ScrollTrigger);
 
 const ocLeads = [
   {
-    name: "ARKA DHAR",
-    role: "Co-Founder / Business Development",
-    experience: "Rocket Internet GmbH, TripAdvisor",
-    education: "Massachusetts Institute of Technology",
-    linkedin: "#",
-    email: "arka@example.com",
-    phone: "+94 71 123 4567"
+    name: "MALEESHA SANJANA",
+    role: "Ambassador - Road to Xtreme 2.0",
+    email: "maleeshasanjanadilshan@gmail.com",
   },
   {
-    name: "GONCALO REIS",
-    role: "Co-Founder / Managing Partner",
-    experience: "Rocket Internet GmbH, Groupon",
-    education: "Vrije Universiteit Brussel",
-    linkedin: "#",
-    email: "goncalo@example.com",
-    phone: "+94 71 234 5678"
+    name: "DENUKA MANUJAYA",
+    role: "Co-Chair - Road To Xtreme 2.0",
+    email: "denukag30@gmail.com",
   },
   {
-    name: "ANDREW WOLF",
-    role: "Co-Founder / Creative Director",
-    experience: "LVMH, Bacardi, Alan Wanzenberg",
-    education: "Stanford University",
-    linkedin: "#",
-    email: "andrew@example.com",
-    phone: "+94 71 345 6789"
+    name: "SANDARUWAN THARAKA",
+    role: "Marketing Team Lead - Road To Xtreme 2.0",
+    email: "info.sandem@gmail.com",
   },
   {
-    name: "DONOVAN M.",
-    role: "Entrepreneur in Residence",
-    experience: "Various Startups",
-    education: "University of Colombo",
-    linkedin: "#",
-    email: "donovan@example.com",
-    phone: "+94 71 456 7890"
+    name: "RAMUTHU THENIYA",
+    role: "Web Development Team Lead - Road To Xtreme 2.0",
+    email: "tramuthu@gmail.com",
   },
   {
-    name: "SONIA B.",
-    role: "Graphic Designer",
-    experience: "Freelance, Creative Agencies",
-    education: "Academy of Design",
-    linkedin: "#",
-    email: "sonia@example.com",
-    phone: "+94 71 567 8901"
+    name: "PRABHANI KALHARA",
+    role: "Logistics Team Lead - Road To Xtreme 2.0",
+    email: "prabhanikalhara19@gmail.com",
   },
   {
-    name: "ASTRID R.",
-    role: "Senior Fashion Designer",
-    experience: "Vogue, Local Brands",
-    education: "NIFT",
-    linkedin: "#",
-    email: "astrid@example.com",
-    phone: "+94 71 678 9012"
+    name: "CHANULA WIJAYARATHNE",
+    role: "Program Team Lead - Road To Xtreme 2.0",
+    email: "chanulawije@gmail.com",
   },
   {
-    name: "JUNZHONG K.",
-    role: "Operations Executive",
-    experience: "Various Logistics",
-    education: "Singapore University",
-    linkedin: "#",
-    email: "junzhong@example.com",
-    phone: "+94 71 789 0123"
+    name: "RANDINI GUNASEKARA",
+    role: "Design Team Lead - Road To Xtreme 2.0",
+    email: "randinigunasekara0@gmail.com",
   },
   {
-    name: "NISHANT",
-    role: "Director of Sales / India",
-    experience: "B2B Sales",
-    education: "Delhi University",
-    linkedin: "#",
-    email: "nishant@example.com",
-    phone: "+94 71 890 1234"
+    name: "NIKINI THATHSARANI",
+    role: "Finance Team Lead - Road To Xtreme 2.0",
+    email: "thathsaraninikini4@gmail.com",
   },
   {
-    name: "JANE DOE",
-    role: "Marketing Head",
-    experience: "Ogilvy & Mather",
-    education: "London Business School",
-    linkedin: "#",
-    email: "jane@example.com",
-    phone: "+94 71 901 2345"
-  },
+    name: "ASHINI PRABODYA",
+    role: "Secretary - Road To Xtreme 2.0",
+    email: "ashigamage094@gmail.com",
+  }
 ];
 
 export default function ContactUs() {
@@ -101,6 +65,35 @@ export default function ContactUs() {
 
   const handleNext = () => {
     setActiveIndex((prev) => (prev + 1) % ocLeads.length);
+  };
+
+  const touchStartX = useRef(0);
+  const touchEndX = useRef(0);
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    touchStartX.current = e.targetTouches[0].clientX;
+    touchEndX.current = e.targetTouches[0].clientX;
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    touchEndX.current = e.targetTouches[0].clientX;
+  };
+
+  const handleTouchEnd = () => {
+    if (!touchStartX.current || !touchEndX.current) return;
+    
+    const distance = touchStartX.current - touchEndX.current;
+    const isLeftSwipe = distance > 50;
+    const isRightSwipe = distance < -50;
+    
+    if (isLeftSwipe) {
+      handleNext();
+    } else if (isRightSwipe) {
+      handlePrev();
+    }
+    
+    touchStartX.current = 0;
+    touchEndX.current = 0;
   };
 
   useEffect(() => {
@@ -173,7 +166,12 @@ export default function ContactUs() {
         </div>
 
         {/* Right Slider Section (Text-based Cyber Cards) */}
-        <div className="w-full lg:w-2/3 relative h-[300px] md:h-[320px] flex items-center justify-center">
+        <div 
+          className="w-full lg:w-2/3 relative h-[300px] md:h-[320px] flex items-center justify-center"
+          onTouchStart={handleTouchStart}
+          onTouchMove={handleTouchMove}
+          onTouchEnd={handleTouchEnd}
+        >
           
           {/* Navigation Controls (Desktop only) */}
           <div className="absolute left-0 right-0 top-1/2 -translate-y-1/2 hidden md:flex justify-between z-40 px-2 lg:px-0 pointer-events-none">
@@ -236,10 +234,6 @@ export default function ContactUs() {
                         <a href={`mailto:${lead.email}`} className="flex items-center text-gray-400 hover:text-white transition-colors group/link">
                           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mr-3 text-gray-600 group-hover/link:text-[#ff5500] transition-colors"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
                           {lead.email}
-                        </a>
-                        <a href={`tel:${lead.phone}`} className="flex items-center text-gray-400 hover:text-white transition-colors group/link">
-                          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mr-3 text-gray-600 group-hover/link:text-[#ff5500] transition-colors"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
-                          {lead.phone}
                         </a>
                       </div>
                     </div>

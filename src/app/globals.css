@@ -36,21 +36,24 @@
 
 .overlay .center {
   position: absolute;
-  top: 50%;
-  left: 50%;
+  inset: 0;
+  padding: 20px;
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
   gap: 42px;
-  transform: translate(-50%, -50%);
 }
 
 .overlay .rotor {
   position: relative;
   width: 160px;
   height: 160px;
+  transform-origin: 80px 80px;
   animation: rotateMark 6s cubic-bezier(0.76, 0, 0.24, 1) infinite;
   will-change: transform;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
 }
 
 .overlay .arm {
@@ -72,6 +75,8 @@
   background: var(--orange);
   transform-origin: 7px 7px;
   animation: foldBar 6s cubic-bezier(0.76, 0, 0.24, 1) infinite;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
 }
 
 .overlay .arm:nth-child(even) i {
