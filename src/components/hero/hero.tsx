@@ -430,8 +430,8 @@ export default function Hero() {
     >
       <div
         className="
-          relative mx-auto h-[680px] w-full max-w-[1920px]
-          sm:h-[800px]
+          relative mx-auto h-[88svh] w-full max-w-[1920px]
+          sm:h-[88svh]
           lg:h-[clamp(580px,calc(100svh_-_110px),980px)]
         "
       >
@@ -457,9 +457,11 @@ export default function Hero() {
         <div
           data-countdown
           className="
-            absolute right-[6%] top-[5%] z-30
-            max-w-[88%] font-mono
-            lg:right-[4%] lg:top-[16%]
+            absolute left-1/2 top-[8%] z-30
+            flex w-full max-w-[90%] -translate-x-1/2
+            justify-center font-mono
+            lg:left-auto lg:right-[4%] lg:top-[16%]
+            lg:block lg:w-auto lg:max-w-[88%] lg:-translate-x-0
           "
         >
           <div
@@ -468,21 +470,21 @@ export default function Hero() {
             aria-label={`${timeLeft.days} days, ${timeLeft.hours} hours, ${timeLeft.minutes} minutes, ${timeLeft.seconds} seconds remaining`}
             className="
               grid grid-cols-[auto_auto_auto_auto_auto_auto_auto]
-              items-center gap-x-1.5 gap-y-2
-              text-center sm:gap-x-2
+              items-center gap-x-2 gap-y-1
+              text-center sm:gap-x-3
             "
           >
             {units.map((unit, index) => (
               <Fragment key={`label-${unit.key}`}>
                 {index > 0 && (
-                  <span aria-hidden="true" className="w-2" />
+                  <span aria-hidden="true" className="w-2 sm:w-3" />
                 )}
 
                 <span
                   className="
-                    text-[10px] font-semibold italic
+                    text-xs font-semibold italic
                     tracking-wide text-[#d0d0d0]
-                    sm:text-xs xl:text-sm
+                    sm:text-sm xl:text-base
                   "
                 >
                   {unit.label}
@@ -495,7 +497,7 @@ export default function Hero() {
                 {index > 0 && (
                   <span
                     aria-hidden="true"
-                    className="text-lg font-bold text-white sm:text-xl"
+                    className="text-xl font-bold text-white sm:text-2xl"
                   >
                     :
                   </span>
@@ -505,9 +507,9 @@ export default function Hero() {
                   id={`countdown-value-${unit.key}`}
                   data-countdown-value={unit.key}
                   className="
-                    inline-block text-xl font-bold italic
+                    inline-block text-2xl font-bold italic
                     leading-none tabular-nums text-white
-                    sm:text-2xl xl:text-3xl
+                    sm:text-3xl xl:text-4xl
                   "
                 >
                   {timeLeft[unit.key]}
@@ -521,7 +523,7 @@ export default function Hero() {
         <div
           data-title
           className="
-            pointer-events-none absolute left-[6%] top-[25%]
+            pointer-events-none absolute left-[6%] top-[18%]
             z-10 w-[88%]
             lg:left-[8%] lg:top-[31%] lg:w-[84%]
           "
@@ -568,7 +570,7 @@ export default function Hero() {
           data-character
           className="
             pointer-events-none absolute
-            bottom-[20%] left-[-10%] z-20
+            bottom-[27%] left-[-10%] z-20
             h-[65%] w-[120%]
             sm:bottom-[17%] sm:left-0 sm:h-[75%] sm:w-full
             lg:bottom-0 lg:left-[12%] lg:h-full lg:w-[76%]

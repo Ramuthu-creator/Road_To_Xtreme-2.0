@@ -19,6 +19,11 @@ const ocLeads = [
     email: "denukag30@gmail.com",
   },
   {
+    name: "MAREENA MAYOR",
+    role: "OC Lead - Road To Xtreme 2.0",
+    email: "mareenamayor@gmail.com",
+  },
+  {
     name: "SANDARUWAN THARAKA",
     role: "Marketing Team Lead - Road To Xtreme 2.0",
     email: "info.sandem@gmail.com",
