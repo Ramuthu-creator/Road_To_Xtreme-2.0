@@ -5,6 +5,10 @@ import { join } from "path";
 export const size = { width: 512, height: 512 };
 export const contentType = "image/png";
 
+export function generateStaticParams() {
+  return [{ __metadata_id__: [] }];
+}
+
 export default function Icon() {
   const logoData = readFileSync(
     join(process.cwd(), "public/assets/logos/ieeextreme-logo.png"),

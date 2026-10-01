@@ -215,10 +215,10 @@ export default function DashboardPage() {
         </header>
 
         {/* Tabs */}
-        <div className="flex items-center gap-4 mb-8">
+        <div className="flex items-center gap-2 sm:gap-4 mb-8 overflow-x-auto pb-2 w-full max-w-full [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
           <button
             onClick={() => setActiveTab("session")}
-            className={`flex items-center gap-2 px-6 py-3 rounded-xl text-sm font-bold transition-all ${
+            className={`flex whitespace-nowrap shrink-0 items-center gap-2 px-4 sm:px-6 py-3 rounded-xl text-xs sm:text-sm font-bold transition-all ${
               activeTab === "session"
                 ? "bg-[#fe5119] text-white shadow-[0_0_20px_rgba(254,81,25,0.4)]"
                 : "bg-white/[0.02] text-gray-400 border border-white/5 hover:bg-white/[0.05]"
@@ -230,7 +230,7 @@ export default function DashboardPage() {
           
           <button
             onClick={() => setActiveTab("prextreme")}
-            className={`flex items-center gap-2 px-6 py-3 rounded-xl text-sm font-bold transition-all ${
+            className={`flex whitespace-nowrap shrink-0 items-center gap-2 px-4 sm:px-6 py-3 rounded-xl text-xs sm:text-sm font-bold transition-all ${
               activeTab === "prextreme"
                 ? "bg-[#fe5119] text-white shadow-[0_0_20px_rgba(254,81,25,0.4)]"
                 : "bg-white/[0.02] text-gray-400 border border-white/5 hover:bg-white/[0.05]"
@@ -242,7 +242,7 @@ export default function DashboardPage() {
           
           <button
             onClick={() => setActiveTab("settings")}
-            className={`flex items-center gap-2 px-6 py-3 rounded-xl text-sm font-bold transition-all ${
+            className={`flex whitespace-nowrap shrink-0 items-center gap-2 px-4 sm:px-6 py-3 rounded-xl text-xs sm:text-sm font-bold transition-all ${
               activeTab === "settings"
                 ? "bg-[#fe5119] text-white shadow-[0_0_20px_rgba(254,81,25,0.4)]"
                 : "bg-white/[0.02] text-gray-400 border border-white/5 hover:bg-white/[0.05]"
@@ -257,9 +257,9 @@ export default function DashboardPage() {
         <section className="flex flex-col gap-6">
           
           {/* Table Header Controls */}
-          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-            <div className="flex items-center gap-3">
-              <h2 className="text-xl font-bold text-white">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 w-full">
+            <div className="flex flex-wrap items-center gap-3">
+              <h2 className="text-lg sm:text-xl font-bold text-white">
                 {activeTab === "session" ? "Current Session Registrations" : "PreXtreme Registrations"}
               </h2>
               <span className="flex items-center gap-1.5 rounded-full border border-[#fe5119]/30 bg-[#fe5119]/10 px-3 py-1 text-[10px] font-bold tracking-widest text-[#fe5119] uppercase">
@@ -279,8 +279,8 @@ export default function DashboardPage() {
           </div>
 
           {/* Table Glass Container */}
-          <div className="w-full overflow-hidden rounded-3xl border border-white/5 bg-white/[0.02] backdrop-blur-xl shadow-2xl">
-            <div className="overflow-x-auto">
+          <div className="w-full max-w-full overflow-hidden rounded-3xl border border-white/5 bg-white/[0.02] backdrop-blur-xl shadow-2xl">
+            <div className="overflow-x-auto w-full">
               <table className="w-full text-left text-sm text-gray-300 whitespace-nowrap">
                 <thead className="border-b border-white/5 bg-black/40 text-[11px] font-bold uppercase tracking-wider text-gray-400">
                   {activeTab === "session" ? (

@@ -7,12 +7,14 @@ import {
   BellRing,
   Calendar,
   Clock,
+  User,
 } from "lucide-react";
 import { gsap } from "gsap";
 
 export interface SessionCardProps {
   sessionNumber: string;
   title: string;
+  speaker?: string;
   time?: string;
   date: string;
   audience: string;
@@ -215,6 +217,7 @@ function ActionButton({
 export default function SessionCard({
   sessionNumber,
   title,
+  speaker,
   time,
   date,
   audience,
@@ -302,6 +305,17 @@ export default function SessionCard({
       <div className="my-6 h-px w-full bg-white/10" />
 
       <div className="flex flex-col gap-3 font-mono text-xs text-neutral-300">
+        {speaker && (
+          <div className="flex items-center gap-3">
+            <User
+              aria-hidden="true"
+              className="h-4 w-4 shrink-0 text-[#fe5119]"
+              strokeWidth={1.5}
+            />
+            <span>{speaker}</span>
+          </div>
+        )}
+
         {time && (
           <div className="flex items-center gap-3">
             <Clock
