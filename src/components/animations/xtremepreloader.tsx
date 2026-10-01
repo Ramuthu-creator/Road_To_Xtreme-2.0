@@ -35,10 +35,10 @@ export default function Preloader({ children }: Props) {
 
     document.body.style.overflow = "hidden";
 
-    // Restored loading time to 6000ms so the animation can play fully
-    const loadingTime = reducedMotion ? 0 : 6000;
-    const orangeTime = reducedMotion ? 100 : 750;
-    const revealTime = reducedMotion ? 100 : 850;
+    // Reduced loading time so user doesn't wait unnecessarily
+    const loadingTime = reducedMotion ? 0 : 2500;
+    const orangeTime = reducedMotion ? 100 : 100;
+    const revealTime = reducedMotion ? 100 : 500;
 
     const timers = [
       window.setTimeout(() => {
@@ -74,7 +74,7 @@ export default function Preloader({ children }: Props) {
               max-md:!top-[max(20px,env(safe-area-inset-top))]
               max-md:!left-[max(20px,env(safe-area-inset-left))]
               max-md:!right-[max(20px,env(safe-area-inset-right))]
-              max-md:!text-[10px]
+              max-md:!text-xs sm:max-md:!text-sm
               max-md:!leading-relaxed
               max-md:!tracking-[1.5px]
             "
@@ -85,8 +85,6 @@ export default function Preloader({ children }: Props) {
           <div
             className="
               center
-              max-md:!w-[calc(100%_-_40px)]
-              max-md:!max-w-[calc(100%_-_40px)]
               max-md:!gap-[clamp(20px,5svh,30px)]
             "
           >
@@ -122,7 +120,7 @@ export default function Preloader({ children }: Props) {
                 max-md:!gap-y-1
                 max-md:!whitespace-normal
                 max-md:!text-center
-                max-md:!text-[10px]
+                max-md:!text-xs sm:max-md:!text-sm
                 max-md:!leading-relaxed
                 max-md:!tracking-[1.5px]
               "
@@ -152,7 +150,7 @@ export default function Preloader({ children }: Props) {
               max-md:!gap-2
               max-md:!whitespace-normal
               max-md:!text-center
-              max-md:!text-[9px]
+              max-md:!text-[10px] sm:max-md:!text-xs
               max-md:!leading-relaxed
               max-md:!tracking-[0.5px]
             "

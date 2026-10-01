@@ -12,6 +12,7 @@ import { ConditionalNavbar, ConditionalFooter } from "@/components/layout/Condit
 import CustomCursor from "@/components/animations/customCursor";
 
 
+
 const inter = Inter({
   subsets: ["latin"],
   variable: "--font-inter",
