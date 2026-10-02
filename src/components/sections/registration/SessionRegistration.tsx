@@ -27,6 +27,7 @@ const batches = [
   { value: "23.3", label: "Network Batch 02" },
   { value: "24.1", label: "ARU Batch 01" },
   { value: "24.2", label: "ARU Batch 02" },
+  { value: "other", label: "Other" },
 ];
 
 export default function SessionRegistration({
@@ -35,6 +36,7 @@ export default function SessionRegistration({
   const router = useRouter();
   const sectionRef = useRef<HTMLElement>(null);
   const [contact, setContact] = useState("");
+  const [selectedBatch, setSelectedBatch] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [message, setMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
   
@@ -125,7 +127,7 @@ export default function SessionRegistration({
       section.removeAttribute("data-motion");
       section.removeAttribute("data-running");
     };
-  }, []);
+  }, [isSettingsLoading, isRegistrationOpen]);
 
   return (
     <section
@@ -183,7 +185,10 @@ export default function SessionRegistration({
                 try {
                   const formData = new FormData(form);
                   const batchValue = formData.get("batch") as string;
-                  const batchLabel = batches.find(b => b.value === batchValue)?.label || batchValue;
+                  let batchLabel = batches.find(b => b.value === batchValue)?.label || batchValue;
+                  if (batchValue === "other") {
+                    batchLabel = formData.get("customBatch") as string;
+                  }
 
                   const data = {
                     fullName: formData.get("fullName"),
@@ -285,6 +290,7 @@ export default function SessionRegistration({
                       name="batch"
                       defaultValue=""
                       className="line-input batch-select"
+                      onChange={(e) => setSelectedBatch(e.target.value)}
                     >
                       <option value="" disabled>
                         Select your batch
@@ -314,6 +320,31 @@ export default function SessionRegistration({
                   </div>
                 </div>
               </div>
+
+              {selectedBatch === "other" && (
+                <div className="mt-8 md:mt-10">
+                  <div className="field">
+                    <label
+                      htmlFor="custom-batch"
+                      className="field-label mb-2 block text-sm text-white md:text-base"
+                    >
+                      Specify your batch
+                    </label>
+
+                    <div className="input-wrap">
+                      <input
+                        id="custom-batch"
+                        name="customBatch"
+                        type="text"
+                        required
+                        placeholder="e.g. Computing Batch 15"
+                        className="line-input"
+                      />
+                      <span className="input-line" aria-hidden="true" />
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
 
             <div className="grid grid-cols-1 gap-8 md:grid-cols-2 md:gap-10">
@@ -378,7 +409,14 @@ export default function SessionRegistration({
 
             {/* Register button */}
             <div data-reveal>
-              <div className="reveal-inner">
+              <div className="reveal-inner flex flex-col-reverse gap-4 md:flex-row md:items-center">
+                <button
+                  type="button"
+                  onClick={() => router.push("/")}
+                  className="relative flex min-h-14 w-full items-center justify-center gap-2 border border-gray-700 bg-transparent px-8 py-4 font-mono text-sm font-semibold text-white transition-colors hover:bg-gray-800 md:w-fit md:mt-2 mt-0"
+                >
+                  Back
+                </button>
                 <button
                   type="submit"
                   disabled={isSubmitting}

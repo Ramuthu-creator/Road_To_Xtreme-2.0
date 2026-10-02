@@ -16,6 +16,7 @@ const batches = [
   "Network Batch 02",
   "ARU Batch 01",
   "ARU Batch 02",
+  "Other",
 ];
 
 export default function TeamDetailsPage() {
@@ -24,6 +25,7 @@ export default function TeamDetailsPage() {
   const [faculty, setFaculty] = useState("computing");
   const [compete, setCompete] = useState("yes");
   const [batch, setBatch] = useState("UGC Batch 04");
+  const [customBatch, setCustomBatch] = useState("");
   const [batchOpen, setBatchOpen] = useState(false);
   const [focusedBatch, setFocusedBatch] = useState(0);
   
@@ -67,7 +69,14 @@ export default function TeamDetailsPage() {
         if (parsed.email) setEmail(parsed.email);
         if (parsed.teamName) setTeamName(parsed.teamName);
         if (parsed.faculty) setFaculty(parsed.faculty);
-        if (parsed.batch) setBatch(parsed.batch);
+        if (parsed.batch) {
+          if (batches.includes(parsed.batch)) {
+            setBatch(parsed.batch);
+          } else {
+            setBatch("Other");
+            setCustomBatch(parsed.batch);
+          }
+        }
         if (parsed.compete) setCompete(parsed.compete);
       } catch (e) {
         console.error("Failed to parse saved team details");
@@ -87,7 +96,7 @@ export default function TeamDetailsPage() {
       email,
       teamName,
       faculty,
-      batch,
+      batch: batch === "Other" ? customBatch : batch,
       compete
     }));
     router.push("/registration/members");
@@ -379,6 +388,28 @@ export default function TeamDetailsPage() {
             </div>
           </div>
 
+          {batch === "Other" && (
+            <div className="form-field reveal reveal-6 relative z-10 min-w-0">
+              <label
+                htmlFor="custom-batch"
+                className="field-label mb-2 block text-xs font-medium text-gray-300"
+              >
+                Specify your batch <span className="text-[#fe5119]">*</span>
+              </label>
+
+              <input
+                id="custom-batch"
+                name="customBatch"
+                type="text"
+                required
+                value={customBatch}
+                onChange={(e) => setCustomBatch(e.target.value)}
+                placeholder="e.g. Computing Batch 15"
+                className="form-control w-full rounded-md border border-gray-800 bg-[#1a1b1e] px-4 py-3 text-base text-white placeholder:text-gray-500 sm:text-sm"
+              />
+            </div>
+          )}
+
           {/* Competition choice */}
           <fieldset className="reveal reveal-7 min-w-0">
             <legend className="mb-2 text-xs font-medium text-gray-300">
@@ -411,7 +442,14 @@ export default function TeamDetailsPage() {
           </fieldset>
 
           {/* Continue */}
-          <div className="reveal reveal-8 mt-6 flex justify-end md:col-span-2">
+          <div className="reveal reveal-8 mt-6 flex flex-col-reverse justify-between gap-4 md:col-span-2 md:flex-row">
+            <button
+              type="button"
+              onClick={() => router.push("/")}
+              className="relative flex min-h-12 w-full items-center justify-center gap-2 rounded-full border border-gray-700 bg-transparent px-8 py-3 font-mono text-sm font-bold text-white transition-colors hover:bg-gray-800 sm:w-auto"
+            >
+              Back
+            </button>
             <button
               type="submit"
               className="continue-button relative isolate flex min-h-12 w-full items-center justify-center gap-5 overflow-hidden rounded-full bg-[#080808] px-8 py-3 font-mono text-sm font-bold text-white sm:w-auto"

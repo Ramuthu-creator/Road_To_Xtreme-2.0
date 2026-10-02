@@ -6,9 +6,7 @@
   --foreground-rgb: 255, 255, 255;
   --background-start-rgb: 10, 10, 11;
   --background-end-rgb: 10, 10, 11;
-
-
-
+}
 
 body {
   color: #ffffff;
@@ -29,6 +27,4 @@ body {
 
 .font-space {
   font-family: var(--font-space), sans-serif;
-}
-
 }

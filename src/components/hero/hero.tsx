@@ -550,7 +550,7 @@ export default function Hero() {
                   data-xtreme-word
                   className="
                     block w-max whitespace-nowrap
-                    text-[16.8vw] lg:text-[320px]
+                    text-[16.8vw] lg:text-[clamp(120px,28vh,320px)]
                     font-black leading-[0.8]
                     tracking-[-0.055em] text-[#fe5119]
                   "
@@ -594,7 +594,8 @@ export default function Hero() {
           className="
             absolute bottom-[10%] left-[6%] z-30 max-w-[88%]
             sm:bottom-[8%]
-            lg:bottom-[12%] lg:left-[11%]
+            lg:bottom-[8%] lg:left-[11%]
+            xl:bottom-[10%] 2xl:bottom-[12%]
           "
         >
           <div
