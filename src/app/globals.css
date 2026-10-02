@@ -1507,3 +1507,64 @@
 }
 
 /* Different speeds and directions for the second emblem */
+@media (max-width: 767px) {
+  .overlay.intro-loader .center {
+    position: absolute;
+    inset: 0;
+    box-sizing: border-box;
+
+    width: 100%;
+    max-width: none;
+    margin: 0;
+    padding: 80px 16px;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 36px;
+  }
+
+  .overlay.intro-loader .rotor {
+    position: relative;
+    width: 180px;
+    height: 180px;
+    flex: 0 0 180px;
+    margin: 0;
+    transform-origin: center;
+  }
+
+  .overlay.intro-loader .arm {
+    left: 50%;
+    top: 50%;
+  }
+
+  .overlay.intro-loader .status {
+    box-sizing: border-box;
+    width: 100%;
+    min-width: 0;
+    margin: 0;
+    padding: 0;
+
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+
+    text-align: center;
+    white-space: nowrap;
+    font-size: clamp(10px, 2.8vw, 12px);
+    line-height: 1.5;
+    letter-spacing: 1.5px;
+  }
+
+  .overlay.intro-loader .dot {
+    flex: 0 0 4px;
+  }
+
+  .overlay.intro-loader .dots {
+    display: inline-block;
+    width: 3ch;
+  }
+}

@@ -17,7 +17,7 @@ type Props = {
 export default function Preloader({ children }: Props) {
   const pathname = usePathname();
   const isHomePage = pathname === "/";
-  
+
   // Start with "loading" to match SSR, then update on mount
   const [phase, setPhase] = useState<Phase>("loading");
 
@@ -82,24 +82,14 @@ export default function Preloader({ children }: Props) {
             ROAD TO <span>XTREME 2.0</span>
           </div>
 
-          <div
-            className="
-              center
-              max-md:!gap-[clamp(20px,5svh,30px)]
-            "
-          >
-            <div
-              className="rotor max-md:!shrink-0"
-              aria-hidden="true"
-            >
+          <div className="center">
+            <div className="rotor" aria-hidden="true">
               {Array.from({ length: 6 }, (_, index) => (
                 <span
                   className="arm"
                   key={index}
                   style={
-                    {
-                      "--angle": `${index * 60}deg`,
-                    } as CSSProperties
+                    { "--angle": `${index * 60}deg` } as CSSProperties
                   }
                 >
                   <i />
@@ -107,29 +97,10 @@ export default function Preloader({ children }: Props) {
               ))}
             </div>
 
-            <div
-              className="
-                status
-                max-md:!flex
-                max-md:!w-full
-                max-md:!min-w-0
-                max-md:!flex-wrap
-                max-md:!items-center
-                max-md:!justify-center
-                max-md:!gap-x-2
-                max-md:!gap-y-1
-                max-md:!whitespace-normal
-                max-md:!text-center
-                max-md:!text-xs sm:max-md:!text-sm
-                max-md:!leading-relaxed
-                max-md:!tracking-[1.5px]
-              "
-            >
-              <span
-                className="dot max-md:!shrink-0"
-                aria-hidden="true"
-              />
-              <span className="max-md:whitespace-nowrap">
+            <div className="status">
+              <span className="dot" aria-hidden="true" />
+
+              <span>
                 LOADING EXPERIENCE
                 <span className="dots">...</span>
               </span>
