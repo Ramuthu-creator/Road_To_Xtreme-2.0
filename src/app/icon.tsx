@@ -11,7 +11,7 @@ export function generateStaticParams() {
 
 export default function Icon() {
   const logoData = readFileSync(
-    join(process.cwd(), "public/assets/logos/ieeextreme-logo.png"),
+    join(process.cwd(), "public/assets/logos/ieeextreme-20-white-logo.png"),
   );
   const logoSrc = `data:image/png;base64,${logoData.toString("base64")}`;
 

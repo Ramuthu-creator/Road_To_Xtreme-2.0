@@ -148,7 +148,7 @@ export default function Navbar() {
           "
         >
           <Image
-            src="/assets/logos/ieeextreme-logo.png"
+            src="/assets/logos/ieeextreme-20-white-logo.png"
             alt="IEEEXtreme Logo"
             width={240}
             height={60}

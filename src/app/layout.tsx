@@ -42,7 +42,7 @@ export const metadata: Metadata = {
     siteName: "CINEC IEEE Road to Xtreme 2.0",
     images: [
       {
-        url: "/assets/logos/xtreme-logo.png", // Update this with your actual logo path in public/assets/
+        url: "/assets/logos/ieeextreme-20-white-logo.png", // Update this with your actual logo path in public/assets/
         width: 1200,
         height: 630,
         alt: "CINEC IEEE Road to Xtreme 2.0 Logo",
