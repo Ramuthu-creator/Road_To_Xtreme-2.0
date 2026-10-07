@@ -2,8 +2,8 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { Database, LogOut, Download, CheckCircle2, Users, Calendar, Settings } from "lucide-react";
-import { collection, getDocs, query, orderBy, Timestamp, doc, getDoc, setDoc } from "firebase/firestore";
+import { Database, LogOut, Download, CheckCircle2, Users, Calendar, Settings, Trash2 } from "lucide-react";
+import { collection, getDocs, query, orderBy, Timestamp, doc, getDoc, setDoc, deleteDoc } from "firebase/firestore";
 import { onAuthStateChanged, signOut } from "firebase/auth";
 import { db, auth } from "@/lib/firebase/firebase";
 
@@ -45,6 +45,7 @@ export default function DashboardPage() {
   
   // Settings state
   const [isRegistrationOpen, setIsRegistrationOpen] = useState(true);
+  const [isPreXtremeOpen, setIsPreXtremeOpen] = useState(true);
   const [currentSessionName, setCurrentSessionName] = useState("Session 01");
   const [isSavingSettings, setIsSavingSettings] = useState(false);
   const [settingsMessage, setSettingsMessage] = useState<{type: "success" | "error", text: string} | null>(null);
@@ -78,6 +79,7 @@ export default function DashboardPage() {
         if (settingsSnap.exists()) {
           const data = settingsSnap.data();
           if (data.isRegistrationOpen !== undefined) setIsRegistrationOpen(data.isRegistrationOpen);
+          if (data.isPreXtremeOpen !== undefined) setIsPreXtremeOpen(data.isPreXtremeOpen);
           if (data.currentSession) setCurrentSessionName(data.currentSession);
         }
       } catch (error) {
@@ -93,6 +95,7 @@ export default function DashboardPage() {
     try {
       await setDoc(doc(db, "settings", "general"), {
         isRegistrationOpen,
+        isPreXtremeOpen,
         currentSession: currentSessionName,
         updatedAt: new Date()
       }, { merge: true });
@@ -169,6 +172,21 @@ export default function DashboardPage() {
       router.push("/");
     } catch (error) {
       console.error("Error signing out:", error);
+    }
+  }
+
+  async function handleDelete(id: string, isSession: boolean) {
+    if (!confirm("Are you sure you want to delete this registration?")) return;
+    try {
+      const collectionName = isSession ? "session_registrations" : "prextreme_registrations";
+      await deleteDoc(doc(db, collectionName, id));
+      if (isSession) {
+        setSessionData(prev => prev.filter(item => item.id !== id));
+      } else {
+        setPrextremeData(prev => prev.filter(item => item.id !== id));
+      }
+    } catch (error) {
+      alert("Error deleting record: " + error);
     }
   }
 
@@ -292,6 +310,7 @@ export default function DashboardPage() {
                       <th className="px-6 py-5">Email Address</th>
                       <th className="px-6 py-5">Contact</th>
                       <th className="px-6 py-5">Registered Date</th>
+                      <th className="px-6 py-5 text-right">Actions</th>
                     </tr>
                   ) : (
                     <tr>
@@ -303,6 +322,7 @@ export default function DashboardPage() {
                       <th className="px-6 py-5">Team Email</th>
                       <th className="px-6 py-5">Leader Name</th>
                       <th className="px-6 py-5">Registered Date</th>
+                      <th className="px-6 py-5 text-right">Actions</th>
                     </tr>
                   )}
                 </thead>
@@ -343,6 +363,11 @@ export default function DashboardPage() {
                         <td className="px-6 py-4 text-xs text-gray-500">
                           {person.createdAt ? new Date(person.createdAt.seconds * 1000).toLocaleString() : "-"}
                         </td>
+                        <td className="px-6 py-4 text-right">
+                          <button onClick={() => handleDelete(person.id, true)} className="text-gray-500 hover:text-red-500 transition-colors p-1" title="Delete">
+                            <Trash2 size={16} />
+                          </button>
+                        </td>
                       </tr>
                     ))
                   ) : (
@@ -373,6 +398,11 @@ export default function DashboardPage() {
                           </td>
                           <td className="px-6 py-4 text-xs text-gray-500">
                             {team.createdAt ? new Date(team.createdAt.seconds * 1000).toLocaleString() : "-"}
+                          </td>
+                          <td className="px-6 py-4 text-right">
+                            <button onClick={() => handleDelete(team.id, false)} className="text-gray-500 hover:text-red-500 transition-colors p-1" title="Delete">
+                              <Trash2 size={16} />
+                            </button>
                           </td>
                         </tr>
                       );
@@ -423,7 +453,25 @@ export default function DashboardPage() {
                     CLOSED
                   </button>
                 </div>
-                <p className="text-xs text-gray-500 mt-1">When closed, the registration form is hidden and a closed message is shown.</p>
+              </div>
+
+              <div className="flex flex-col gap-2 mt-4">
+                <label className="text-sm font-semibold text-gray-300">Pre-Xtreme Registration Status</label>
+                <div className="flex items-center gap-4">
+                  <button 
+                    onClick={() => setIsPreXtremeOpen(true)}
+                    className={`flex-1 py-3 rounded-lg font-bold transition-all ${isPreXtremeOpen ? 'bg-green-500/20 text-green-500 border border-green-500/30' : 'bg-white/5 text-gray-500 hover:bg-white/10'}`}
+                  >
+                    OPEN
+                  </button>
+                  <button 
+                    onClick={() => setIsPreXtremeOpen(false)}
+                    className={`flex-1 py-3 rounded-lg font-bold transition-all ${!isPreXtremeOpen ? 'bg-red-500/20 text-red-500 border border-red-500/30' : 'bg-white/5 text-gray-500 hover:bg-white/10'}`}
+                  >
+                    CLOSED
+                  </button>
+                </div>
+                <p className="text-xs text-gray-500 mt-1">When closed, the Pre-Xtreme team registration form is hidden.</p>
               </div>
 
               <div className="flex flex-col gap-2 mt-4">

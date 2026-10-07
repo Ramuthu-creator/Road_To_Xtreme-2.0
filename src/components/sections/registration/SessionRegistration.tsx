@@ -225,7 +225,7 @@ export default function SessionRegistration({
                     }
                   }
 
-                  setMessage({ type: "success", text: "Successfully registered! Redirecting..." });
+                  setMessage({ type: "success", text: "Successfully registered! Check your email for the meeting link. Redirecting..." });
                   form.reset();
                   setContact("");
                   setTimeout(() => {
