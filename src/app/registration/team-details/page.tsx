@@ -2,6 +2,8 @@
 
 import { useEffect, useRef, useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
+import { doc, onSnapshot } from "firebase/firestore";
+import { db } from "@/lib/firebase/firebase";
 
 const steps = ["Team Details", "Members", "Confirmation"];
 const batches = [
@@ -21,6 +23,19 @@ const batches = [
 
 export default function TeamDetailsPage() {
   const router = useRouter();
+  const [isPreXtremeOpen, setIsPreXtremeOpen] = useState(true);
+
+  useEffect(() => {
+    const unsub = onSnapshot(doc(db, "settings", "general"), (docSnap) => {
+      if (docSnap.exists()) {
+        const data = docSnap.data();
+        if (data.isPreXtremeOpen !== undefined) {
+          setIsPreXtremeOpen(data.isPreXtremeOpen);
+        }
+      }
+    });
+    return () => unsub();
+  }, []);
 
   const [faculty, setFaculty] = useState("computing");
   const [compete, setCompete] = useState("yes");
@@ -156,6 +171,7 @@ export default function TeamDetailsPage() {
           </p>
         </div>
 
+        {isPreXtremeOpen ? (
         <form
           onSubmit={handleSubmit}
           className="relative grid grid-cols-1 gap-x-8 gap-y-6 md:grid-cols-2"
@@ -468,6 +484,21 @@ export default function TeamDetailsPage() {
             </button>
           </div>
         </form>
+        ) : (
+          <div className="reveal reveal-4 text-center mt-8 rounded-md border border-[#fe5119]/20 bg-[#fe5119]/10 p-8 sm:p-12">
+            <h3 className="mb-4 text-2xl font-bold text-white">Registration Closed</h3>
+            <p className="text-gray-400 leading-relaxed max-w-md mx-auto">
+              The Pre-Xtreme registration is currently closed. Thank you for your interest! Keep an eye on our social media for future updates and announcements.
+            </p>
+            <button
+              type="button"
+              onClick={() => router.push("/session-registration")}
+              className="mt-10 relative inline-flex min-h-12 items-center justify-center gap-2 rounded-full border border-gray-700 bg-[#080808] px-8 py-3 font-mono text-sm font-bold text-white transition-colors hover:bg-gray-800"
+            >
+              Go to Session Registration
+            </button>
+          </div>
+        )}
       </div>
 
       <style jsx>{`
