@@ -11,6 +11,8 @@ import { useRouter } from "next/navigation";
 import { collection, addDoc, doc, onSnapshot } from "firebase/firestore";
 import { db } from "@/lib/firebase/firebase";
 
+import emailjs from '@emailjs/browser';
+
 type SessionRegistrationProps = {
   onSubmit?: FormEventHandler<HTMLFormElement>;
 };
@@ -201,6 +203,28 @@ export default function SessionRegistration({
                   };
 
                   await addDoc(collection(db, "session_registrations"), data);
+
+                  // Send email if it's Session 01 or Awareness Session
+                  if (currentSession === "Session 01" || currentSession === "Session 1" || currentSession === "Awareness Session") {
+                    try {
+                      const templateParams = {
+                        to_email: data.email,
+                        to_name: data.fullName,
+                        session_name: "Awareness Session",
+                        meeting_link: process.env.NEXT_PUBLIC_MEETING_LINK || "https://calendar.app.google/EgpEz62Yd4dbSvcZ9"
+                      };
+
+                      await emailjs.send(
+                        process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID!,
+                        process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID!,
+                        templateParams,
+                        process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY!
+                      );
+                    } catch (emailError) {
+                      console.error("Error sending email via EmailJS:", emailError);
+                    }
+                  }
+
                   setMessage({ type: "success", text: "Successfully registered! Redirecting..." });
                   form.reset();
                   setContact("");
