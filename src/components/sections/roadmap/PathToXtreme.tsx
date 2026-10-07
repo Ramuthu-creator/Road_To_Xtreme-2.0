@@ -453,7 +453,7 @@ export default function PathToXtreme() {
                 data-heading-word
                 className="inline-block text-[#fe5119]"
               >
-                EXTREME
+                XTREME
               </span>
             </span>
           </h2>
