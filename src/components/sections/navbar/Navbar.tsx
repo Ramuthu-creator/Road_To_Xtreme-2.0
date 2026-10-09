@@ -1,6 +1,11 @@
 "use client";
 
-import { useEffect, useRef, useState, type MouseEvent } from "react";
+import {
+  useEffect,
+  useRef,
+  useState,
+  type MouseEvent,
+} from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
@@ -9,15 +14,14 @@ import RegisterButton from "./RegisterButton";
 const navLinks = [
   { name: "Home", href: "/#home" },
   { name: "About", href: "/#about" },
+  { name: "Merch", href: "/merch" },
   { name: "Contact Us", href: "/#contact" },
 ];
 
 export default function Navbar() {
   const pathname = usePathname();
-
   const headerRef = useRef<HTMLElement>(null);
   const toggleRef = useRef<HTMLButtonElement>(null);
-
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   useEffect(() => {
@@ -70,7 +74,6 @@ export default function Navbar() {
     event: MouseEvent<HTMLAnchorElement>,
     href: string,
   ) => {
-    // Preserve opening links in a new tab.
     if (
       event.defaultPrevented ||
       event.button !== 0 ||
@@ -84,18 +87,19 @@ export default function Navbar() {
 
     setMobileMenuOpen(false);
 
-    if (pathname !== "/") return;
+    // Merch uses normal Next.js page navigation.
+    if (pathname !== "/" || !href.startsWith("/#")) return;
 
-    const targetId = href.split("#")[1];
-    const target = document.getElementById(targetId);
+    const targetId = href.slice(2);
+    const target =
+      document.getElementById(targetId) ??
+      (targetId === "contact"
+        ? document.getElementById("contact-us")
+        : null);
 
     if (targetId !== "home" && !target) return;
 
     event.preventDefault();
-
-    const reducedMotion = window.matchMedia(
-      "(prefers-reduced-motion: reduce)",
-    ).matches;
 
     const headerHeight =
       headerRef.current?.getBoundingClientRect().height ?? 0;
@@ -110,7 +114,11 @@ export default function Navbar() {
 
     window.scrollTo({
       top: Math.max(0, top),
-      behavior: reducedMotion ? "auto" : "smooth",
+      behavior: window.matchMedia(
+        "(prefers-reduced-motion: reduce)",
+      ).matches
+        ? "auto"
+        : "smooth",
     });
   };
 
@@ -118,8 +126,8 @@ export default function Navbar() {
     <header
       ref={headerRef}
       className="
-        sticky top-0 z-50 w-full
-        select-none border-b border-zinc-800/60
+        sticky top-0 z-50 w-full select-none
+        border-b border-zinc-800/60
         bg-[#0d0d0e]/95 text-white backdrop-blur-md
       "
     >
@@ -129,20 +137,17 @@ export default function Navbar() {
           items-center justify-between
           gap-2 px-3 py-3
           sm:gap-4 sm:px-6
-          lg:gap-8 lg:px-12
+          lg:gap-6 lg:px-12
         "
       >
-        {/* Logo */}
         <Link
           href="/"
           aria-label="Road to Xtreme home"
           onClick={() => setMobileMenuOpen(false)}
           className="
-            relative flex min-w-0 shrink
-            items-center justify-center
-            rounded-sm p-2 sm:p-2.5
-            focus-visible:outline
-            focus-visible:outline-2
+            relative flex min-w-0 shrink items-center
+            justify-center rounded-sm p-2 sm:p-2.5
+            focus-visible:outline focus-visible:outline-2
             focus-visible:outline-offset-2
             focus-visible:outline-[#fe5119]
           "
@@ -155,18 +160,15 @@ export default function Navbar() {
             priority
             className="
               relative h-auto w-[clamp(80px,25vw,150px)]
-              object-contain
-              sm:h-11 sm:w-auto
-              lg:h-12
+              object-contain sm:h-11 sm:w-auto lg:h-12
             "
           />
         </Link>
 
-        {/* Desktop navigation */}
         <nav
           aria-label="Main navigation"
           className="
-            hidden items-center gap-12 lg:flex xl:gap-16
+            hidden items-center gap-8 lg:flex xl:gap-12
             font-mono text-xs font-semibold
             uppercase tracking-[0.08em] xl:text-sm
           "
@@ -175,14 +177,18 @@ export default function Navbar() {
             <Link
               key={link.href}
               href={link.href}
-              onClick={(event) => handleNavigation(event, link.href)}
+              aria-current={
+                pathname === link.href ? "page" : undefined
+              }
+              onClick={(event) =>
+                handleNavigation(event, link.href)
+              }
               className="
                 group relative whitespace-nowrap py-2
                 text-zinc-400 transition-colors duration-200
                 hover:text-[#fe5119]
                 focus-visible:text-[#fe5119]
-                focus-visible:outline
-                focus-visible:outline-2
+                focus-visible:outline focus-visible:outline-2
                 focus-visible:outline-offset-4
                 focus-visible:outline-[#fe5119]
               "
@@ -205,7 +211,6 @@ export default function Navbar() {
           ))}
         </nav>
 
-        {/* Register and menu toggle */}
         <div className="flex shrink-0 items-center gap-1 sm:gap-4">
           <RegisterButton />
 
@@ -221,12 +226,11 @@ export default function Navbar() {
             aria-expanded={mobileMenuOpen}
             aria-controls="mobile-navigation"
             className="
-              flex h-11 w-11 shrink-0
-              items-center justify-center rounded-sm
-              text-zinc-400 transition-colors
-              hover:bg-zinc-800/60 hover:text-white
-              focus-visible:outline
-              focus-visible:outline-2
+              flex h-11 w-11 shrink-0 items-center
+              justify-center rounded-sm text-zinc-400
+              transition-colors hover:bg-zinc-800/60
+              hover:text-white
+              focus-visible:outline focus-visible:outline-2
               focus-visible:outline-offset-2
               focus-visible:outline-[#fe5119]
               lg:hidden
@@ -234,7 +238,9 @@ export default function Navbar() {
           >
             <span
               aria-hidden="true"
-              className={`menu-icon ${mobileMenuOpen ? "is-open" : ""}`}
+              className={`menu-icon ${
+                mobileMenuOpen ? "is-open" : ""
+              }`}
             >
               <span />
               <span />
@@ -244,7 +250,6 @@ export default function Navbar() {
         </div>
       </div>
 
-      {/* Absolute positioning keeps the hero in place. */}
       <nav
         id="mobile-navigation"
         aria-label="Mobile navigation"
@@ -267,24 +272,26 @@ export default function Navbar() {
               <Link
                 href={link.href}
                 tabIndex={mobileMenuOpen ? 0 : -1}
-                onClick={(event) => handleNavigation(event, link.href)}
+                aria-current={
+                  pathname === link.href ? "page" : undefined
+                }
+                onClick={(event) =>
+                  handleNavigation(event, link.href)
+                }
                 className="
                   group flex min-h-12 items-center
                   rounded-sm px-3 py-3
                   font-mono text-xs font-semibold
                   uppercase tracking-[0.08em]
-                  text-zinc-400
-                  transition-colors duration-200
+                  text-zinc-400 transition-colors duration-200
                   hover:bg-zinc-800/50 hover:text-[#fe5119]
                   focus-visible:text-[#fe5119]
-                  focus-visible:outline
-                  focus-visible:outline-2
+                  focus-visible:outline focus-visible:outline-2
                   focus-visible:outline-[#fe5119]
                 "
               >
                 <span className="relative inline-block py-1">
                   {link.name}
-
                   <span
                     aria-hidden="true"
                     className="
@@ -311,18 +318,14 @@ export default function Navbar() {
           left: 0;
           right: 0;
           z-index: 60;
-
           visibility: hidden;
           pointer-events: none;
           opacity: 0;
-
           transform: translateY(-10px);
           clip-path: inset(0 0 100% 0);
-
           background: #0d0d0e;
           border-bottom: 1px solid rgba(254, 81, 25, 0.3);
           box-shadow: 0 24px 40px -20px rgba(0, 0, 0, 0.85);
-
           transition:
             opacity 220ms ease,
             transform 320ms cubic-bezier(0.22, 1, 0.36, 1),
@@ -334,10 +337,8 @@ export default function Navbar() {
           visibility: visible;
           pointer-events: auto;
           opacity: 1;
-
           transform: translateY(0);
           clip-path: inset(0 0 0 0);
-
           transition:
             opacity 220ms ease,
             transform 400ms cubic-bezier(0.22, 1, 0.36, 1),
@@ -358,7 +359,6 @@ export default function Navbar() {
         .mobile-menu-row {
           opacity: 0;
           transform: translateY(-8px);
-
           transition:
             opacity 220ms ease,
             transform 300ms cubic-bezier(0.22, 1, 0.36, 1);
@@ -379,13 +379,11 @@ export default function Navbar() {
         .menu-icon > span {
           position: absolute;
           left: 0;
-          display: block;
           width: 22px;
           height: 2px;
           border-radius: 2px;
           background: currentColor;
           transform-origin: center;
-
           transition:
             transform 280ms cubic-bezier(0.22, 1, 0.36, 1),
             opacity 180ms ease,
