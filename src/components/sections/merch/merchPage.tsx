@@ -9,11 +9,12 @@ import {
 import { ArrowUpRight, Maximize2, ScanLine } from "lucide-react";
 import "./Merch.css";
 
+const SHIRT_IMAGE = "/assets/images/merch/merch.jpeg";
+
 const SIZES = ["S", "M", "L", "XL", "XXL", "3XL"] as const;
 type Size = (typeof SIZES)[number];
 
-// SAMPLE ONLY: replace with the supplier's confirmed size chart.
-// Chest is the full garment circumference, in inches.
+// Sample measurements. Replace with the supplier's final chart.
 const SIZE_CHART = [
   { size: "S", chest: 38, length: 27, shoulder: 16.5 },
   { size: "M", chest: 40, length: 28, shoulder: 17.5 },
@@ -36,6 +37,85 @@ type MerchPageProps = {
 const currency = (value: number) =>
   `LKR ${value.toLocaleString("en-US")}`;
 
+// Cache the processed image when navigating away and back.
+let processedShirtCache: string | null = null;
+
+/**
+ * Removes near-white pixels connected to the outer image boundary.
+ * Enclosed white details, such as the shirt prints, are not selected.
+ * The original image file remains unchanged.
+ */
+function createTransparentShirt(image: HTMLImageElement): string {
+  const canvas = document.createElement("canvas");
+
+  canvas.width = image.naturalWidth;
+  canvas.height = image.naturalHeight;
+
+  const context = canvas.getContext("2d");
+
+  if (!context) {
+    throw new Error("Canvas is unavailable.");
+  }
+
+  context.drawImage(image, 0, 0);
+
+  const { width, height } = canvas;
+  const frame = context.getImageData(0, 0, width, height);
+  const pixels = frame.data;
+
+  const visited = new Uint8Array(width * height);
+  const queue = new Uint32Array(width * height);
+
+  let head = 0;
+  let tail = 0;
+
+  const enqueue = (position: number) => {
+    if (visited[position]) return;
+
+    visited[position] = 1;
+
+    const offset = position * 4;
+    const red = pixels[offset];
+    const green = pixels[offset + 1];
+    const blue = pixels[offset + 2];
+
+    const lightest = Math.max(red, green, blue);
+    const darkest = Math.min(red, green, blue);
+
+    if (darkest >= 235 && lightest - darkest <= 20) {
+      queue[tail++] = position;
+    }
+  };
+
+  // Start at every outer edge of the original image.
+  for (let x = 0; x < width; x++) {
+    enqueue(x);
+    enqueue((height - 1) * width + x);
+  }
+
+  for (let y = 0; y < height; y++) {
+    enqueue(y * width);
+    enqueue(y * width + width - 1);
+  }
+
+  while (head < tail) {
+    const position = queue[head++];
+    const x = position % width;
+    const y = Math.floor(position / width);
+
+    pixels[position * 4 + 3] = 0;
+
+    if (x > 0) enqueue(position - 1);
+    if (x < width - 1) enqueue(position + 1);
+    if (y > 0) enqueue(position - width);
+    if (y < height - 1) enqueue(position + width);
+  }
+
+  context.putImageData(frame, 0, 0);
+
+  return canvas.toDataURL("image/png");
+}
+
 export default function MerchPage({
   price = 2500,
   preorderClosesAt,
@@ -45,8 +125,15 @@ export default function MerchPage({
   const reviewButtonRef = useRef<HTMLButtonElement>(null);
 
   const [panelHeight, setPanelHeight] = useState(640);
+
   const [view, setView] = useState<"front" | "back">("front");
   const [zoomed, setZoomed] = useState(false);
+
+  const [imageSrc, setImageSrc] = useState<string | null>(null);
+  const [imageReady, setImageReady] = useState(false);
+  const [imageError, setImageError] = useState(false);
+  const [backgroundWarning, setBackgroundWarning] = useState(false);
+
   const [selected, setSelected] = useState<Size>("M");
   const [tab, setTab] = useState<"guide" | "finder">("guide");
   const [unit, setUnit] = useState<"in" | "cm">("in");
@@ -54,6 +141,48 @@ export default function MerchPage({
   const [quantity, setQuantity] = useState(1);
   const [remaining, setRemaining] = useState<number | null>(null);
 
+  // Process the original image once, before displaying it.
+  useEffect(() => {
+    let cancelled = false;
+
+    if (processedShirtCache) {
+      setImageSrc(processedShirtCache);
+      return;
+    }
+
+    const source = new window.Image();
+    source.decoding = "async";
+
+    source.onload = () => {
+      if (cancelled) return;
+
+      try {
+        const result = createTransparentShirt(source);
+        processedShirtCache = result;
+        setImageSrc(result);
+      } catch (error) {
+        console.error("Could not process the shirt background:", error);
+
+        // Keep the product visible if image processing is unavailable.
+        setBackgroundWarning(true);
+        setImageSrc(SHIRT_IMAGE);
+      }
+    };
+
+    source.onerror = () => {
+      if (!cancelled) setImageError(true);
+    };
+
+    source.src = SHIRT_IMAGE;
+
+    return () => {
+      cancelled = true;
+      source.onload = null;
+      source.onerror = null;
+    };
+  }, []);
+
+  // Match the desktop scroll panel to the image column.
   useEffect(() => {
     const element = showcaseRef.current;
     if (!element) return;
@@ -88,6 +217,7 @@ export default function MerchPage({
     };
 
     update();
+
     const timer = window.setInterval(update, 1000);
 
     return () => window.clearInterval(timer);
@@ -124,6 +254,7 @@ export default function MerchPage({
       <main className="xm-main">
         <div className="xm-topline">
           <span>THE XTREME COLLECTION</span>
+
           <span>
             <b className="xm-dot" aria-hidden="true" />
             MERCH // 2.0
@@ -139,24 +270,50 @@ export default function MerchPage({
             <div
               className={`xm-stage ${
                 view === "back" ? "is-back" : ""
-              } ${zoomed ? "zoomed" : ""}`}
+              } ${zoomed ? "zoomed" : ""} ${
+                imageReady ? "is-ready" : ""
+              }`}
+              aria-busy={!imageReady && !imageError}
             >
-              <div className="xm-shirt-wrap" key={view}>
-                {/* Original combined image; only the viewport changes. */}
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  className="xm-shirt"
-                  src="/assets/images/merch/merch.jpeg"
-                  alt={
-                    view === "front"
-                      ? "Front of the original Road to Xtreme polo"
-                      : "Back of the original Road to Xtreme polo"
-                  }
-                  width={2048}
-                  height={1152}
-                  draggable={false}
-                />
+              <div className="xm-shirt-wrap">
+                {imageSrc && (
+                  /* eslint-disable-next-line @next/next/no-img-element */
+                  <img
+                    className="xm-shirt"
+                    src={imageSrc}
+                    alt={
+                      view === "front"
+                        ? "Front of the original Road to Xtreme polo"
+                        : "Back of the original Road to Xtreme polo"
+                    }
+                    width={2048}
+                    height={1152}
+                    draggable={false}
+                    onLoad={() => setImageReady(true)}
+                    onError={() => {
+                      setImageReady(false);
+                      setImageError(true);
+                    }}
+                  />
+                )}
               </div>
+
+              {!imageReady && (
+                <div className="xm-image-status" role="status">
+                  {!imageError && (
+                    <span
+                      className="xm-image-loader"
+                      aria-hidden="true"
+                    />
+                  )}
+
+                  <span>
+                    {imageError
+                      ? "Unable to load the shirt image."
+                      : "LOADING PRODUCT"}
+                  </span>
+                </div>
+              )}
 
               <span className="xm-view">
                 {view.toUpperCase()} VIEW
@@ -166,6 +323,7 @@ export default function MerchPage({
                 type="button"
                 className="xm-zoom"
                 aria-pressed={zoomed}
+                disabled={!imageReady}
                 onClick={() => setZoomed((previous) => !previous)}
               >
                 <Maximize2 aria-hidden="true" />
@@ -197,6 +355,13 @@ export default function MerchPage({
               <span>BLACK / BLUE TRIM</span>
               <span>UNISEX FIT</span>
             </div>
+
+            {backgroundWarning && (
+              <p className="xm-note" role="status">
+                Showing the original image. Background removal
+                was unavailable.
+              </p>
+            )}
           </section>
 
           <section
@@ -408,9 +573,7 @@ export default function MerchPage({
                 <div className="xm-result" aria-live="polite">
                   <span>
                     SUGGESTED FIT
-                    <strong>
-                      {suggested?.size ?? "No match"}
-                    </strong>
+                    <strong>{suggested?.size ?? "No match"}</strong>
                   </span>
 
                   <button
@@ -418,9 +581,7 @@ export default function MerchPage({
                     className="xm-use"
                     disabled={!suggested}
                     onClick={() => {
-                      if (suggested) {
-                        setSelected(suggested.size);
-                      }
+                      if (suggested) setSelected(suggested.size);
                     }}
                   >
                     Select size ↗
@@ -477,9 +638,11 @@ export default function MerchPage({
               <span>
                 {expired ? "PRE-ORDERS CLOSED" : "REVIEW SELECTION"}
               </span>
+
               <span className="xm-total">
                 {currency(price * quantity)}
               </span>
+
               <ArrowUpRight aria-hidden="true" />
             </button>
 

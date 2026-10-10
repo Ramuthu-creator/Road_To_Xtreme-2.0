@@ -103,7 +103,7 @@
   aspect-ratio: 765 / 880;
   overflow: hidden;
   border-radius: 4px;
-  background: #fff;
+  /* background: #181717; */
 }
 
 #xtreme-merch .xm-shirt-wrap {
@@ -851,5 +851,105 @@
     animation: none !important;
     transition: none !important;
     scroll-behavior: auto !important;
+  }
+}
+/* Black product background */
+
+#xtreme-merch .xm-stage {
+  position: relative;
+  aspect-ratio: 765 / 880;
+  overflow: hidden;
+  border-radius: 4px;
+  background: #080808;
+}
+
+#xtreme-merch .xm-shirt-wrap {
+  position: absolute;
+  inset: 0;
+  display: block;
+  animation: none;
+  mix-blend-mode: normal;
+}
+
+/* Hide the image until its processed version has loaded. */
+
+#xtreme-merch .xm-shirt {
+  position: absolute;
+  left: -7.8431%;
+  top: -14.7727%;
+  display: block;
+  width: 267.7124%;
+  max-width: none;
+  height: auto;
+  object-fit: initial;
+  user-select: none;
+
+  opacity: 0;
+  transform-origin: 22% 40%;
+
+  transition:
+    opacity 450ms ease,
+    transform 600ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+#xtreme-merch .xm-stage.is-ready .xm-shirt {
+  opacity: 1;
+}
+
+#xtreme-merch .xm-stage.is-back .xm-shirt {
+  left: -109.8039%;
+  transform-origin: 59% 40%;
+}
+
+#xtreme-merch .xm-stage.zoomed .xm-shirt {
+  transform: scale(1.24);
+}
+
+/* Loading and image error state */
+
+#xtreme-merch .xm-image-status {
+  position: absolute;
+  inset: 0;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+
+  padding: 24px;
+  color: var(--xm-muted);
+  font: 10px/1.7 var(--xm-mono);
+  letter-spacing: 1.5px;
+  text-align: center;
+}
+
+#xtreme-merch .xm-image-loader {
+  width: 28px;
+  height: 28px;
+  border: 1px solid rgba(254, 81, 25, 0.18);
+  border-top-color: #fe5119;
+  border-radius: 50%;
+  animation: xm-image-spin 800ms linear infinite;
+}
+
+#xtreme-merch .xm-view,
+#xtreme-merch .xm-zoom {
+  z-index: 2;
+}
+
+@keyframes xm-image-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #xtreme-merch .xm-shirt {
+    transition: none;
+  }
+
+  #xtreme-merch .xm-image-loader {
+    animation: none;
   }
 }
