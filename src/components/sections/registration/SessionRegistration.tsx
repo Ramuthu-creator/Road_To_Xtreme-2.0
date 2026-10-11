@@ -266,6 +266,7 @@ export default function SessionRegistration({
                     name="fullName"
                     type="text"
                     autoComplete="name"
+                    required
                     placeholder="e.g. John Doe"
                     className="line-input"
                   />
@@ -290,6 +291,7 @@ export default function SessionRegistration({
                       id="participant-registration"
                       name="registrationNumber"
                       type="text"
+                      required
                       placeholder="e.g. M200 or F200"
                       className="line-input"
                     />
@@ -313,6 +315,7 @@ export default function SessionRegistration({
                       id="participant-batch"
                       name="batch"
                       defaultValue=""
+                      required
                       className="line-input batch-select"
                       onChange={(e) => setSelectedBatch(e.target.value)}
                     >
@@ -388,6 +391,7 @@ export default function SessionRegistration({
                       name="email"
                       type="email"
                       autoComplete="email"
+                      required
                       placeholder="name@example.com"
                       className="line-input"
                     />
@@ -413,6 +417,7 @@ export default function SessionRegistration({
                       type="tel"
                       inputMode="numeric"
                       autoComplete="tel-national"
+                      required
                       placeholder="07XXXXXXXX"
                       maxLength={10}
                       pattern="[0-9]{10}"
