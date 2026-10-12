@@ -19,6 +19,7 @@ const sessionsBase = [
     speaker: "OC Leads",
     time: "8.00 PM",
     date: "OCTOBER 9",
+    endDate: "2026-10-09T22:00:00+05:30",
     audience: "OC-VIRTUAL",
   },
   {
@@ -27,6 +28,7 @@ const sessionsBase = [
     speaker: "Mr. Shanodh Vithanage",
     time: "3.00 PM to 5.00 PM",
     date: "OCTOBER 15",
+    endDate: "2026-10-15T18:00:00+05:30",
     audience: "PHYSICAL",
   },
   {
@@ -35,6 +37,7 @@ const sessionsBase = [
     speaker: "Mr. Manosha Cooray",
     time: "3.00 PM to 5.00 PM",
     date: "OCTOBER 16",
+    endDate: "2026-10-16T18:00:00+05:30",
     audience: "PHYSICAL",
   },
   {
@@ -43,6 +46,7 @@ const sessionsBase = [
     speaker: "Mr. Naveen Hasaranga",
     time: "3.00 PM to 5.00 PM",
     date: "OCTOBER 29",
+    endDate: "2026-10-29T18:00:00+05:30",
     audience: "PHYSICAL",
   },
   {
@@ -51,9 +55,27 @@ const sessionsBase = [
     speaker: "Mr. Hasira Koswatta & Mr. Harindu Mansaka",
     time: "3.00 PM to 5.00 PM",
     date: "OCTOBER 30",
+    endDate: "2026-10-30T18:00:00+05:30",
     audience: "PHYSICAL",
   },
 ];
+
+function isSessionPast(dateStr: string, endDateStr?: string): boolean {
+  if (endDateStr) {
+    const end = Date.parse(endDateStr);
+    if (!Number.isNaN(end)) {
+      return Date.now() > end;
+    }
+  }
+
+  const currentYear = new Date().getFullYear();
+  const parsed = Date.parse(`${dateStr} ${currentYear} 23:59:59`);
+  if (!Number.isNaN(parsed)) {
+    return Date.now() > parsed;
+  }
+
+  return false;
+}
 
 const description =
   "Gear up for hands-on workshops, expert tech talks, and strategic prep sessions. Level up your skills and master the competition.";
@@ -85,20 +107,30 @@ export default function UpcomingSessions() {
     return () => unsub();
   }, []);
 
-  const sessions: SessionCardProps[] = sessionsBase.map(session => {
+  const sessions: SessionCardProps[] = sessionsBase.map((session) => {
+    const isPast = isSessionPast(session.date, session.endDate);
+
+    if (isPast) {
+      return {
+        ...session,
+        status: "completed",
+        actionHref: undefined,
+      } as SessionCardProps;
+    }
+
     if (session.sessionNumber === activeSessionNumber) {
       return {
         ...session,
         status: isRegistrationOpen ? "live" : "upcoming",
         actionHref: isRegistrationOpen ? "/session-registration" : undefined,
       } as SessionCardProps;
-    } else {
-      return {
-        ...session,
-        status: "upcoming",
-        actionHref: undefined,
-      } as SessionCardProps;
     }
+
+    return {
+      ...session,
+      status: "upcoming",
+      actionHref: undefined,
+    } as SessionCardProps;
   });
 
   useEffect(() => {

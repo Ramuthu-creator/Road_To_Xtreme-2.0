@@ -6,6 +6,7 @@ import {
   Bell,
   BellRing,
   Calendar,
+  CheckCircle2,
   Clock,
   User,
 } from "lucide-react";
@@ -18,7 +19,7 @@ export interface SessionCardProps {
   time?: string;
   date: string;
   audience: string;
-  status: "live" | "upcoming";
+  status: "live" | "upcoming" | "completed";
   actionHref?: string;
   reminderSet?: boolean;
   onSetReminder?: () => void;
@@ -226,67 +227,89 @@ export default function SessionCard({
   reminderSet = false,
   onSetReminder,
 }: SessionCardProps) {
+  const isCompleted = status === "completed";
+
   return (
     <article
       aria-labelledby={`session-title-${sessionNumber}`}
-      className="
+      className={`
         group relative isolate flex h-full min-h-[360px]
         w-full flex-col overflow-hidden
-        border border-white/10 bg-[#101010]
-        p-6 transition-colors duration-300
-        hover:border-[#fe5119]/60
-        focus-within:border-[#fe5119]/60
+        border bg-[#101010] p-6 transition-all duration-300
         sm:min-h-[390px] sm:p-7
-      "
+        ${
+          isCompleted
+            ? "border-white/5 opacity-80 hover:border-white/20 hover:opacity-100"
+            : "border-white/10 hover:border-[#fe5119]/60 focus-within:border-[#fe5119]/60"
+        }
+      `}
     >
-      {/* Subtle orange tint */}
-      <div
-        aria-hidden="true"
-        className="
-          pointer-events-none absolute inset-0 -z-10
-          bg-[radial-gradient(ellipse_at_top_right,rgba(254,81,25,0.12),transparent_65%)]
-          opacity-40 transition-opacity duration-500
-          group-hover:opacity-100
-        "
-      />
+      {/* Subtle orange tint - active/upcoming sessions only */}
+      {!isCompleted && (
+        <div
+          aria-hidden="true"
+          className="
+            pointer-events-none absolute inset-0 -z-10
+            bg-[radial-gradient(ellipse_at_top_right,rgba(254,81,25,0.12),transparent_65%)]
+            opacity-40 transition-opacity duration-500
+            group-hover:opacity-100
+          "
+        />
+      )}
 
       {/* Circuit-style corner accents */}
-      <span
-        aria-hidden="true"
-        className="pointer-events-none absolute left-0 top-0 h-4 w-4 border-l border-t border-[#fe5119]"
-      />
-      <span
-        aria-hidden="true"
-        className="pointer-events-none absolute bottom-0 right-0 h-4 w-4 border-b border-r border-[#fe5119]"
-      />
+      {!isCompleted && (
+        <>
+          <span
+            aria-hidden="true"
+            className="pointer-events-none absolute left-0 top-0 h-4 w-4 border-l border-t border-[#fe5119]"
+          />
+          <span
+            aria-hidden="true"
+            className="pointer-events-none absolute bottom-0 right-0 h-4 w-4 border-b border-r border-[#fe5119]"
+          />
+        </>
+      )}
 
       {/* Hover line */}
-      <span
-        aria-hidden="true"
-        className="
-          pointer-events-none absolute inset-x-0 top-0
-          h-px origin-left scale-x-0 bg-[#fe5119]
-          transition-transform duration-500
-          group-hover:scale-x-100
-          group-focus-within:scale-x-100
-          motion-reduce:transition-none
-        "
-      />
+      {!isCompleted && (
+        <span
+          aria-hidden="true"
+          className="
+            pointer-events-none absolute inset-x-0 top-0
+            h-px origin-left scale-x-0 bg-[#fe5119]
+            transition-transform duration-500
+            group-hover:scale-x-100
+            group-focus-within:scale-x-100
+            motion-reduce:transition-none
+          "
+        />
+      )}
 
       <div className="mb-7 flex items-center justify-between gap-3 font-mono">
         <span className="text-[10px] tracking-[0.16em] text-neutral-500">
           // SESSION_{sessionNumber}
         </span>
 
-        <span className="flex items-center gap-2 text-[9px] uppercase tracking-[0.12em] text-[#fe5119]">
-          <span
-            aria-hidden="true"
-            className={`h-1.5 w-1.5 ${
-              status === "live" ? "bg-[#fe5119]" : "border border-[#fe5119]"
-            }`}
-          />
-          {status === "live" ? "OPEN" : "UPCOMING"}
-        </span>
+        {isCompleted ? (
+          <span className="flex items-center gap-2 text-[9px] uppercase tracking-[0.12em] text-neutral-400">
+            <span
+              aria-hidden="true"
+              className="h-1.5 w-1.5 rounded-full bg-neutral-500"
+            />
+            COMPLETED
+          </span>
+        ) : (
+          <span className="flex items-center gap-2 text-[9px] uppercase tracking-[0.12em] text-[#fe5119]">
+            <span
+              aria-hidden="true"
+              className={`h-1.5 w-1.5 ${
+                status === "live" ? "bg-[#fe5119]" : "border border-[#fe5119]"
+              }`}
+            />
+            {status === "live" ? "OPEN" : "UPCOMING"}
+          </span>
+        )}
       </div>
 
       <div className="min-h-[88px]">
@@ -297,7 +320,11 @@ export default function SessionCard({
           {title}
         </h3>
 
-        <p className="mt-3 font-mono text-[11px] font-semibold tracking-[0.12em] text-[#fe5119]">
+        <p
+          className={`mt-3 font-mono text-[11px] font-semibold tracking-[0.12em] ${
+            isCompleted ? "text-neutral-500" : "text-[#fe5119]"
+          }`}
+        >
           SESSION {sessionNumber}
         </p>
       </div>
@@ -309,7 +336,9 @@ export default function SessionCard({
           <div className="flex items-center gap-3">
             <User
               aria-hidden="true"
-              className="h-4 w-4 shrink-0 text-[#fe5119]"
+              className={`h-4 w-4 shrink-0 ${
+                isCompleted ? "text-neutral-500" : "text-[#fe5119]"
+              }`}
               strokeWidth={1.5}
             />
             <span>{speaker}</span>
@@ -320,7 +349,9 @@ export default function SessionCard({
           <div className="flex items-center gap-3">
             <Clock
               aria-hidden="true"
-              className="h-4 w-4 shrink-0 text-[#fe5119]"
+              className={`h-4 w-4 shrink-0 ${
+                isCompleted ? "text-neutral-500" : "text-[#fe5119]"
+              }`}
               strokeWidth={1.5}
             />
             <span>{time}</span>
@@ -330,19 +361,44 @@ export default function SessionCard({
         <div className="flex items-center gap-3">
           <Calendar
             aria-hidden="true"
-            className="h-4 w-4 shrink-0 text-[#fe5119]"
+            className={`h-4 w-4 shrink-0 ${
+              isCompleted ? "text-neutral-500" : "text-[#fe5119]"
+            }`}
             strokeWidth={1.5}
           />
           <span>{date}</span>
         </div>
       </div>
 
-      <p className="mt-5 font-mono text-[11px] uppercase tracking-[0.1em] text-[#fe5119]">
+      <p
+        className={`mt-5 font-mono text-[11px] uppercase tracking-[0.1em] ${
+          isCompleted ? "text-neutral-500" : "text-[#fe5119]"
+        }`}
+      >
         {audience}
       </p>
 
       <div className="relative z-10 mt-auto pt-8">
-        {status === "live" ? (
+        {isCompleted ? (
+          <div
+            className="
+              relative isolate flex min-h-[52px] w-full
+              items-center justify-between gap-3 overflow-hidden
+              border border-white/5 bg-[#141414] px-4 py-3.5
+              font-mono text-[11px] font-semibold uppercase
+              tracking-[0.08em] text-neutral-500
+              cursor-default select-none
+              sm:px-5 sm:text-xs
+            "
+          >
+            <span>SESSION ENDED</span>
+            <CheckCircle2
+              aria-hidden="true"
+              className="h-4 w-4 shrink-0 text-neutral-500"
+              strokeWidth={1.5}
+            />
+          </div>
+        ) : status === "live" ? (
           <ActionButton
             label="REGISTER HERE"
             href={actionHref}
