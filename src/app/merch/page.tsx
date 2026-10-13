@@ -11,7 +11,7 @@ export default function Page() {
   return (
     <MerchPage
       price={1800}
-      preorderClosesAt="2026-10-16T23:59:59+05:30"
+      preorderClosesAt="2026-10-18T12:00:00+05:30"
       googleFormUrl="https://docs.google.com/forms/d/e/1FAIpQLScotabcvcrfotx6qL9vsp_CPV3duoVTKccLQhq62ag0LlsZbw/viewform?usp=publish-editor"
     />
   );

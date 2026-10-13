@@ -22,9 +22,19 @@ export default function Preloader({ children }: Props) {
   const [phase, setPhase] = useState<Phase>("loading");
 
   useEffect(() => {
+    if (typeof window !== "undefined") {
+      if ("scrollRestoration" in window.history) {
+        window.history.scrollRestoration = "manual";
+      }
+      window.scrollTo({ top: 0, left: 0, behavior: "instant" as ScrollBehavior });
+    }
+
     // If not on home page, or if already played in this session, skip animation
     if (!isHomePage || sessionStorage.getItem("xtreme_preloader_done")) {
       setPhase("done");
+      if (typeof window !== "undefined") {
+        window.scrollTo(0, 0);
+      }
       return;
     }
 
@@ -53,6 +63,7 @@ export default function Preloader({ children }: Props) {
         setPhase("done");
         document.body.style.overflow = previousOverflow;
         sessionStorage.setItem("xtreme_preloader_done", "true");
+        window.scrollTo({ top: 0, left: 0, behavior: "instant" as ScrollBehavior });
       }, loadingTime + orangeTime + revealTime),
     ];
 
