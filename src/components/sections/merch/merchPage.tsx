@@ -7,7 +7,14 @@ import {
   type CSSProperties,
 } from "react";
 import Link from "next/link";
-import { ArrowLeft, ArrowUpRight, Maximize2, ScanLine, X } from "lucide-react";
+import {
+  ArrowLeft,
+  ArrowUpRight,
+  ChevronDown,
+  Maximize2,
+  ScanLine,
+  X,
+} from "lucide-react";
 import "./Merch.css";
 
 const SHIRT_IMAGE = "/assets/images/merch/merch.jpeg";
@@ -30,9 +37,11 @@ const STICKERS = [
 ] as const;
 
 const SIZES = ["XS", "S", "M", "L", "XL", "XXL", "XXXL"] as const;
-type Size = (typeof SIZES)[number];
 
-// Garment measurements. Chest measured flat (half-width).
+type Size = (typeof SIZES)[number];
+type Sticker = (typeof STICKERS)[number];
+type SizingPanel = "guide" | "finder" | null;
+
 const SIZE_CHART = [
   { size: "XS", chest: 18, length: 24.5 },
   { size: "S", chest: 19, length: 25.5 },
@@ -56,12 +65,10 @@ type MerchPageProps = {
 const currency = (value: number) =>
   `LKR ${value.toLocaleString("en-US")}`;
 
-// Cache the processed image when navigating away and back.
 let processedShirtCache: string | null = null;
 
-/**
- * Removes near-white pixels connected to the outer image boundary.
- * Enclosed white details, such as the shirt prints, are not selected.
+/*
+ * Removes near-white pixels connected to the image boundary.
  * The original image file remains unchanged.
  */
 function createTransparentShirt(image: HTMLImageElement): string {
@@ -106,7 +113,6 @@ function createTransparentShirt(image: HTMLImageElement): string {
     }
   };
 
-  // Start at every outer edge of the original image.
   for (let x = 0; x < width; x++) {
     enqueue(x);
     enqueue((height - 1) * width + x);
@@ -141,11 +147,10 @@ export default function MerchPage({
   googleFormUrl = "https://docs.google.com/forms/d/e/1FAIpQLScotabcvcrfotx6qL9vsp_CPV3duoVTKccLQhq62ag0LlsZbw/viewform?usp=publish-editor",
 }: MerchPageProps) {
   const showcaseRef = useRef<HTMLElement>(null);
+  const lightboxRef = useRef<HTMLDialogElement>(null);
 
   const [panelHeight, setPanelHeight] = useState(640);
-
   const [view, setView] = useState<"front" | "back">("front");
-  const [lightboxSticker, setLightboxSticker] = useState<(typeof STICKERS)[number] | null>(null);
   const [zoomed, setZoomed] = useState(false);
 
   const [imageSrc, setImageSrc] = useState<string | null>(null);
@@ -153,13 +158,31 @@ export default function MerchPage({
   const [imageError, setImageError] = useState(false);
   const [backgroundWarning, setBackgroundWarning] = useState(false);
 
+  const [lightboxSticker, setLightboxSticker] =
+    useState<Sticker | null>(null);
+
   const [selected, setSelected] = useState<Size | null>(null);
-  const [tab, setTab] = useState<"guide" | "finder">("guide");
+  const [tab, setTab] = useState<SizingPanel>(null);
   const [unit, setUnit] = useState<"in" | "cm">("in");
   const [chest, setChest] = useState(38);
   const [remaining, setRemaining] = useState<number | null>(null);
+  const [orderMessage, setOrderMessage] = useState("");
 
-  // Process the original image once, before displaying it.
+  // Mobile sizing tools start closed.
+  useEffect(() => {
+    const media = window.matchMedia("(max-width: 650px)");
+
+    const update = () => {
+      setTab(media.matches ? null : "guide");
+    };
+
+    update();
+    media.addEventListener("change", update);
+
+    return () => media.removeEventListener("change", update);
+  }, []);
+
+  // Process and cache the original shirt image.
   useEffect(() => {
     let cancelled = false;
 
@@ -176,12 +199,10 @@ export default function MerchPage({
 
       try {
         const result = createTransparentShirt(source);
+
         processedShirtCache = result;
         setImageSrc(result);
-      } catch (error) {
-        console.error("Could not process the shirt background:", error);
-
-        // Keep the product visible if image processing is unavailable.
+      } catch {
         setBackgroundWarning(true);
         setImageSrc(SHIRT_IMAGE);
       }
@@ -200,9 +221,10 @@ export default function MerchPage({
     };
   }, []);
 
-  // Match the desktop scroll panel to the image column.
+  // Keep the desktop details panel aligned with the left column.
   useEffect(() => {
     const element = showcaseRef.current;
+
     if (!element) return;
 
     const update = () => {
@@ -212,6 +234,7 @@ export default function MerchPage({
     };
 
     const observer = new ResizeObserver(update);
+
     observer.observe(element);
     update();
 
@@ -219,9 +242,7 @@ export default function MerchPage({
   }, []);
 
   useEffect(() => {
-    const deadline = preorderClosesAt
-      ? Date.parse(preorderClosesAt)
-      : NaN;
+    const deadline = Date.parse(preorderClosesAt);
 
     if (!Number.isFinite(deadline)) {
       setRemaining(null);
@@ -241,11 +262,26 @@ export default function MerchPage({
     return () => window.clearInterval(timer);
   }, [preorderClosesAt]);
 
-  const suggested =
-    SIZE_CHART.find((item) => item.chest * 2 >= chest + 2) ??
-    (chest <= SIZE_CHART[SIZE_CHART.length - 1].chest * 2
-      ? SIZE_CHART[SIZE_CHART.length - 1]
-      : undefined);
+  // Native dialog handles keyboard focus and Escape.
+  useEffect(() => {
+    const dialog = lightboxRef.current;
+
+    if (!dialog || !lightboxSticker) return;
+
+    const previousOverflow = document.body.style.overflow;
+
+    dialog.showModal();
+    document.body.style.overflow = "hidden";
+
+    return () => {
+      dialog.close();
+      document.body.style.overflow = previousOverflow;
+    };
+  }, [lightboxSticker]);
+
+  const suggested = SIZE_CHART.find(
+    (item) => item.chest * 2 >= chest + 2,
+  );
 
   const clock =
     remaining === null
@@ -262,6 +298,10 @@ export default function MerchPage({
   const measurement = (value: number) =>
     unit === "cm" ? (value * 2.54).toFixed(1) : `${value}″`;
 
+  const togglePanel = (panel: Exclude<SizingPanel, null>) => {
+    setTab((current) => (current === panel ? null : panel));
+  };
+
   return (
     <div
       id="xtreme-merch"
@@ -273,153 +313,131 @@ export default function MerchPage({
     >
       <main className="xm-main">
         <div className="xm-topline">
-          <Link href="/" className="xm-home-btn" aria-label="Back to Home">
-            <ArrowLeft className="xm-home-arrow" aria-hidden="true" />
-            <span>BACK TO HOME</span>
+          <Link
+            href="/"
+            className="xm-home-btn"
+            aria-label="Back to home"
+          >
+            <ArrowLeft aria-hidden="true" />
+            <span className="xm-desktop-home">BACK TO HOME</span>
+            <span className="xm-mobile-home">ROAD TO XTREME</span>
           </Link>
 
-          <span>
+          <span className="xm-collection-label">
             <b className="xm-dot" aria-hidden="true" />
             MERCH // 2.0
           </span>
         </div>
 
+        <h1 className="xm-mobile-heading">
+          Go beyond.
+          <br />
+          <em>Wear Xtreme.</em>
+        </h1>
+
         <div className="xm-grid">
+          {/* LEFT: shirt gallery and countdown */}
           <section
             ref={showcaseRef}
             className="xm-showcase"
-            aria-label="Shirt images"
+            aria-label="Shirt images and pre-order countdown"
           >
-            <div
-              className={`xm-stage ${
-                view === "back" ? "is-back" : ""
-              } ${zoomed ? "zoomed" : ""} ${
-                imageReady ? "is-ready" : ""
-              }`}
-              aria-busy={!imageReady && !imageError}
-            >
-              <div className="xm-shirt-wrap">
-                {imageSrc && (
-                  /* eslint-disable-next-line @next/next/no-img-element */
-                  <img
-                    className="xm-shirt"
-                    src={imageSrc}
-                    alt={
-                      view === "front"
-                        ? "Front of the original Road to Xtreme polo"
-                        : "Back of the original Road to Xtreme polo"
-                    }
-                    width={2048}
-                    height={1152}
-                    draggable={false}
-                    onLoad={() => setImageReady(true)}
-                    onError={() => {
-                      setImageReady(false);
-                      setImageError(true);
-                    }}
-                  />
-                )}
-              </div>
-
-              {!imageReady && (
-                <div className="xm-image-status" role="status">
-                  {!imageError && (
-                    <span
-                      className="xm-image-loader"
-                      aria-hidden="true"
+            <div className="xm-gallery">
+              <div
+                className={`xm-stage ${
+                  view === "back" ? "is-back" : ""
+                } ${zoomed ? "zoomed" : ""} ${
+                  imageReady ? "is-ready" : ""
+                }`}
+                aria-busy={!imageReady && !imageError}
+              >
+                <div className="xm-shirt-wrap">
+                  {imageSrc && (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      className="xm-shirt"
+                      src={imageSrc}
+                      alt={
+                        view === "front"
+                          ? "Front of the Road to Xtreme polo"
+                          : "Back of the Road to Xtreme polo"
+                      }
+                      width={2048}
+                      height={1152}
+                      draggable={false}
+                      onLoad={() => {
+                        setImageReady(true);
+                        setImageError(false);
+                      }}
+                      onError={() => {
+                        setImageReady(false);
+                        setImageError(true);
+                      }}
                     />
                   )}
-
-                  <span>
-                    {imageError
-                      ? "Unable to load the shirt image."
-                      : "LOADING PRODUCT"}
-                  </span>
                 </div>
-              )}
 
-              <span className="xm-view">
-                {`${view.toUpperCase()} VIEW`}
-              </span>
+                {!imageReady && (
+                  <div className="xm-image-status" role="status">
+                    {!imageError && (
+                      <span
+                        className="xm-image-loader"
+                        aria-hidden="true"
+                      />
+                    )}
 
-              <button
-                type="button"
-                className="xm-zoom"
-                aria-pressed={zoomed}
-                disabled={!imageReady}
-                onClick={() => setZoomed((previous) => !previous)}
-              >
-                <Maximize2 aria-hidden="true" />
-                {zoomed ? "Full view" : "View detail"}
-              </button>
-            </div>
+                    <span>
+                      {imageError
+                        ? "Unable to load the shirt image."
+                        : "LOADING PRODUCT"}
+                    </span>
+                  </div>
+                )}
 
-            <div
-              className="xm-view-controls"
-              role="group"
-              aria-label="Product view"
-            >
-              {(
-                [
-                  { id: "front", label: "FRONT" },
-                  { id: "back", label: "BACK" },
-                ] as const
-              ).map((tab) => (
+                <span className="xm-view">
+                  <span className="xm-view-number">
+                    {view === "front" ? "01 / " : "02 / "}
+                  </span>
+                  {view.toUpperCase()}
+                </span>
+
                 <button
-                  key={tab.id}
                   type="button"
-                  aria-pressed={view === tab.id}
-                  onClick={() => {
-                    setView(tab.id);
-                    setZoomed(false);
-                  }}
+                  className="xm-zoom"
+                  aria-label={
+                    zoomed ? "Show full shirt" : "Zoom into shirt"
+                  }
+                  aria-pressed={zoomed}
+                  disabled={!imageReady}
+                  onClick={() => setZoomed((current) => !current)}
                 >
-                  {tab.label}
+                  <Maximize2 aria-hidden="true" />
+                  <span>{zoomed ? "Full view" : "View detail"}</span>
                 </button>
-              ))}
+              </div>
+
+              <div
+                className="xm-view-controls"
+                role="group"
+                aria-label="Product view"
+              >
+                {(["front", "back"] as const).map((side) => (
+                  <button
+                    key={side}
+                    type="button"
+                    aria-pressed={view === side}
+                    onClick={() => {
+                      setView(side);
+                      setZoomed(false);
+                    }}
+                  >
+                    {side.toUpperCase()}
+                  </button>
+                ))}
+              </div>
             </div>
 
-            <div className="xm-product-note">
-              <span>BLACK / BLUE TRIM</span>
-              <span>POLO + LAPTOP STICKER PACK</span>
-            </div>
-
-            {backgroundWarning && (
-              <p className="xm-note" role="status">
-                Showing the original image. Background removal
-                was unavailable.
-              </p>
-            )}
-          </section>
-
-          <section
-            className="xm-details"
-            aria-label="Choose your polo"
-            tabIndex={0}
-          >
-            <div className="xm-status">
-              <b className="xm-dot" aria-hidden="true" />
-              ROAD TO XTREME
-              <span>// 2.0</span>
-            </div>
-
-            <h1>
-              Go beyond.
-              <br />
-              <em>Wear Xtreme.</em>
-            </h1>
-
-            <h2>Road to Xtreme Merch Pack</h2>
-
-            <p className="xm-description">
-              CINEC Campus Student Branch exclusive edition.
-            </p>
-
-            <div className="xm-price">
-              <strong>{currency(price)}</strong>
-              <span>PER PACK</span>
-            </div>
-
+            {/* Countdown directly below the shirt preview */}
             <div className="xm-timer">
               <p className="xm-timer-label">
                 {expired
@@ -456,9 +474,67 @@ export default function MerchPage({
               )}
             </div>
 
+            <div className="xm-product-note">
+              <span>BLACK / BLUE TRIM</span>
+              <span>POLO + LAPTOP STICKER PACK</span>
+            </div>
+
+            {backgroundWarning && (
+              <p className="xm-note" role="status">
+                Showing the original product image.
+              </p>
+            )}
+          </section>
+
+          {/* RIGHT: product details */}
+          <section
+            className="xm-details"
+            aria-label="Merch pack details"
+            tabIndex={0}
+          >
+            <div className="xm-status">
+              <b className="xm-dot" aria-hidden="true" />
+              ROAD TO XTREME
+              <span>// 2.0</span>
+            </div>
+
+            <h1 className="xm-desktop-heading">
+              Go beyond.
+              <br />
+              <em>Wear Xtreme.</em>
+            </h1>
+
+            <div className="xm-product-summary">
+              <div className="xm-product-copy">
+                <h2>Road to Xtreme Merch Pack</h2>
+
+                <p className="xm-description">
+                  <span className="xm-desktop-description">
+                    CINEC Campus Student Branch exclusive edition.
+                  </span>
+                  <span className="xm-mobile-description">
+                    Polo + laptop sticker pack
+                  </span>
+                </p>
+              </div>
+
+              <div className="xm-price">
+                <strong>{currency(price)}</strong>
+                <span>PER PACK</span>
+              </div>
+            </div>
+
+            <div className="xm-mobile-meta">
+              <span>BLACK / BLUE TRIM</span>
+              <span>UNISEX FIT</span>
+            </div>
+
             <div className="xm-pack-inclusions">
               <div className="xm-pack-item">
-                <span className="xm-pack-icon" aria-hidden="true">👕</span>
+                <span className="xm-pack-icon" aria-hidden="true">
+                  👕
+                </span>
+
                 <div>
                   <strong>Road to Xtreme Polo</strong>
                   <small>Black / Blue trim · Unisex fit</small>
@@ -466,69 +542,116 @@ export default function MerchPage({
               </div>
 
               <div className="xm-pack-item">
-                <span className="xm-pack-icon" aria-hidden="true">✨</span>
+                <span className="xm-pack-icon" aria-hidden="true">
+                  ✨
+                </span>
+
                 <div>
                   <div className="xm-pack-item-head">
                     <strong>1× Laptop Sticker</strong>
-                    <span className="xm-badge-random">1 OF 2 RANDOM</span>
+                    <span className="xm-badge-random">
+                      1 OF 2 RANDOM
+                    </span>
                   </div>
                   <small>Exclusive die-cut vinyl sticker</small>
                 </div>
               </div>
             </div>
 
-            <div className="xm-stickers-section">
+            <section
+              className="xm-stickers-section"
+              aria-label="Included sticker designs"
+            >
               <div className="xm-stickers-section-head">
                 <div>
-                  <span className="xm-stickers-tag">INCLUDED LAPTOP STICKER</span>
-                  <span className="xm-stickers-sub">1 OF 2 COLLECTIBLE DESIGNS</span>
+                  <span className="xm-stickers-tag">
+                    INCLUDED LAPTOP STICKER
+                  </span>
+                  <span className="xm-stickers-sub">
+                    1 OF 2 COLLECTIBLE DESIGNS
+                  </span>
                 </div>
-                <span className="xm-stickers-random-pill">1 PACKED AT RANDOM</span>
+
+                <span className="xm-stickers-random-pill">
+                  1 PACKED AT RANDOM
+                </span>
               </div>
 
               <div className="xm-stickers-grid">
                 {STICKERS.map((sticker) => (
-                  <div
+                  <button
                     key={sticker.id}
+                    type="button"
                     className={`xm-sticker-card ${sticker.id}`}
                     onClick={() => setLightboxSticker(sticker)}
-                    role="button"
-                    tabIndex={0}
-                    onKeyDown={(e) => {
-                      if (e.key === "Enter" || e.key === " ") {
-                        e.preventDefault();
-                        setLightboxSticker(sticker);
-                      }
-                    }}
-                    title={`Click to preview ${sticker.name} in full size`}
+                    aria-label={`Preview ${sticker.name}`}
+                    aria-haspopup="dialog"
                   >
-                    <div className="xm-sticker-img-wrap">
+                    <span className="xm-sticker-img-wrap">
                       {/* eslint-disable-next-line @next/next/no-img-element */}
                       <img
                         src={sticker.src}
                         alt={sticker.alt}
                         className={`xm-sticker-img xm-img-${sticker.id}`}
+                        loading="lazy"
                       />
-                      <span className="xm-sticker-zoom-hint" aria-hidden="true">
+
+                      <span
+                        className="xm-sticker-zoom-hint"
+                        aria-hidden="true"
+                      >
                         <Maximize2 />
                       </span>
-                    </div>
-                    <div className="xm-sticker-info">
-                      <span className="xm-sticker-badge">{sticker.edition}</span>
-                      <strong className="xm-sticker-name">{sticker.name}</strong>
-                    </div>
-                  </div>
+                    </span>
+
+                    <span className="xm-sticker-info">
+                      <span className="xm-sticker-badge">
+                        {sticker.edition}
+                      </span>
+                      <strong className="xm-sticker-name">
+                        {sticker.name}
+                      </strong>
+                    </span>
+                  </button>
                 ))}
               </div>
 
               <div className="xm-stickers-note-banner">
-                <span aria-hidden="true">🎲</span>
+                <span aria-hidden="true">↗</span>
                 <span>
-                  1 of these 2 sticker designs is packed at random with every Polo!
+                  One of these two designs is packed at random
+                  with every polo.
                 </span>
               </div>
-            </div>
+            </section>
 
+            <div className="xm-mobile-sizing">
+              <div className="xm-fieldhead">
+                <span>01 / YOUR SIZE</span>
+                <span className="xm-selected" aria-live="polite">
+                  {selected
+                    ? `${selected} SELECTED`
+                    : "SELECT A SIZE"}
+                </span>
+              </div>
+
+              <div
+                className="xm-sizes"
+                role="group"
+                aria-label="Choose your preferred size"
+              >
+                {SIZES.map((size) => (
+                  <button
+                    key={size}
+                    type="button"
+                    aria-pressed={selected === size}
+                    onClick={() => setSelected(size)}
+                  >
+                    {size}
+                  </button>
+                ))}
+              </div>
+            </div>
 
             <div className="xm-fit">
               <div
@@ -538,21 +661,29 @@ export default function MerchPage({
               >
                 <button
                   type="button"
-                  aria-pressed={tab === "guide"}
+                  aria-expanded={tab === "guide"}
                   aria-controls="xm-guide-panel"
-                  onClick={() => setTab("guide")}
+                  onClick={() => togglePanel("guide")}
                 >
                   Size guide
+                  <ChevronDown
+                    className="xm-panel-chevron"
+                    aria-hidden="true"
+                  />
                 </button>
 
                 <button
                   type="button"
-                  aria-pressed={tab === "finder"}
+                  aria-expanded={tab === "finder"}
                   aria-controls="xm-finder-panel"
-                  onClick={() => setTab("finder")}
+                  onClick={() => togglePanel("finder")}
                 >
                   <ScanLine aria-hidden="true" />
                   Find my size
+                  <ChevronDown
+                    className="xm-panel-chevron"
+                    aria-hidden="true"
+                  />
                 </button>
               </div>
 
@@ -568,8 +699,8 @@ export default function MerchPage({
                     type="button"
                     className="xm-unit"
                     onClick={() =>
-                      setUnit((previous) =>
-                        previous === "in" ? "cm" : "in",
+                      setUnit((current) =>
+                        current === "in" ? "cm" : "in",
                       )
                     }
                     aria-label={`Change measurements to ${
@@ -600,18 +731,20 @@ export default function MerchPage({
                       <tr
                         key={item.size}
                         className={
-                          selected === item.size
-                            ? "chosen"
-                            : undefined
+                          selected === item.size ? "chosen" : ""
                         }
-                        onClick={() =>
-                          setSelected((previous) =>
-                            previous === item.size ? null : item.size,
-                          )
-                        }
-                        style={{ cursor: "pointer" }}
                       >
-                        <th scope="row">{item.size}</th>
+                        <th scope="row">
+                          <button
+                            type="button"
+                            className="xm-chart-size"
+                            aria-label={`Select size ${item.size}`}
+                            aria-pressed={selected === item.size}
+                            onClick={() => setSelected(item.size)}
+                          >
+                            {item.size}
+                          </button>
+                        </th>
                         <td>{measurement(item.chest)}</td>
                         <td>{measurement(item.length)}</td>
                       </tr>
@@ -630,7 +763,7 @@ export default function MerchPage({
                 hidden={tab !== "finder"}
               >
                 <label htmlFor="xm-chest">
-                  Your chest measurement
+                  Your chest circumference
                   <output htmlFor="xm-chest">{chest} in</output>
                 </label>
 
@@ -662,10 +795,10 @@ export default function MerchPage({
                     className="xm-use"
                     disabled={!suggested}
                     onClick={() => {
-                      if (suggested) {
-                        setSelected(suggested.size);
-                        setTab("guide");
-                      }
+                      if (!suggested) return;
+
+                      setSelected(suggested.size);
+                      setTab("guide");
                     }}
                   >
                     View in chart ↗
@@ -674,64 +807,87 @@ export default function MerchPage({
 
                 <p className="xm-note">
                   {suggested
-                    ? "Estimate based on approx. 2 inches of ease for a comfortable fit."
-                    : "This chart does not cover your measurement. Contact us for custom sizing."}
+                    ? "Estimate based on approximately 2 inches of ease. Check the garment measurements before ordering."
+                    : "No size in this chart provides 2 inches of ease for this measurement. Contact us for sizing help."}
                 </p>
               </div>
             </div>
 
-            <a
-              href={googleFormUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className={`xm-order ${expired ? "is-disabled" : ""}`}
-              aria-disabled={expired}
-              onClick={(event) => {
-                if (expired) {
-                  event.preventDefault();
-                } else if (!googleFormUrl || googleFormUrl === "#") {
-                  event.preventDefault();
-                  alert("Google Form link will be updated shortly.");
-                }
-              }}
-            >
-              <span>
-                {expired ? "PRE-ORDERS CLOSED" : "PRE-ORDER NOW"}
-              </span>
-
-              <span className="xm-total">
-                {currency(price)}
-              </span>
-
-              <ArrowUpRight aria-hidden="true" />
-            </a>
-
-            <p className="xm-order-note">
-              {expired
-                ? "Pre-orders closed on October 16th at 12:00 AM."
-                : "Secure your pack via the official pre-order form."}
+            <p className="xm-mobile-campus">
+              CINEC Campus Student Branch exclusive edition.
             </p>
+
+            {/* Last block: pre-order action */}
+            <div className="xm-order-section">
+              <a
+                href={googleFormUrl || "#"}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={`xm-order ${
+                  expired ? "is-disabled" : ""
+                }`}
+                aria-disabled={expired}
+                onClick={(event) => {
+                  if (expired) {
+                    event.preventDefault();
+                    return;
+                  }
+
+                  if (!googleFormUrl || googleFormUrl === "#") {
+                    event.preventDefault();
+                    setOrderMessage(
+                      "The pre-order form will be available shortly.",
+                    );
+                  }
+                }}
+              >
+                <span>
+                  {expired ? "PRE-ORDERS CLOSED" : "PRE-ORDER NOW"}
+                </span>
+
+                <span className="xm-total">
+                  {currency(price)}
+                </span>
+
+                <ArrowUpRight aria-hidden="true" />
+              </a>
+
+              <p className="xm-order-note">
+                {expired
+                  ? "The pre-order window has closed."
+                  : "Complete your order and confirm your size in the official form."}
+              </p>
+
+              {orderMessage && (
+                <p className="xm-order-note" role="status">
+                  {orderMessage}
+                </p>
+              )}
+            </div>
           </section>
         </div>
       </main>
 
-      {lightboxSticker && (
-        <div
-          className="xm-lightbox-overlay"
-          role="dialog"
-          aria-modal="true"
-          aria-label={`Preview ${lightboxSticker.name}`}
-          onClick={() => setLightboxSticker(null)}
-        >
-          <div
-            className="xm-lightbox-card"
-            onClick={(e) => e.stopPropagation()}
-          >
+      <dialog
+        ref={lightboxRef}
+        className="xm-lightbox-dialog"
+        aria-labelledby="xm-lightbox-title"
+        onCancel={() => setLightboxSticker(null)}
+        onClose={() => setLightboxSticker(null)}
+        onClick={(event) => {
+          if (event.target === event.currentTarget) {
+            setLightboxSticker(null);
+          }
+        }}
+      >
+        {lightboxSticker && (
+          <div className="xm-lightbox-card">
             <button
               type="button"
               className="xm-lightbox-close"
               onClick={() => setLightboxSticker(null)}
-              aria-label="Close preview"
+              aria-label="Close sticker preview"
+              autoFocus
             >
               <X aria-hidden="true" />
             </button>
@@ -746,15 +902,25 @@ export default function MerchPage({
             </div>
 
             <div className="xm-lightbox-meta">
-              <span className="xm-lightbox-badge">{lightboxSticker.edition}</span>
-              <h3 className="xm-lightbox-title">{lightboxSticker.name}</h3>
+              <span className="xm-lightbox-badge">
+                {lightboxSticker.edition}
+              </span>
+
+              <h3
+                id="xm-lightbox-title"
+                className="xm-lightbox-title"
+              >
+                {lightboxSticker.name}
+              </h3>
+
               <p className="xm-lightbox-note">
-                🎲 1 of 2 collectible die-cut vinyl stickers packed at random with every Road to Xtreme Polo!
+                One of two collectible die-cut vinyl stickers,
+                packed at random with every Road to Xtreme polo.
               </p>
             </div>
           </div>
-        </div>
-      )}
+        )}
+      </dialog>
     </div>
   );
 }
