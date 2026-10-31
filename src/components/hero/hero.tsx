@@ -7,6 +7,7 @@ import { animate } from "animejs";
 import Typed from "typed.js";
 
 import Starfield from "@/components/animations/Starfield";
+import LivePopupButton from "@/components/hero/LivePopupButton";
 
 const TARGET = new Date("2026-10-31T00:00:00+05:30").getTime();
 
@@ -620,6 +621,11 @@ export default function Hero() {
             <p className="sr-only">
               Outthink the challenge. Outcode the competition.
             </p>
+          </div>
+
+          {/* Live popup pill — appears after hero reveal */}
+          <div className="mt-5">
+            <LivePopupButton />
           </div>
         </div>
 

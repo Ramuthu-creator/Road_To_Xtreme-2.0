@@ -8,7 +8,7 @@ import FAQ from "@/components/sections/faq/faq";
 import About from "@/components/sections/about/about";
 import Roadmap from "@/components/sections/roadmap/PathToXtreme";
 import ContactUs from "@/components/sections/contact-us/ContactUs";
-import MerchAdModal from "@/components/sections/merch/MerchAdModal";
+// import MerchAdModal from "@/components/sections/merch/MerchAdModal";
 
 export default function Home() {
   useEffect(() => {
@@ -53,7 +53,7 @@ export default function Home() {
       </section>
 
       {/* Pop-up Ad and Floating HUD Pill for T-Shirt Release */}
-      <MerchAdModal />
+      {/* <MerchAdModal /> */}
     </main>
   );
 }
