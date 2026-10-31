@@ -13,6 +13,15 @@ const config: Config = {
         orbitron: ['var(--font-orbitron)'],
         space: ['var(--font-space)'],
       },
+      keyframes: {
+        'pill-ripple': {
+          '0%':   { opacity: '0.65', transform: 'scale(1)' },
+          '100%': { opacity: '0',    transform: 'scale(1.4)' },
+        },
+      },
+      animation: {
+        'pill-ripple': 'pill-ripple 2s ease-out infinite',
+      },
     },
   },
   plugins: [],
